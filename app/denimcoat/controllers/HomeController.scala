@@ -1,10 +1,11 @@
 package denimcoat.controllers
 
+import denimcoat.reasoners.{Reasoner, ReasonerRegistry}
 import javax.inject._
-import play.api._
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsError, JsString, JsValue, Json}
 import play.api.mvc._
-import play.twirl.api.Html
+import denimcoat.reasoners.json.ReasonerRequestJsonReading.requestReads
+import denimcoat.reasoners.json.ReasonerResponseJsonWriting.responseWrites
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -24,7 +25,20 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(denimcoat.views.html.index())
   }
 
-  def reasoner(id: String) = Action(parse.json) { request: Request[JsValue] =>
-    ???
+  def reasoner(id: String): Action[JsValue] = Action(parse.json) { request: Request[JsValue] =>
+    ReasonerRegistry.get(id) match {
+      case Some(reasoner) =>
+        val reasonerRequestResult = request.body.validate[Reasoner.Request]
+        reasonerRequestResult.fold(
+          errors => {
+            BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors)))
+          },
+          reasonerRequest => {
+            val reasonerResponse = reasoner.reason(reasonerRequest)
+            Ok(Json.toJson(reasonerResponse))
+          }
+        )
+      case None => BadRequest(Json.obj("status" -> "KO", "message" -> JsString(s"No reasoner found for '$id'")))
+    }
   }
 }
