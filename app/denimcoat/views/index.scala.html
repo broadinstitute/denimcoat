@@ -1,5 +1,9 @@
+@import java.util.Date
 @()
 
 @main("Welcome to DenimCoat") {
   <h1>Welcome to DenimCoat!</h1>
+
+  <p>This page was loaded @{(new Date(System.currentTimeMillis())).toString}. </p>
+  <p id="greeting">Blub.</p>
 }
