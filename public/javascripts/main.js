@@ -12,8 +12,22 @@ d3.select("#inputSubmitButton").on("click", submitQuestion);
 d3.select("#inputExampleButton").on("click", setExample);
 d3.select("#inputClearButton").on("click", clearInput);
 
+var reasonerId = "deepthought"
+var reasonerUrl = "/reasoner/" + reasonerId
+
 function submitQuestion() {
-    alert(d3.select("#input").property("value"));
+    var questionText = d3.select("#input").property("value");
+    var currentTimeInMs = new Date().getTime();
+    var requestObject = { "text": questionText, "timestamp": currentTimeInMs};
+    var requestJson = JSON.stringify(requestObject);
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        var responseJson = this.responseText;
+        alert(responseJson);
+    };
+    http.open("POST", reasonerUrl, true);
+    http.setRequestHeader("Content-type", "application/json");
+    http.send(requestJson);
 }
 
 var exampleInput = "How many roads must a man walk down, before you call him a man?";
