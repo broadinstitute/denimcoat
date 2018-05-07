@@ -4,6 +4,7 @@
 @main("Welcome to DenimCoat") {
   <h1>Welcome to DenimCoat!</h1>
 
-  <p>This page was loaded @{(new Date(System.currentTimeMillis())).toString}. </p>
+  <p>This page was loaded @{new Date(System.currentTimeMillis()).toString}. </p>
   <p id="greeting">Blub.</p>
+  <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
 }

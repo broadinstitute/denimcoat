@@ -1,2 +1,1 @@
-d3.select("body").style("background-color", "yellow");
-d3.selectAll("p").style("color", "blue");
+d3.select("#greeting").style("color", "red");
