@@ -6,13 +6,19 @@
 
   <p>Enter question</p>
 
-  <textarea label="inputQuestion" id="input" rows="5" cols="100"></textarea>
+  <textarea id="input" rows="5" cols="120"></textarea>
 
   <div>
-  <button id="inputSubmitButton">Submit</button>
-  <button id="inputExampleButton">Example</button>
-  <button id="inputClearButton">Clear</button>
+    <select name="reasoners" id="reasoners">
+      <option value="deepThought" selected>Deep Thought</option>
+      <option value="hal9000">HAL 9000</option>
+    </select>
+    <button id="inputSubmitButton">Submit</button>
+    <button id="inputExampleButton">Example</button>
+    <button id="inputClearButton">Clear</button>
   </div>
+
+  <textarea id="answer" rows="20" cols="120"></textarea>
 
   <p>This page was loaded <span id="loadTime"></span>. Now it is <span id="nowTime"></span>.</p>
 

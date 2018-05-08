@@ -8,6 +8,6 @@ object ReasonerResponseJsonWriting {
 
   implicit val responseWrites: Writes[Reasoner.Response] = (response: Reasoner.Response) => Json.obj(
     "text" -> response.text,
-    "timstampe" -> response.timestamp.getTime
+    "timestamp" -> response.timestamp.getTime
   )
 }

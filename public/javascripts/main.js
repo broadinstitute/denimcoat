@@ -12,8 +12,13 @@ d3.select("#inputSubmitButton").on("click", submitQuestion);
 d3.select("#inputExampleButton").on("click", setExample);
 d3.select("#inputClearButton").on("click", clearInput);
 
-var reasonerId = "deepthought"
-var reasonerUrl = "/reasoner/" + reasonerId
+function getReasonerId() {
+    return d3.select("#reasoners").property("value");
+}
+
+function getReasonerUrl() {
+    return "/reasoner/" + getReasonerId();
+}
 
 function submitQuestion() {
     var questionText = d3.select("#input").property("value");
@@ -21,11 +26,14 @@ function submitQuestion() {
     var requestObject = { "text": questionText, "timestamp": currentTimeInMs};
     var requestJson = JSON.stringify(requestObject);
     var http = new XMLHttpRequest();
-    http.onreadystatechange = function() {
-        var responseJson = this.responseText;
-        alert(responseJson);
+    http.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            var responseJson = this.responseText;
+            var responseJsonPretty = JSON.stringify(JSON.parse(responseJson), null, 2);
+            d3.select("#answer").property("value", responseJsonPretty);
+        }
     };
-    http.open("POST", reasonerUrl, true);
+    http.open("POST", getReasonerUrl(), true);
     http.setRequestHeader("Content-type", "application/json");
     http.send(requestJson);
 }

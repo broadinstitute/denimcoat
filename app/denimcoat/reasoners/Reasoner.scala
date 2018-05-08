@@ -6,6 +6,8 @@ import denimcoat.reasoners.Reasoner.{Request, Response}
 
 trait Reasoner {
 
+  def id: String
+
   def reason(request: Request): Response
 
 }
