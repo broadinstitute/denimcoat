@@ -12,12 +12,28 @@ d3.select("#inputSubmitButton").on("click", submitQuestion);
 d3.select("#inputExampleButton").on("click", setExample);
 d3.select("#inputClearButton").on("click", clearInput);
 
-function getReasonerId() {
-    return d3.select("#reasoners").property("value");
+
+function getReasonerIds(){
+    return d3.selectAll(".reasoners").nodes().filter(element => element.checked).map(element => element.value);
 }
 
-function getReasonerUrl() {
-    return "/reasoner/" + getReasonerId();
+function getReasonerUrl(reasonerId) {
+    return "/reasoner/" + reasonerId;
+}
+
+var answers = {};
+
+function clearAnswers() {
+    answers = {};
+}
+
+function addAnswer(reasonerId, answer) {
+    answers[reasonerId] = answer;
+}
+
+function displayAnswers() {
+    var answersJsonPretty = JSON.stringify(answers, null, 2);
+    d3.select("#answer").property("value", answersJsonPretty);
 }
 
 function submitQuestion() {
@@ -28,17 +44,27 @@ function submitQuestion() {
         var currentTimeInMs = new Date().getTime();
         var requestObject = {"text": questionText, "timestamp": currentTimeInMs};
         var requestJson = JSON.stringify(requestObject);
-        var http = new XMLHttpRequest();
-        http.onreadystatechange = function () {
-            if (this.readyState === 4) {
-                var responseJson = this.responseText;
-                var responseJsonPretty = JSON.stringify(JSON.parse(responseJson), null, 2);
-                d3.select("#answer").property("value", responseJsonPretty);
-            }
-        };
-        http.open("POST", getReasonerUrl(), true);
-        http.setRequestHeader("Content-type", "application/json");
-        http.send(requestJson);
+        var reasonerIds = getReasonerIds();
+        if(reasonerIds.length === 0) {
+            alert("Please check at least one reasoner.");
+        } else {
+            clearAnswers();
+            reasonerIds.forEach(reasonerId => {
+                var reasonerIdConst = reasonerId;
+                var http = new XMLHttpRequest();
+                http.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        var responseJson = this.responseText;
+                        var answer = JSON.parse(responseJson);
+                        addAnswer(reasonerIdConst, answer);
+                        displayAnswers();
+                    }
+                };
+                http.open("POST", getReasonerUrl(reasonerId), true);
+                http.setRequestHeader("Content-type", "application/json");
+                http.send(requestJson);
+            })
+        }
     }
 }
 
