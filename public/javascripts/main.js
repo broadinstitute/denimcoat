@@ -4,7 +4,7 @@ setInterval(function () {
 }, 200);
 
 function printTime(element) {
-    var nowTime = new Date();
+    const nowTime = new Date();
     element.html(nowTime.toLocaleTimeString());
 }
 
@@ -21,7 +21,7 @@ function getReasonerUrl(reasonerId) {
     return "/reasoner/" + reasonerId;
 }
 
-var answers = {};
+let answers = {};
 
 function clearAnswers() {
     answers = {};
@@ -31,31 +31,48 @@ function addAnswer(reasonerId, answer) {
     answers[reasonerId] = answer;
 }
 
+function answersAsArray() {
+    return Object.entries(answers).map(entry => {
+        const answerWithKey = entry[1];
+        answerWithKey["reasonerId"] = entry[0];
+        return answerWithKey;
+    })
+}
+
+function populateAnswerTable() {
+    const answersArray = answersAsArray();
+    const rows = d3.select("#answersTable").selectAll("tr").data(answersArray, answer => answer.reasonerId);
+    const rowsEnter = rows.enter().append("tr");
+    rows.exit().remove();
+    rowsEnter.merge(rows).html(answer => `<th>${answer.reasonerId}</th><td>${answer.text}</td>`);
+}
+
 function displayAnswers() {
-    var answersJsonPretty = JSON.stringify(answers, null, 2);
-    d3.select("#answer").property("value", answersJsonPretty);
+    const answersJsonPretty = JSON.stringify(answers, null, 2);
+    d3.select("#answersRaw").property("value", answersJsonPretty);
+    populateAnswerTable();
 }
 
 function submitQuestion() {
-    var questionText = d3.select("#input").property("value").trim();
+    const questionText = d3.select("#input").property("value").trim();
     if (questionText === "") {
         alert("Please enter a question to submit.")
     } else {
-        var currentTimeInMs = new Date().getTime();
-        var requestObject = {"text": questionText, "timestamp": currentTimeInMs};
-        var requestJson = JSON.stringify(requestObject);
-        var reasonerIds = getReasonerIds();
+        const currentTimeInMs = new Date().getTime();
+        const requestObject = {"text": questionText, "timestamp": currentTimeInMs};
+        const requestJson = JSON.stringify(requestObject);
+        const reasonerIds = getReasonerIds();
         if(reasonerIds.length === 0) {
             alert("Please check at least one reasoner.");
         } else {
             clearAnswers();
             reasonerIds.forEach(reasonerId => {
-                var reasonerIdConst = reasonerId;
-                var http = new XMLHttpRequest();
+                const reasonerIdConst = reasonerId;
+                const http = new XMLHttpRequest();
                 http.onreadystatechange = function () {
                     if (this.readyState === 4) {
-                        var responseJson = this.responseText;
-                        var answer = JSON.parse(responseJson);
+                        const responseJson = this.responseText;
+                        const answer = JSON.parse(responseJson);
                         addAnswer(reasonerIdConst, answer);
                         displayAnswers();
                     }
@@ -68,7 +85,7 @@ function submitQuestion() {
     }
 }
 
-var exampleInput = "How many roads must a man walk down, before you call him a man?";
+const exampleInput = "How many roads must a man walk down, before you call him a man?";
 
 function setExample() {
     d3.select("#input").property("value", exampleInput);
