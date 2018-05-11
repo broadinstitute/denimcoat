@@ -44,7 +44,7 @@ function populateAnswerTable() {
     const rows = d3.select("#answersTable").selectAll("tr").data(answersArray, answer => answer.reasonerId);
     const rowsEnter = rows.enter().append("tr");
     rows.exit().remove();
-    rowsEnter.merge(rows).html(answer => `<th>${answer.reasonerId}</th><td>${answer.text}</td>`);
+    rowsEnter.merge(rows).html(answer => `<th>${answer.reasonerId}</th><td>${answer.message}</td>`);
 }
 
 function displayAnswers() {
