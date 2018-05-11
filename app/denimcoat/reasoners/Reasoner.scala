@@ -17,10 +17,24 @@ object Reasoner {
 
   case class Request(text: String, timestamp: Date)
 
-  case class Result(id: URI, text: String, confidence: Float)
+  case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
 
-  case class Response(context: URI, id: URI, aType: String, schemaVersion: String, toolVersion: String, datetime: Date,
-                      originalQuestionText: String, restatedQuestionText: String, resultCode: String, message: String,
-                      resultList: Seq[Result])
+  case class Node(id: String, category: String, name: String, uri: URI, description: String, symbol: String,
+                  nodePropertyList: Seq[NodeProperty])
+
+  case class EdgeProperty(`type`: String, name: String, value: Any, uri: URI)
+
+  case class Origin(id: String, `type`: String, name: String)
+
+  case class Edge(predicate: String, subject: String, `object`: String, isDefinedBy: String, providedBy: String,
+                  confidence: Float, edgePropertyList: Seq[EdgeProperty], originList: Seq[Origin])
+
+  case class ResultGraph(nodeList: Seq[Node], edgeList: Seq[Edge])
+
+  case class Result(id: URI, text: String, confidence: Float, resultGraph: ResultGraph)
+
+  case class Response(context: URI, id: URI, `type`: String, schemaVersion: String, toolVersion: String,
+                      datetime: Date, originalQuestionText: String, restatedQuestionText: String, resultCode: String,
+                      message: String, resultList: Seq[Result])
 
 }

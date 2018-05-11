@@ -27,7 +27,7 @@ object MockReasoners {
       Reasoner.Response(
         context = contextUri(id),
         id = idUri(id),
-        aType = typeDefault,
+        `type` = typeDefault,
         schemaVersion = "23",
         toolVersion = "19",
         datetime = now,
@@ -39,7 +39,8 @@ object MockReasoners {
           Reasoner.Result(
             id = idResultUri(id, "best"),
             text = "The answer is 42",
-            confidence = 1.0f
+            confidence = 1.0f,
+            resultGraph = Reasoner.ResultGraph(Seq.empty, Seq.empty)
           )
         )
       )
@@ -53,7 +54,7 @@ object MockReasoners {
       Reasoner.Response(
         context = contextUri(id),
         id = idUri(id),
-        aType = typeDefault,
+        `type` = typeDefault,
         schemaVersion = "1.2.3",
         toolVersion = "3.1.4",
         datetime = now,
