@@ -1,16 +1,53 @@
 package denimcoat.reasoners.json
 
 import denimcoat.reasoners.Reasoner
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{JsObject, JsValue, Json, Writes}
 
 
 object ReasonerResponseJsonWriting {
 
+  implicit val resultNodeProptertyWrites: Writes[Reasoner.NodeProperty] =
+    (property: Reasoner.NodeProperty) => Json.obj(
+      "type" -> property.`type`,
+      "name" -> property.name,
+      "value" -> property.value.toString,
+      "uri" -> property.uri.toString
+    )
+
   implicit val resultNodeWrites: Writes[Reasoner.Node] = (node: Reasoner.Node) => Json.obj(
-    // TODO
+    "id" -> node.id,
+    "category" -> node.category,
+    "name" -> node.name,
+    "uri" -> node.uri.toString,
+    "description" -> node.description,
+    "symbol" -> node.symbol,
+    "node_property_list" -> node.nodePropertyList
   )
 
-  implicit val resultEdgeWrites: Writes[Reasoner.Edge] = (_: Reasoner.Edge) => Json.obj() // TODO
+  implicit val resultEdgePropertyWrites: Writes[Reasoner.EdgeProperty] =
+    (property: Reasoner.EdgeProperty) => Json.obj(
+      "type" -> property.`type`,
+      "name" -> property.name,
+      "value" -> property.value.toString,
+      "uri" -> property.uri.toString
+    )
+
+  implicit val resultOriginWrites: Writes[Reasoner.Origin] = (origin: Reasoner.Origin) => Json.obj(
+    "id" -> origin.id,
+    "type" -> origin.`type`,
+    "name" -> origin.name
+  )
+
+  implicit val resultEdgeWrites: Writes[Reasoner.Edge] = (edge: Reasoner.Edge) => Json.obj(
+    "predicate" -> edge.predicate,
+    "subject" -> edge.subject,
+    "object" -> edge.`object`,
+    "is_defined_by" -> edge.isDefinedBy,
+    "provided_by" -> edge.providedBy,
+    "confidence" -> edge.confidence,
+    "edge_property_list" -> edge.edgePropertyList,
+    "origin_list" -> edge.originList
+  )
 
   implicit val resultGraphWrites: Writes[Reasoner.ResultGraph] = (graph: Reasoner.ResultGraph) => Json.obj(
     "node_list" -> graph.nodeList,
