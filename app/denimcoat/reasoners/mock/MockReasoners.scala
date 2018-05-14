@@ -28,8 +28,8 @@ object MockReasoners {
         context = contextUri(id),
         id = idUri(id),
         `type` = typeDefault,
-        schemaVersion = "23",
-        toolVersion = "19",
+        schemaVersion = Reasoner.apiVersion,
+        toolVersion = version,
         datetime = now,
         originalQuestionText = request.text,
         restatedQuestionText = request.text,
@@ -45,6 +45,8 @@ object MockReasoners {
         )
       )
     }
+
+    override val version: String = "42"
   }
 
   val hal9000: Reasoner = new Reasoner {
@@ -56,7 +58,7 @@ object MockReasoners {
         id = idUri(id),
         `type` = typeDefault,
         schemaVersion = "1.2.3",
-        toolVersion = "3.1.4",
+        toolVersion = version,
         datetime = now,
         originalQuestionText = request.text,
         restatedQuestionText = request.text,
@@ -65,6 +67,8 @@ object MockReasoners {
         resultList = Seq.empty
       )
     }
+
+    override val version: String = "9000"
   }
 
   val all: Map[String, Reasoner] = Set(deepThought, hal9000).map(reasoner => (reasoner.id, reasoner)).toMap

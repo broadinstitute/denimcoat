@@ -9,11 +9,15 @@ trait Reasoner {
 
   def id: String
 
+  def version: String
+
   def reason(request: Request): Response
 
 }
 
 object Reasoner {
+
+  val apiVersion: String = "0.6"
 
   case class Request(text: String, timestamp: Date)
 
