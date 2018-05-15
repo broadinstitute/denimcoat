@@ -4,7 +4,6 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import jdk.nashorn.internal.runtime.regexp.joni.constants.TargetInfo
 
 object Avicenna extends Reasoner {
 

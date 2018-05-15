@@ -85,7 +85,7 @@ function submitQuestion() {
     }
 }
 
-const exampleInput = "How many roads must a man walk down, before you call him a man?";
+const exampleInput = "What are targets of aspirin?";
 
 function setExample() {
     d3.select("#input").property("value", exampleInput);
