@@ -47,10 +47,34 @@ function populateAnswerTable() {
     rowsEnter.merge(rows).html(answer => `<th>${answer.reasonerId}</th><td>${answer.message}</td>`);
 }
 
+const branchDataKey = "treeBranchData";
+const treeBranchTextMax = 120;
+
+function createTreeBranch(key, data, indent = "") {
+    const branch = document.createElement("div");
+    let text = indent + key + ": " + JSON.stringify(data);
+    if(text.length > treeBranchTextMax) {
+        text = text.substr(0, treeBranchTextMax - 3) + "..."
+    }
+    branch.append(document.createTextNode(text));
+    branch[branchDataKey] = {key: key, data: data};
+    return branch;
+}
+
+function plantTree() {
+    const node = d3.select("#answersTree").node();
+    let child;
+    while(child = node.firstChild) {
+        node.removeChild(child);
+    }
+    node.append(createTreeBranch("answers", answers));
+}
+
 function displayAnswers() {
     const answersJsonPretty = JSON.stringify(answers, null, 2);
     d3.select("#answersRaw").property("value", answersJsonPretty);
     populateAnswerTable();
+    plantTree();
 }
 
 function submitQuestion() {
