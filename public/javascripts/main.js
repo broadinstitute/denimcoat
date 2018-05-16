@@ -47,27 +47,67 @@ function populateAnswerTable() {
     rowsEnter.merge(rows).html(answer => `<th>${answer.reasonerId}</th><td>${answer.message}</td>`);
 }
 
-const branchDataKey = "treeBranchData";
+const branchPropsKey = "treeBranchProps";
 const treeBranchTextMax = 120;
 
-function createTreeBranch(key, data, indent = "") {
-    const branch = document.createElement("div");
-    let text = indent + key + ": " + JSON.stringify(data);
-    if(text.length > treeBranchTextMax) {
-        text = text.substr(0, treeBranchTextMax - 3) + "..."
+function keyPrefix(key) {
+    if(typeof key === "undefined") {
+        return "";
+    } else {
+        return key + ": ";
     }
-    branch.append(document.createTextNode(text));
-    branch[branchDataKey] = {key: key, data: data};
+}
+
+function renderTreeBranch(branch) {
+    const props = branch[branchPropsKey];
+    branch.innerHTML = "";
+    if(props.collapsed) {
+        let text = keyPrefix(props.key) + JSON.stringify(props.value);
+        if(text.length > treeBranchTextMax) {
+            text = text.substr(0, treeBranchTextMax - 3) + "..."
+        }
+        branch.append(document.createTextNode(text));
+    } else {
+        const value = props.value;
+        if (typeof value === "object") {
+            if(Array.isArray(value)) {
+                branch.append(document.createTextNode("["));
+                value.forEach(childValue => branch.append(createTreeBranch(childValue)));
+                branch.append(document.createTextNode("]"));
+            } else {
+                branch.append(document.createTextNode("{"));
+                Object.entries(value).forEach(
+                    ([childKey, childValue]) => branch.append(createTreeBranch(childValue, childKey))
+                );
+                branch.append(document.createTextNode("}"));
+            }
+        } else {
+            let text = keyPrefix(props.key) + JSON.stringify(props.value);
+            branch.append(document.createTextNode(text));
+        }
+    }
+}
+
+function onTreeBranchClicked(event) {
+    const props = this[branchPropsKey];
+    props.collapsed = !(props.collapsed);
+    renderTreeBranch(this);
+    event.stopPropagation();
+}
+
+function createTreeBranch(value, key) {
+    const branch = document.createElement("div");
+    branch[branchPropsKey] = { key: key, value: value, collapsed: true };
+    renderTreeBranch(branch);
+    branch.setAttribute("class", "treeBranch");
+    branch.onclick = onTreeBranchClicked;
     return branch;
 }
 
 function plantTree() {
     const node = d3.select("#answersTree").node();
-    let child;
-    while(child = node.firstChild) {
-        node.removeChild(child);
-    }
-    node.append(createTreeBranch("answers", answers));
+    node.innerHTML = "";
+    node.append(createTreeBranch(answers));
 }
 
 function displayAnswers() {
