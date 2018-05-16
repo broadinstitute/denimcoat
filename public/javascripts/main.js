@@ -17,8 +17,16 @@ function getReasonerIds(){
     return d3.selectAll(".reasoners").nodes().filter(element => element.checked).map(element => element.value);
 }
 
+function isTwoStepReasoner(reasonerId) {
+    return reasonerId === "rtx";
+}
+
 function getReasonerUrl(reasonerId) {
-    return "/reasoner/" + reasonerId;
+    if(reasonerId === "rtx") {
+        return "http://rtx.ncats.io/devED/api/rtx/v1/ui/query";
+    } else {
+        return "/reasoner/" + reasonerId;
+    }
 }
 
 let answers = {};
@@ -117,33 +125,50 @@ function displayAnswers() {
     plantTree();
 }
 
+function createRequest(questionText) {
+    const currentTimeInMs = new Date().getTime();
+    const requestObject = {"text": questionText, "timestamp": currentTimeInMs};
+    return JSON.stringify(requestObject);
+}
+
+function receiveResponse() {
+    if (this.readyState === 4) {
+        const responseJson = this.responseText;
+        const answer = JSON.parse(responseJson);
+        addAnswer(this.reasonerId, answer);
+        displayAnswers();
+    }
+}
+
+class ReasonerHttpRequest extends XMLHttpRequest {
+    constructor(reasonerId) {
+        super();
+        this.reasonerId = reasonerId;
+    }
+}
+
+function submitReasonerRequest(reasonerId, url, request, responseHandler) {
+    const http = new ReasonerHttpRequest(reasonerId);
+    http.onreadystatechange = responseHandler;
+    http.open("POST", url, true);
+    http.setRequestHeader("Content-type", "application/json");
+    http.send(request);
+}
+
 function submitQuestion() {
     const questionText = d3.select("#input").property("value").trim();
     if (questionText === "") {
         alert("Please enter a question to submit.")
     } else {
-        const currentTimeInMs = new Date().getTime();
-        const requestObject = {"text": questionText, "timestamp": currentTimeInMs};
-        const requestJson = JSON.stringify(requestObject);
         const reasonerIds = getReasonerIds();
         if(reasonerIds.length === 0) {
             alert("Please check at least one reasoner.");
         } else {
             clearAnswers();
             reasonerIds.forEach(reasonerId => {
-                const reasonerIdConst = reasonerId;
-                const http = new XMLHttpRequest();
-                http.onreadystatechange = function () {
-                    if (this.readyState === 4) {
-                        const responseJson = this.responseText;
-                        const answer = JSON.parse(responseJson);
-                        addAnswer(reasonerIdConst, answer);
-                        displayAnswers();
-                    }
-                };
-                http.open("POST", getReasonerUrl(reasonerId), true);
-                http.setRequestHeader("Content-type", "application/json");
-                http.send(requestJson);
+                const url = getReasonerUrl(reasonerId);
+                const request = createRequest(questionText);
+                submitReasonerRequest(reasonerId, url, request, receiveResponse);
             })
         }
     }
