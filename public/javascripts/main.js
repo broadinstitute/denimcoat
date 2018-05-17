@@ -17,16 +17,8 @@ function getReasonerIds(){
     return d3.selectAll(".reasoners").nodes().filter(element => element.checked).map(element => element.value);
 }
 
-function isTwoStepReasoner(reasonerId) {
-    return reasonerId === "rtx";
-}
-
-function getReasonerUrl(reasonerId) {
-    if(reasonerId === "rtx") {
-        return "http://rtx.ncats.io/devED/api/rtx/v1/ui/query";
-    } else {
-        return "/reasoner/" + reasonerId;
-    }
+function getDefaultReasonerUrl(reasonerId) {
+    return "/reasoner/" + reasonerId;
 }
 
 let answers = {};
@@ -141,7 +133,7 @@ function displayAnswers() {
     plantTree();
 }
 
-function createRequest(questionText) {
+function createDefaultRequest(questionText) {
     const currentTimeInMs = new Date().getTime();
     const requestObject = {"text": questionText, "timestamp": currentTimeInMs};
     return JSON.stringify(requestObject);
@@ -171,6 +163,32 @@ function submitReasonerRequest(reasonerId, url, request, responseHandler) {
     http.send(request);
 }
 
+function queryDefaultReasoner(reasonerId, questionText) {
+    const url = getDefaultReasonerUrl(reasonerId);
+    const request = createDefaultRequest(questionText);
+    submitReasonerRequest(reasonerId, url, request, receiveResponse);
+}
+
+function queryRtxReasoner(reasonerId, questionText) {
+    const translateRequest = { language: "English", text: questionText};
+    const baseUrl = "http://rtx.ncats.io/api/rtx/v1/ui";
+    const translateUrl = baseUrl + "/translate";
+    function handleTranslateResponse() {
+        if (this.readyState === 4) {
+            const translateResponse = this.responseText;
+            alert(translateResponse);
+        }
+    }
+    submitReasonerRequest(reasonerId, translateUrl, translateRequest, handleTranslateResponse);
+}
+
+function queryIndigoReasoner(reasonerId, questionText) {
+    const baseUrl = "https://indigo.ncats.io/reasoner/api/v0";
+    const queryUrl = baseUrl + "/query";
+    const queryRequest = { terms: { disease: "headache", drug: "aspirin"}, type: "cop"};
+    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
+}
+
 function submitQuestion() {
     const questionText = d3.select("#input").property("value").trim();
     if (questionText === "") {
@@ -182,9 +200,13 @@ function submitQuestion() {
         } else {
             clearAnswers();
             reasonerIds.forEach(reasonerId => {
-                const url = getReasonerUrl(reasonerId);
-                const request = createRequest(questionText);
-                submitReasonerRequest(reasonerId, url, request, receiveResponse);
+                if(reasonerId === "rtx") {
+                    queryRtxReasoner(reasonerId, questionText);
+                } else if(reasonerId === "indigo") {
+                    queryIndigoReasoner(reasonerId, questionText);
+                } else {
+                    queryDefaultReasoner(reasonerId, questionText);
+                }
             })
         }
     }
