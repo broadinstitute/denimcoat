@@ -66,31 +66,47 @@ function keyPrefix(key) {
     }
 }
 
+function forEachButLast(array, forNonLast, forLast) {
+    const length = array.length;
+    if(length > 0) {
+        let i;
+        for(i = 0; i < length - 1; i++) {
+            forNonLast(array[i]);
+        }
+        forLast(array[length - 1]);
+    }
+}
+
 function renderTreeBranch(branch) {
     const props = branch[branchPropsKey];
     branch.innerHTML = "";
+    const trailer = props.isLast ? "" : ",";
     if(props.collapsed) {
         let text = keyPrefix(props.key) + JSON.stringify(props.value);
         if(text.length > treeBranchTextMax) {
-            text = text.substr(0, treeBranchTextMax - 3) + "..."
+            text = text.substr(0, treeBranchTextMax - 3) + "...";
         }
-        branch.append(document.createTextNode(text));
+        branch.append(document.createTextNode(text + trailer));
     } else {
         const value = props.value;
         if (typeof value === "object") {
             if(Array.isArray(value)) {
-                branch.append(document.createTextNode("["));
-                value.forEach(childValue => branch.append(createTreeBranch(childValue)));
-                branch.append(document.createTextNode("]"));
-            } else {
-                branch.append(document.createTextNode("{"));
-                Object.entries(value).forEach(
-                    ([childKey, childValue]) => branch.append(createTreeBranch(childValue, childKey))
+                branch.append(document.createTextNode(keyPrefix(props.key) + "["));
+                forEachButLast(value,
+                    childValue => branch.append(createTreeBranch(childValue)),
+                    childValue => branch.append(createTreeBranch(childValue, undefined, true)),
                 );
-                branch.append(document.createTextNode("}"));
+                branch.append(document.createTextNode("]" + trailer));
+            } else {
+                branch.append(document.createTextNode(keyPrefix(props.key) + "{"));
+                forEachButLast(Object.entries(value),
+                    ([childKey, childValue]) => branch.append(createTreeBranch(childValue, childKey)),
+                    ([childKey, childValue]) => branch.append(createTreeBranch(childValue, childKey, true)),
+                );
+                branch.append(document.createTextNode("}" + trailer));
             }
         } else {
-            let text = keyPrefix(props.key) + JSON.stringify(props.value);
+            const text = keyPrefix(props.key) + JSON.stringify(props.value) + trailer;
             branch.append(document.createTextNode(text));
         }
     }
@@ -103,9 +119,9 @@ function onTreeBranchClicked(event) {
     event.stopPropagation();
 }
 
-function createTreeBranch(value, key) {
+function createTreeBranch(value, key, isLast = false) {
     const branch = document.createElement("div");
-    branch[branchPropsKey] = { key: key, value: value, collapsed: true };
+    branch[branchPropsKey] = { key: key, value: value, collapsed: true, isLast: isLast };
     renderTreeBranch(branch);
     branch.setAttribute("class", "treeBranch");
     branch.onclick = onTreeBranchClicked;
