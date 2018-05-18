@@ -135,8 +135,7 @@ function displayAnswers() {
 
 function createDefaultRequest(questionText) {
     const currentTimeInMs = new Date().getTime();
-    const requestObject = {"text": questionText, "timestamp": currentTimeInMs};
-    return JSON.stringify(requestObject);
+    return {"text": questionText, "timestamp": currentTimeInMs};
 }
 
 function receiveResponse() {
@@ -161,7 +160,7 @@ function submitReasonerRequest(reasonerId, url, request, responseHandler) {
     http.open("POST", url, true);
     http.setRequestHeader("Content-type", "application/json");
     http.setRequestHeader("Accept", "application/json");
-    http.send(request);
+    http.send(JSON.stringify(request));
 }
 
 function queryDefaultReasoner(reasonerId, questionText) {
