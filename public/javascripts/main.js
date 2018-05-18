@@ -175,9 +175,9 @@ function queryRtxReasoner(reasonerId, questionText) {
     const translateUrl = baseUrl + "/translate";
     function handleTranslateResponse() {
         if (this.readyState === 4) {
-            alert(this.getAllResponseHeaders());
-            const translateResponse = this.responseText;
-            alert(translateResponse);
+            const queryUrl = baseUrl + "/query";
+            const queryRequest = JSON.parse(this.responseText);
+            submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
         }
     }
     submitReasonerRequest(reasonerId, translateUrl, translateRequest, handleTranslateResponse);
