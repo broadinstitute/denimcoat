@@ -160,6 +160,7 @@ function submitReasonerRequest(reasonerId, url, request, responseHandler) {
     http.onreadystatechange = responseHandler;
     http.open("POST", url, true);
     http.setRequestHeader("Content-type", "application/json");
+    http.setRequestHeader("Accept", "application/json");
     http.send(request);
 }
 
@@ -171,10 +172,11 @@ function queryDefaultReasoner(reasonerId, questionText) {
 
 function queryRtxReasoner(reasonerId, questionText) {
     const translateRequest = { language: "English", text: questionText};
-    const baseUrl = "http://rtx.ncats.io/api/rtx/v1/ui";
+    const baseUrl = "http://rtx.ncats.io/api/rtx/v1";
     const translateUrl = baseUrl + "/translate";
     function handleTranslateResponse() {
         if (this.readyState === 4) {
+            alert(this.getAllResponseHeaders());
             const translateResponse = this.responseText;
             alert(translateResponse);
         }
