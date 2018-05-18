@@ -123,7 +123,7 @@ function createTreeBranch(value, key, isLast = false) {
 function plantTree() {
     const node = d3.select("#answersTree").node();
     node.innerHTML = "";
-    node.append(createTreeBranch(answers));
+    node.append(createTreeBranch(answers, undefined, true));
 }
 
 function displayAnswers() {
