@@ -250,7 +250,6 @@ function getCyElements() {
     });
     const cyNodes = Object.entries(cyNodesMap).map(cyNodeEntry => cyNodeEntry[1]);
     const cyEdges = Object.entries(cyEdgesMap).map(cyEdgeEntry => cyEdgeEntry[1]);
-    alert(JSON.stringify(cyEdges));
     return cyNodes.concat(cyEdges);
 }
 
