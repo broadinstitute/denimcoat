@@ -8,3 +8,8 @@ body {
     margin-left: 2ex;
 }
 
+#cytoscape {
+    width: 300px;
+    height: 300px;
+    display: block;
+}
