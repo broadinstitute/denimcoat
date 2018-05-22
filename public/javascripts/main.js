@@ -13,7 +13,7 @@ d3.select("#inputExampleButton").on("click", setExample);
 d3.select("#inputClearButton").on("click", clearInput);
 
 
-function getReasonerIds(){
+function getReasonerIds() {
     return d3.selectAll(".reasoners").nodes().filter(element => element.checked).map(element => element.value);
 }
 
@@ -51,7 +51,7 @@ const branchPropsKey = "treeBranchProps";
 const treeBranchTextMax = 120;
 
 function keyPrefix(key) {
-    if(typeof key === "undefined") {
+    if (typeof key === "undefined") {
         return "";
     } else {
         return key + ": ";
@@ -60,9 +60,9 @@ function keyPrefix(key) {
 
 function forEachButLast(array, forNonLast, forLast) {
     const length = array.length;
-    if(length > 0) {
+    if (length > 0) {
         let i;
-        for(i = 0; i < length - 1; i++) {
+        for (i = 0; i < length - 1; i++) {
             forNonLast(array[i]);
         }
         forLast(array[length - 1]);
@@ -73,16 +73,16 @@ function renderTreeBranch(branch) {
     const props = branch[branchPropsKey];
     branch.innerHTML = "";
     const trailer = props.isLast ? "" : ",";
-    if(props.collapsed) {
+    if (props.collapsed) {
         let text = keyPrefix(props.key) + JSON.stringify(props.value);
-        if(text.length > treeBranchTextMax) {
+        if (text.length > treeBranchTextMax) {
             text = text.substr(0, treeBranchTextMax - 3) + "...";
         }
         branch.append(document.createTextNode(text + trailer));
     } else {
         const value = props.value;
         if (typeof value === "object") {
-            if(Array.isArray(value)) {
+            if (Array.isArray(value)) {
                 branch.append(document.createTextNode(keyPrefix(props.key) + "["));
                 forEachButLast(value,
                     childValue => branch.append(createTreeBranch(childValue)),
@@ -113,7 +113,7 @@ function onTreeBranchClicked(event) {
 
 function createTreeBranch(value, key, isLast = false) {
     const branch = document.createElement("div");
-    branch[branchPropsKey] = { key: key, value: value, collapsed: true, isLast: isLast };
+    branch[branchPropsKey] = {key: key, value: value, collapsed: true, isLast: isLast};
     renderTreeBranch(branch);
     branch.setAttribute("class", "treeBranch");
     branch.onclick = onTreeBranchClicked;
@@ -131,6 +131,7 @@ function displayAnswers() {
     d3.select("#answersRaw").property("value", answersJsonPretty);
     populateAnswerTable();
     plantTree();
+    drawCyGraph();
 }
 
 function createDefaultRequest(questionText) {
@@ -170,9 +171,10 @@ function queryDefaultReasoner(reasonerId, questionText) {
 }
 
 function queryRtxReasoner(reasonerId, questionText) {
-    const translateRequest = { language: "English", text: questionText};
+    const translateRequest = {language: "English", text: questionText};
     const baseUrl = "https://rtx.ncats.io/api/rtx/v1";
     const translateUrl = baseUrl + "/translate";
+
     function handleTranslateResponse() {
         if (this.readyState === 4) {
             const queryUrl = baseUrl + "/query";
@@ -180,13 +182,14 @@ function queryRtxReasoner(reasonerId, questionText) {
             submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
         }
     }
+
     submitReasonerRequest(reasonerId, translateUrl, translateRequest, handleTranslateResponse);
 }
 
 function queryIndigoReasoner(reasonerId, questionText) {
     const baseUrl = "https://indigo.ncats.io/reasoner/api/v0";
     const queryUrl = baseUrl + "/query";
-    const queryRequest = { terms: { disease: "headache", drug: "aspirin"}, type: "cop"};
+    const queryRequest = {terms: {disease: "headache", drug: "aspirin"}, type: "cop"};
     submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
 }
 
@@ -196,14 +199,14 @@ function submitQuestion() {
         alert("Please enter a question to submit.")
     } else {
         const reasonerIds = getReasonerIds();
-        if(reasonerIds.length === 0) {
+        if (reasonerIds.length === 0) {
             alert("Please check at least one reasoner.");
         } else {
             clearAnswers();
             reasonerIds.forEach(reasonerId => {
-                if(reasonerId === "rtx") {
+                if (reasonerId === "rtx") {
                     queryRtxReasoner(reasonerId, questionText);
-                } else if(reasonerId === "indigo") {
+                } else if (reasonerId === "indigo") {
                     queryIndigoReasoner(reasonerId, questionText);
                 } else {
                     queryDefaultReasoner(reasonerId, questionText);
@@ -218,43 +221,67 @@ const exampleInput = "What are targets of aspirin?";
 function setExample() {
     d3.select("#input").property("value", exampleInput);
 }
+
 function clearInput() {
     d3.select("#input").property("value", "");
 }
 
-const cy = cytoscape({
-    container: d3.select("#cytoscape").node(),
-    elements: [ // list of graph elements to start with
-        { // node a
-            data: { id: 'a' }
-        },
-        { // node b
-            data: { id: 'b' }
-        },
-        { // edge ab
-            data: { id: 'ab', source: 'a', target: 'b' }
-        }
-    ],
-    style: [ // the stylesheet for the graph
-        {
-            selector: 'node',
-            style: {
-                'background-color': '#666',
-                'label': 'data(id)'
+let cy;
+
+function getCyElements() {
+    const cyNodesMap = {};
+    const cyEdgesMap = {};
+    Object.entries(answers).forEach(answerEntry => {
+        answerEntry[1].result_list.forEach(result => {
+            const resultGraph = result.result_graph;
+            resultGraph.node_list.forEach(resultNode => {
+                const id = resultNode.id;
+                const name = resultNode.name;
+                cyNodesMap[id] = {data: {id: id, name: name}};
+            });
+            resultGraph.edge_list.forEach(resultEdge => {
+                const source = resultEdge.subject;
+                const predicate = resultEdge.predicate;
+                const target = resultEdge.object;
+                const id = source + "_" + predicate + "_" + target;
+                cyEdgesMap[id] = {data: {id: id, source: source, target: target, predicate: predicate }};
+            });
+        })
+    });
+    const cyNodes = Object.entries(cyNodesMap).map(cyNodeEntry => cyNodeEntry[1]);
+    const cyEdges = Object.entries(cyEdgesMap).map(cyEdgeEntry => cyEdgeEntry[1]);
+    alert(JSON.stringify(cyEdges));
+    return cyNodes.concat(cyEdges);
+}
+
+function drawCyGraph() {
+    const elements = getCyElements();
+    cy = cytoscape({
+        container: d3.select("#cytoscape").node(),
+        elements: elements,
+        style: [ // the stylesheet for the graph
+            {
+                selector: 'node',
+                style: {
+                    'background-color': '#666',
+                    'label': 'data(name)'
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    'width': 3,
+                    'line-color': '#ccc',
+                    'target-arrow-color': '#ccc',
+                    'target-arrow-shape': 'triangle',
+                    'label': 'data(predicate)'
+                }
             }
-        },
-        {
-            selector: 'edge',
-            style: {
-                'width': 3,
-                'line-color': '#ccc',
-                'target-arrow-color': '#ccc',
-                'target-arrow-shape': 'triangle'
-            }
+        ],
+        layout: {
+            name: 'cose'
         }
-    ],
-    layout: {
-        name: 'grid',
-        rows: 1
-    }
-});
+    });
+    return cy;
+}
+

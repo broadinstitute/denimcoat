@@ -65,7 +65,7 @@ object Avicenna extends Reasoner {
               category = "disease",
               name = disease.name,
               uri = new URI(s"disease:${disease.cui}"),
-              description = s"The disease $disease.",
+              description = s"The disease ${disease.name}.",
               symbol = disease.name,
               nodePropertyList = Seq.empty
             )
@@ -84,7 +84,8 @@ object Avicenna extends Reasoner {
           }
           Reasoner.Result(
             id = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
-            text = s"Drug $drug has target $target affecting ${target.diseases.mkString(", ")}.",
+            text =
+              s"Drug ${drug.name} has target ${target.name} affecting ${target.diseases.map(_.name).mkString(", ")}.",
             confidence = 1.0f,
             resultGraph =
               Reasoner.ResultGraph(
