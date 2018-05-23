@@ -189,7 +189,7 @@ function queryRtxReasoner(reasonerId, questionText) {
 function queryIndigoReasoner(reasonerId, questionText) {
     const baseUrl = "https://indigo.ncats.io/reasoner/api/v0";
     const queryUrl = baseUrl + "/query";
-    const queryRequest = {terms: {disease: "headache", drug: "aspirin"}, type: "cop"};
+    const queryRequest = { "terms": { "chemical_substance": "CHEMBL:CHEMBL521" }, "query_type_id": "Q3" };
     submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
 }
 
