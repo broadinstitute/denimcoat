@@ -189,7 +189,21 @@ function queryRtxReasoner(reasonerId, questionText) {
 function queryIndigoReasoner(reasonerId, questionText) {
     const baseUrl = "https://indigo.ncats.io/reasoner/api/v0";
     const queryUrl = baseUrl + "/query";
-    const queryRequest = { "terms": { "chemical_substance": "CHEMBL:CHEMBL521" }, "query_type_id": "Q3" };
+    const queryRequest = {"terms": {"chemical_substance": "CHEMBL:CHEMBL521"}, "query_type_id": "Q3"};
+    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
+}
+
+function queryRobokopReasoner(reasonerId, questionText) {
+    const baseUrl = "http://robokop.renci.org:6011/api";
+    const queryUrl = baseUrl + "/query";
+    const queryRequest = {
+        "max_results": "100",
+        "original_question": "What proteins are targeted by ibuprofen?",
+        "query_type_id": "Q3",
+        "terms": {
+            "chemical_substance": "CHEBI:5855"
+        }
+    };
     submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
 }
 
@@ -208,6 +222,8 @@ function submitQuestion() {
                     queryRtxReasoner(reasonerId, questionText);
                 } else if (reasonerId === "indigo") {
                     queryIndigoReasoner(reasonerId, questionText);
+                } else if (reasonerId === "robokop") {
+                    queryRobokopReasoner(reasonerId, questionText);
                 } else {
                     queryDefaultReasoner(reasonerId, questionText);
                 }
@@ -216,7 +232,7 @@ function submitQuestion() {
     }
 }
 
-const exampleInput = "What are targets of aspirin?";
+const exampleInput = "What are targets of ibuprofen?";
 
 function setExample() {
     d3.select("#input").property("value", exampleInput);
@@ -228,13 +244,13 @@ function clearInput() {
 
 let cy;
 
-function nodeColor(type) {
-    if(type.toLowerCase().includes("drug")) {
-        return "green";
-    } else if(type.toLowerCase().includes("disease")) {
-        return "red";
+function nodeStyle(type) {
+    if (type.toLowerCase().includes("drug")) {
+        return {shape: "hexagon", color: "green"};
+    } else if (type.toLowerCase().includes("disease")) {
+        return {shape: "triangle", color: "red"};
     } else {
-        return "blue";
+        return {shape: "ellipse", color: "blue"};
     }
 }
 
@@ -247,15 +263,17 @@ function getCyElements() {
             resultGraph.node_list.forEach(resultNode => {
                 const id = resultNode.id;
                 const name = resultNode.name;
-                const color = nodeColor(resultNode.type);
-                cyNodesMap[id] = {data: {id: id, name: name, color: color}};
+                const style = nodeStyle(resultNode.type);
+                const shape = style.shape;
+                const color = style.color;
+                cyNodesMap[id] = {data: {id: id, name: name, shape: shape, color: color}};
             });
             resultGraph.edge_list.forEach(resultEdge => {
                 const sourceId = resultEdge.source_id;
                 const type = resultEdge.type;
                 const targetId = resultEdge.target_id;
                 const id = sourceId + "_" + type + "_" + targetId;
-                cyEdgesMap[id] = {data: {id: id, source: sourceId, target: targetId, type: type }};
+                cyEdgesMap[id] = {data: {id: id, source: sourceId, target: targetId, type: type}};
             });
         })
     });
@@ -274,6 +292,7 @@ function drawCyGraph() {
                 selector: 'node',
                 style: {
                     'color': 'yellow',
+                    'shape': 'data(shape)',
                     'background-color': 'data(color)',
                     'border-color': 'yellow',
                     'border-width': 1,
