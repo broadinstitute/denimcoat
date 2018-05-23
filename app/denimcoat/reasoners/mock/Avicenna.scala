@@ -50,9 +50,9 @@ object Avicenna extends Reasoner {
             nodePropertyList = Seq.empty
           )
           val drugTargetEdge = Reasoner.Edge(
-            predicate = "hasTarget",
-            subject = drugNode.id,
-            `object` = targetNode.id,
+            `type` = "hasTarget",
+            sourceId = drugNode.id,
+            targetId = targetNode.id,
             isDefinedBy = "Some smart dude",
             providedBy = "Avicenna",
             confidence = 1.0f,
@@ -72,9 +72,9 @@ object Avicenna extends Reasoner {
           }.toSeq
           val targetDiseaseEdges = diseaseNodes.map { diseaseNode =>
             Reasoner.Edge(
-              predicate = "isPartOfPathway",
-              subject = targetNode.id,
-              `object` = diseaseNode.id,
+              `type` = "isPartOfPathway",
+              sourceId = targetNode.id,
+              targetId = diseaseNode.id,
               isDefinedBy = "Some smart dude",
               providedBy = "Avicenna",
               confidence = 1.0f,

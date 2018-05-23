@@ -39,9 +39,9 @@ object ReasonerResponseJsonWriting {
   )
 
   implicit val resultEdgeWrites: Writes[Reasoner.Edge] = (edge: Reasoner.Edge) => Json.obj(
-    "predicate" -> edge.predicate,
-    "subject" -> edge.subject,
-    "object" -> edge.`object`,
+    "type" -> edge.`type`,
+    "source_id" -> edge.sourceId,
+    "target_id" -> edge.targetId,
     "is_defined_by" -> edge.isDefinedBy,
     "provided_by" -> edge.providedBy,
     "confidence" -> edge.confidence,

@@ -17,7 +17,7 @@ trait Reasoner {
 
 object Reasoner {
 
-  val apiVersion: String = "0.6"
+  val apiVersion: String = "0.9"
 
   case class Request(text: String, timestamp: Date)
 
@@ -30,7 +30,7 @@ object Reasoner {
 
   case class Origin(id: String, `type`: String, name: String)
 
-  case class Edge(predicate: String, subject: String, `object`: String, isDefinedBy: String, providedBy: String,
+  case class Edge(`type`: String, sourceId: String, targetId: String, isDefinedBy: String, providedBy: String,
                   confidence: Float, edgePropertyList: Seq[EdgeProperty], originList: Seq[Origin])
 
   case class ResultGraph(nodeList: Seq[Node], edgeList: Seq[Edge])

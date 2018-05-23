@@ -240,11 +240,11 @@ function getCyElements() {
                 cyNodesMap[id] = {data: {id: id, name: name}};
             });
             resultGraph.edge_list.forEach(resultEdge => {
-                const source = resultEdge.subject;
-                const predicate = resultEdge.predicate;
-                const target = resultEdge.object;
-                const id = source + "_" + predicate + "_" + target;
-                cyEdgesMap[id] = {data: {id: id, source: source, target: target, predicate: predicate }};
+                const sourceId = resultEdge.source_id;
+                const type = resultEdge.type;
+                const targetId = resultEdge.target_id;
+                const id = sourceId + "_" + type + "_" + targetId;
+                cyEdgesMap[id] = {data: {id: id, source: sourceId, target: targetId, type: type }};
             });
         })
     });
