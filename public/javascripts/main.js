@@ -228,6 +228,16 @@ function clearInput() {
 
 let cy;
 
+function nodeColor(type) {
+    if(type.toLowerCase().includes("drug")) {
+        return "green";
+    } else if(type.toLowerCase().includes("disease")) {
+        return "red";
+    } else {
+        return "blue";
+    }
+}
+
 function getCyElements() {
     const cyNodesMap = {};
     const cyEdgesMap = {};
@@ -237,7 +247,8 @@ function getCyElements() {
             resultGraph.node_list.forEach(resultNode => {
                 const id = resultNode.id;
                 const name = resultNode.name;
-                cyNodesMap[id] = {data: {id: id, name: name}};
+                const color = nodeColor(resultNode.type);
+                cyNodesMap[id] = {data: {id: id, name: name, color: color}};
             });
             resultGraph.edge_list.forEach(resultEdge => {
                 const sourceId = resultEdge.source_id;
@@ -262,7 +273,10 @@ function drawCyGraph() {
             {
                 selector: 'node',
                 style: {
-                    'background-color': '#666',
+                    'color': 'yellow',
+                    'background-color': 'data(color)',
+                    'border-color': 'yellow',
+                    'border-width': 1,
                     'label': 'data(name)'
                 }
             },
@@ -270,10 +284,11 @@ function drawCyGraph() {
                 selector: 'edge',
                 style: {
                     'width': 3,
-                    'line-color': '#ccc',
-                    'target-arrow-color': '#ccc',
-                    'target-arrow-shape': 'triangle',
-                    'label': 'data(predicate)'
+                    'color': 'lime',
+                    'line-color': 'green',
+                    'mid-target-arrow-color': 'green',
+                    'mid-target-arrow-shape': 'triangle',
+                    'label': 'data(type)'
                 }
             }
         ],

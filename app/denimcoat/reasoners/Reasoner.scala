@@ -23,7 +23,7 @@ object Reasoner {
 
   case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
 
-  case class Node(id: String, category: String, name: String, uri: URI, description: String, symbol: String,
+  case class Node(id: String, `type`: String, name: String, uri: URI, description: String, symbol: String,
                   nodePropertyList: Seq[NodeProperty])
 
   case class EdgeProperty(`type`: String, name: String, value: Any, uri: URI)

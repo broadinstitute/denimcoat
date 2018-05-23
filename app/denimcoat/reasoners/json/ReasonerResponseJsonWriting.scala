@@ -16,7 +16,7 @@ object ReasonerResponseJsonWriting {
 
   implicit val resultNodeWrites: Writes[Reasoner.Node] = (node: Reasoner.Node) => Json.obj(
     "id" -> node.id,
-    "category" -> node.category,
+    "type" -> node.`type`,
     "name" -> node.name,
     "uri" -> node.uri.toString,
     "description" -> node.description,

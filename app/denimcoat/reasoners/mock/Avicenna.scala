@@ -33,7 +33,7 @@ object Avicenna extends Reasoner {
         val results = drug.targets.map { target =>
           val drugNode = Reasoner.Node(
             id = drug.cui,
-            category = "drug",
+            `type` = "drug",
             name = drug.name,
             uri = new URI(s"drug:${drug.cui}"),
             description = s"The drug ${drug.name}.",
@@ -42,7 +42,7 @@ object Avicenna extends Reasoner {
           )
           val targetNode = Reasoner.Node(
             id = target.cui,
-            category = "target",
+            `type` = "target",
             name = target.name,
             uri = new URI(s"target:${target.cui}"),
             description = s"The target ${target.name}.",
@@ -62,7 +62,7 @@ object Avicenna extends Reasoner {
           val diseaseNodes = target.diseases.map { disease =>
             Reasoner.Node(
               id = disease.cui,
-              category = "disease",
+              `type` = "disease",
               name = disease.name,
               uri = new URI(s"disease:${disease.cui}"),
               description = s"The disease ${disease.name}.",
