@@ -155,10 +155,12 @@ class ReasonerHttpRequest extends XMLHttpRequest {
     }
 }
 
-function submitReasonerRequest(reasonerId, url, request, responseHandler) {
+function submitReasonerRequest(reasonerId, url, request, responseHandler, useProxy = false) {
     const http = new ReasonerHttpRequest(reasonerId);
     http.onreadystatechange = responseHandler;
-    http.open("POST", url, true);
+    const proxyBaseUrl = "/proxy/";
+    const urlActual = useProxy ? proxyBaseUrl + url : url;
+    http.open("POST", urlActual, true);
     http.setRequestHeader("Content-type", "application/json");
     http.setRequestHeader("Accept", "application/json");
     http.send(JSON.stringify(request));
@@ -174,16 +176,17 @@ function queryRtxReasoner(reasonerId, questionText) {
     const translateRequest = {language: "English", text: questionText};
     const baseUrl = "https://rtx.ncats.io/api/rtx/v1";
     const translateUrl = baseUrl + "/translate";
+    const useProxy = true;
 
     function handleTranslateResponse() {
         if (this.readyState === 4) {
             const queryUrl = baseUrl + "/query";
             const queryRequest = JSON.parse(this.responseText);
-            submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
+            submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse, useProxy);
         }
     }
 
-    submitReasonerRequest(reasonerId, translateUrl, translateRequest, handleTranslateResponse);
+    submitReasonerRequest(reasonerId, translateUrl, translateRequest, handleTranslateResponse, useProxy);
 }
 
 function queryIndigoReasoner(reasonerId, questionText) {
@@ -204,7 +207,7 @@ function queryRobokopReasoner(reasonerId, questionText) {
             "chemical_substance": "CHEBI:5855"
         }
     };
-    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
+    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse, true);
 }
 
 function submitQuestion() {

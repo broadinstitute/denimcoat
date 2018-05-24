@@ -6,13 +6,16 @@ import play.api.libs.json.{JsError, JsString, JsValue, Json}
 import play.api.mvc._
 import denimcoat.reasoners.json.ReasonerRequestJsonReading.requestReads
 import denimcoat.reasoners.json.ReasonerResponseJsonWriting.responseWrites
+import play.api.libs.ws.{WSClient, WSResponse, writeableOf_JsValue}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cc: ControllerComponents, ws: WSClient) extends AbstractController(cc) {
 
   /**
    * Create an Action to render an HTML page.
@@ -39,6 +42,12 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
           }
         )
       case None => BadRequest(Json.obj("status" -> "KO", "message" -> JsString(s"No reasoner found for '$id'")))
+    }
+  }
+
+  def proxy(url: String): Action[JsValue] = Action(parse.json).async { request: Request[JsValue] =>
+    ws.url(url).post(request.body).map { response: WSResponse =>
+      Ok(response.body)
     }
   }
 }
