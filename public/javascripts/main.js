@@ -174,7 +174,7 @@ function queryDefaultReasoner(reasonerId, questionText) {
 
 function queryRtxReasoner(reasonerId, questionText) {
     const translateRequest = {language: "English", text: questionText};
-    const baseUrl = "https://rtx.ncats.io/api/rtx/v1";
+    const baseUrl = "http://rtx.ncats.io/api/rtx/v1";
     const translateUrl = baseUrl + "/translate";
     const useProxy = true;
 
