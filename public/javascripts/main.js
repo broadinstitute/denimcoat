@@ -259,6 +259,15 @@ function nodeStyle(type) {
     }
 }
 
+function mapId(id) {
+    const idLC = id.toLowerCase();
+    if (id === "1034" || idLC === "chembl:521" || id === "chebi:5855" || id === "chembl:chembl521") {
+        return "CHEBI:5855"
+    } else {
+        return id;
+    }
+}
+
 function getCyElements() {
     const cyNodesMap = {};
     const cyEdgesMap = {};
@@ -266,21 +275,45 @@ function getCyElements() {
         answerEntry[1].result_list.forEach(result => {
             const resultGraph = result.result_graph;
             resultGraph.node_list.forEach(resultNode => {
-                const id = resultNode.id;
+                const id = mapId(resultNode.id);
                 const name = resultNode.name;
                 const style = nodeStyle(resultNode.type);
                 const shape = style.shape;
                 const color = style.color;
-                cyNodesMap[id] =
-                    {data: {id: id, name: name, shape: shape, color: color, original: resultNode}};
+                if (cyNodesMap.hasOwnProperty(id)) {
+                    const cyNode = cyNodesMap[id];
+                    const original = cyNode.data.original;
+                    if (Array.isArray(original)) {
+                        original.push(resultNode);
+                        cyNode.data.original = original;
+                    } else {
+                        cyNode.data.original = [original, resultNode];
+                    }
+                    cyNodesMap[id] = cyNode;
+                } else {
+                    cyNodesMap[id] =
+                        {data: {id: id, name: name, shape: shape, color: color, original: resultNode}};
+                }
             });
             resultGraph.edge_list.forEach(resultEdge => {
-                const sourceId = resultEdge.source_id;
+                const sourceId = mapId(resultEdge.source_id);
                 const type = resultEdge.type;
-                const targetId = resultEdge.target_id;
+                const targetId = mapId(resultEdge.target_id);
                 const id = sourceId + "_" + type + "_" + targetId;
-                cyEdgesMap[id] =
-                    {data: {id: id, source: sourceId, target: targetId, type: type, original: resultEdge}};
+                if (cyEdgesMap.hasOwnProperty(id)) {
+                    const cyEdge = cyEdgesMap[id];
+                    const original = cyEdge.data.original;
+                    if (Array.isArray(original)) {
+                        original.push(resultEdge);
+                        cyEdge.data.original = original;
+                    } else {
+                        cyEdge.data.original = [original, resultEdge];
+                    }
+                    cyEdgesMap[id] = cyEdge;
+                } else {
+                    cyEdgesMap[id] =
+                        {data: {id: id, source: sourceId, target: targetId, type: type, original: resultEdge}};
+                }
             });
         })
     });
@@ -322,7 +355,7 @@ function drawCyGraph() {
             name: 'cose'
         }
     });
-    cy.on("click", function(evt) {
+    cy.on("click", function (evt) {
         alert(JSON.stringify(evt.target.data("original"), undefined, 2));
         evt.stopPropagation();
     });

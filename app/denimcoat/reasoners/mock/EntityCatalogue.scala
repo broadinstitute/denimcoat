@@ -46,7 +46,7 @@ object EntityCatalogue {
 
   val acetaminophen = Drug("acetaminophen", "C0000970", Set(cyclooxygenase))
   val aspirin = Drug("aspirin", "C0004057", Set(cyclooxygenase))
-  val ibuprofen = Drug("ibuprofen", "C0020740", Set(cyclooxygenase))
+  val ibuprofen = Drug("ibuprofen", "CHEBI:5855", Set(cyclooxygenase))
 
   def byCui(cui: String): Option[Entry] = entries.find(_.cui == cui)
 
