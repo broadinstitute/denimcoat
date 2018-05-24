@@ -207,7 +207,7 @@ function queryRobokopReasoner(reasonerId, questionText) {
             "chemical_substance": "CHEBI:5855"
         }
     };
-    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse, true);
+    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
 }
 
 function submitQuestion() {
@@ -248,7 +248,8 @@ function clearInput() {
 let cy;
 
 function nodeStyle(type) {
-    if (type.toLowerCase().includes("drug")) {
+    const typeLC = type.toLowerCase();
+    if (typeLC.includes("drug") || typeLC.includes("chemical_substance")) {
         return {shape: "hexagon", color: "green"};
     } else if (type.toLowerCase().includes("disease")) {
         return {shape: "triangle", color: "red"};
@@ -269,14 +270,16 @@ function getCyElements() {
                 const style = nodeStyle(resultNode.type);
                 const shape = style.shape;
                 const color = style.color;
-                cyNodesMap[id] = {data: {id: id, name: name, shape: shape, color: color}};
+                cyNodesMap[id] =
+                    {data: {id: id, name: name, shape: shape, color: color, original: resultNode}};
             });
             resultGraph.edge_list.forEach(resultEdge => {
                 const sourceId = resultEdge.source_id;
                 const type = resultEdge.type;
                 const targetId = resultEdge.target_id;
                 const id = sourceId + "_" + type + "_" + targetId;
-                cyEdgesMap[id] = {data: {id: id, source: sourceId, target: targetId, type: type}};
+                cyEdgesMap[id] =
+                    {data: {id: id, source: sourceId, target: targetId, type: type, original: resultEdge}};
             });
         })
     });
@@ -317,6 +320,10 @@ function drawCyGraph() {
         layout: {
             name: 'cose'
         }
+    });
+    cy.on("click", function(evt) {
+        alert(JSON.stringify(evt.target.data("original"), undefined, 2));
+        evt.stopPropagation();
     });
     return cy;
 }
