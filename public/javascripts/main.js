@@ -197,6 +197,7 @@ function queryIndigoReasoner(reasonerId, questionText) {
 }
 
 function queryRobokopReasoner(reasonerId, questionText) {
+    const useProxy = true;
     const baseUrl = "http://robokop.renci.org:6011/api";
     const queryUrl = baseUrl + "/query";
     const queryRequest = {
@@ -207,7 +208,7 @@ function queryRobokopReasoner(reasonerId, questionText) {
             "chemical_substance": "CHEBI:5855"
         }
     };
-    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse);
+    submitReasonerRequest(reasonerId, queryUrl, queryRequest, receiveResponse, useProxy);
 }
 
 function submitQuestion() {
