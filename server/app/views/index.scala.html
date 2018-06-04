@@ -1,9 +1,11 @@
-@(message: String)
+@()
+
+@import denimcoat.shared.SharedMessages
 
 @main("Denimcoat") {
 <h1>Welcome to Denimcoat</h1>
 <ul>
-  <li>Play shouts out: <em>@message</em></li>
+  <li>Play shouts out: <em>@SharedMessages.itWorks</em></li>
   <li>Scala.js shouts out: <em id="scalajsShoutOut"></em></li>
 </ul>
 }

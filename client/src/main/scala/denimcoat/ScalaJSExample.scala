@@ -1,6 +1,6 @@
-package com.example.denimcoat
+package denimcoat
 
-import com.example.denimcoat.shared.SharedMessages
+import denimcoat.shared.SharedMessages
 import org.scalajs.dom
 
 object ScalaJSExample {

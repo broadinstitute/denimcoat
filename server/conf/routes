@@ -3,7 +3,9 @@
 # ~~~~
 
 # Home page
-GET        /                             com.example.denimcoat.controllers.Application.index
+GET     /                           denimcoat.controllers.HomeController.index
+POST    /reasoner/:id               denimcoat.controllers.HomeController.reasoner(id: String)
+POST    /proxy/*url                 denimcoat.controllers.HomeController.proxy(url)
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
