@@ -1,0 +1,16 @@
+body {
+    background-color: indigo;
+    color: yellow;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.treeBranch {
+    margin-left: 2ex;
+}
+
+#cytoscape {
+    width: 1000px;
+    height: 700px;
+    display: block;
+    border: solid yellow;
+}
