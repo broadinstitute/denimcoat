@@ -9,16 +9,15 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
     guice,
     ws,
     specs2 % Test
-  ),
-  // Compile the project before generating Eclipse files, so that generated .scala or .class files for views and routes are present
-  EclipseKeys.preTasks := Seq(compile in Compile)
+  )
 ).enablePlugins(PlayScala).
   dependsOn(sharedJvm)
 
 lazy val client = (project in file("client")).settings(commonSettings).settings(
   scalaJSUseMainModuleInitializer := true,
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.9.5"
+    "org.scala-js" %%% "scalajs-dom" % "0.9.5",
+    "org.singlespaced" %%% "scalajs-d3" % "0.3.4"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
   dependsOn(sharedJs)

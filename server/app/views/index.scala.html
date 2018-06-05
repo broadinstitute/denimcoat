@@ -1,11 +1,32 @@
 @()
 
-@import denimcoat.shared.SharedMessages
-
 @main("Denimcoat") {
-<h1>Welcome to Denimcoat</h1>
-<ul>
-  <li>Play shouts out: <em>@SharedMessages.itWorks</em></li>
-  <li>Scala.js shouts out: <em id="scalajsShoutOut"></em></li>
-</ul>
+  <h1>Welcome to DenimCoat!</h1>
+
+  <p>Enter question</p>
+
+  <textarea id="input" rows="5" cols="120"></textarea>
+
+  <div>
+    <input type="checkbox" name="reasoner" class="reasoners" value="rtx"> RTX
+    <input type="checkbox" name="reasoner" class="reasoners" value="indigo"> Indigo
+    <input type="checkbox" name="reasoner" class="reasoners" value="robokop"> Robokop
+    <input type="checkbox" name="reasoner" class="reasoners" value="avicenna"> Avicenna
+  </div>
+
+  <div>
+    <button id="inputSubmitButton">Submit</button>
+    <button id="inputExampleButton">Example</button>
+    <button id="inputClearButton">Clear</button>
+  </div>
+
+  <div id="cytoscape"></div>
+
+  <p><table id="answersTable"></table></p>
+
+  <p id="answersTree"></p>
+
+  <p><textarea id="answersRaw" rows="50" cols="120"></textarea></p>
+
+  <p>This page was loaded <span id="loadTime"></span>. Now it is <span id="nowTime"></span>.</p>
 }
