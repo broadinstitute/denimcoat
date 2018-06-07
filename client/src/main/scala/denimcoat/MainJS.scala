@@ -2,19 +2,40 @@ package denimcoat
 
 import java.util.Date
 
-import org.scalajs.dom.EventTarget
 import org.scalajs.dom
+import org.scalajs.dom.{Event, EventTarget}
+import org.scalajs.dom.raw.XMLHttpRequest
 import org.singlespaced.d3js.{Selection, d3}
 
 import scala.scalajs.js
 import scala.scalajs.js.JSON
-import scala.scalajs.js.annotation.JSName
 
 object MainJS {
 
   def printTime(selection: Selection[EventTarget]): Unit = {
     val timeNow = new Date()
     selection.html(timeNow.toString)
+  }
+
+  class ReasonerHttpRequest(val reasonerId: String) extends XMLHttpRequest {
+
+  }
+
+  trait ReasonerRequest
+
+  trait ReasonerResponse
+
+  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest, responseHandler: () => (),
+                            useProxy: Boolean = false): Unit = {
+    val http = new ReasonerHttpRequest(reasonerId)
+    http.onreadystatechange = (_: Event) => responseHandler()
+    val proxyBaseUrl = "/proxy/"
+    val urlActual = if (useProxy) proxyBaseUrl + url else url
+    http.open("POST", urlActual, async = true)
+    http.setRequestHeader("Content-type", "application/json")
+    http.setRequestHeader("Accept", "application/json")
+    val requestJson = ???
+    http.send(requestJson)
   }
 
   def submitQuestion(): Unit = {
@@ -26,17 +47,7 @@ object MainJS {
     }
   }
 
-  case class User(id: Int, name:String)
-
-  def ohWow(): Unit = {
-    val user = User(42, "Trillian")
-    val userJson = JSON.stringify(user.asInstanceOf[js.Any], js.Array[js.Any](), 2)
-    dom.window.alert(userJson)
-  }
-
   def main(args: Array[String]): Unit = {
-    ohWow()
-
     printTime(d3.select("#loadTime"))
 
     js.timers.setInterval(200) {
