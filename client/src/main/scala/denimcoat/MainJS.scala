@@ -25,10 +25,10 @@ object MainJS {
 
   trait ReasonerResponse
 
-  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest, responseHandler: () => (),
+  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest, responseHandler: => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new ReasonerHttpRequest(reasonerId)
-    http.onreadystatechange = (_: Event) => responseHandler()
+    http.onreadystatechange = (_: Event) => responseHandler
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
     http.open("POST", urlActual, async = true)
