@@ -1,12 +1,14 @@
 package denimcoat.controllers
 
-import denimcoat.reasoners.{Reasoner, ReasonerRegistry}
+import denimcoat.reasoners.ReasonerRegistry
+import denimcoat.reasoners.json.ReasonerRequestJsonReading.requestReads
+import denimcoat.reasoners.json.ReasonerResponseJsonWriting.responseWrites
+import denimcoat.reasoners.messages.{Request => ReasonerRequest}
 import javax.inject._
 import play.api.libs.json.{JsError, JsString, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc._
-import denimcoat.reasoners.json.ReasonerRequestJsonReading.requestReads
-import denimcoat.reasoners.json.ReasonerResponseJsonWriting.responseWrites
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -20,10 +22,10 @@ class HomeController @Inject()(cc: ControllerComponents, ws: WSClient) extends A
   def reasoner(id: String): Action[JsValue] = Action(parse.json) { request: Request[JsValue] =>
     ReasonerRegistry.get(id) match {
       case Some(reasoner) =>
-        val reasonerRequestResult = request.body.validate[Reasoner.Request]
+        val reasonerRequestResult = request.body.validate[ReasonerRequest]
         reasonerRequestResult.fold(
           errors => {
-            BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors)))
+            BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors)))
           },
           reasonerRequest => {
             val reasonerResponse = reasoner.reason(reasonerRequest)

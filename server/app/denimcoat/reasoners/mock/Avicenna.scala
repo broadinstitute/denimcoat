@@ -4,6 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
+import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result, ResultGraph}
 import denimcoat.reasoners.mock.EntityCatalogue.Drug
 
 object Avicenna extends Reasoner {
@@ -19,9 +20,9 @@ object Avicenna extends Reasoner {
   def restateQuestion(drug: String): String = questionPrefix + drug + questionPostfix
 
   case class CoreResponse(restatedQuestion: String, resultCode: String, message: String,
-                          resultList: Seq[Reasoner.Result])
+                          resultList: Seq[Result])
 
-  override def reason(request: Reasoner.Request): Reasoner.Response = {
+  override def reason(request: Request): Response = {
     val coreResponse = parseQuestion(request.text) match {
       case Some(drug) =>
         val restatedQuestionText = restateQuestion(drug.name)
@@ -31,7 +32,7 @@ object Avicenna extends Reasoner {
           }.mkString("", ", ", ".")
         }"
         val results = drug.targets.map { target =>
-          val drugNode = Reasoner.Node(
+          val drugNode = Node(
             id = drug.cui,
             `type` = "drug",
             name = drug.name,
@@ -40,7 +41,7 @@ object Avicenna extends Reasoner {
             symbol = drug.name,
             nodePropertyList = Seq.empty
           )
-          val targetNode = Reasoner.Node(
+          val targetNode = Node(
             id = target.cui,
             `type` = "target",
             name = target.name,
@@ -49,7 +50,7 @@ object Avicenna extends Reasoner {
             symbol = target.name,
             nodePropertyList = Seq.empty
           )
-          val drugTargetEdge = Reasoner.Edge(
+          val drugTargetEdge = Edge(
             `type` = "hasTarget",
             sourceId = drugNode.id,
             targetId = targetNode.id,
@@ -60,7 +61,7 @@ object Avicenna extends Reasoner {
             originList = Seq.empty
           )
           val diseaseNodes = target.diseases.map { disease =>
-            Reasoner.Node(
+            Node(
               id = disease.cui,
               `type` = "disease",
               name = disease.name,
@@ -71,7 +72,7 @@ object Avicenna extends Reasoner {
             )
           }.toSeq
           val targetDiseaseEdges = diseaseNodes.map { diseaseNode =>
-            Reasoner.Edge(
+            Edge(
               `type` = "isPartOfPathway",
               sourceId = targetNode.id,
               targetId = diseaseNode.id,
@@ -82,13 +83,13 @@ object Avicenna extends Reasoner {
               originList = Seq.empty
             )
           }
-          Reasoner.Result(
+          Result(
             id = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
             text =
               s"Drug ${drug.name} has target ${target.name} affecting ${target.diseases.map(_.name).mkString(", ")}.",
             confidence = 1.0f,
             resultGraph =
-              Reasoner.ResultGraph(
+              ResultGraph(
                 nodeList = Seq(drugNode, targetNode) ++ diseaseNodes,
                 edgeList = Seq(drugTargetEdge) ++ targetDiseaseEdges
               )
@@ -98,7 +99,7 @@ object Avicenna extends Reasoner {
       case None =>
         CoreResponse(request.text, "Invalid", "Could not parse the question", Seq.empty)
     }
-    Reasoner.Response(
+    Response(
       context = new URI(MockReasoners.baseUriContext),
       id = MockReasoners.idUri(this.id),
       `type` = "Very awesome type of response",
