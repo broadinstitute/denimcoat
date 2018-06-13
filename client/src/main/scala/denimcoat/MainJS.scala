@@ -6,6 +6,7 @@ import org.scalajs.dom
 import org.scalajs.dom.{Event, EventTarget}
 import org.scalajs.dom.raw.XMLHttpRequest
 import org.singlespaced.d3js.{Selection, d3}
+import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse }
 
 import scala.scalajs.js
 import scala.scalajs.js.JSON
@@ -17,15 +18,33 @@ object MainJS {
     selection.html(timeNow.toString)
   }
 
+  def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
+
   class ReasonerHttpRequest(val reasonerId: String) extends XMLHttpRequest {
 
   }
 
-  trait ReasonerRequest
+  var answers: Map[String, ReasonerResponse] = Map.empty
 
-  trait ReasonerResponse
+  def addAnswer(reasonerId: String, response: ReasonerResponse): Unit = {
+    answers += reasonerId -> response
+  }
 
-  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest, responseHandler: => Unit,
+  def displayAnswers(): Unit = {} // TODO
+
+  def receiveResponse(request: ReasonerHttpRequest): Event => Unit = { _: Event =>
+    if (request.readyState == 4) {
+      val responseJson = request.responseText
+      // TODO
+//      val answer = ??? // JSON.parse(responseJson)
+//      addAnswer(request.reasonerId, answer)
+      displayAnswers()
+    }
+  }
+
+
+  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest,
+                            responseHandler: ReasonerHttpRequest => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new ReasonerHttpRequest(reasonerId)
     http.onreadystatechange = (_: Event) => responseHandler
@@ -34,9 +53,17 @@ object MainJS {
     http.open("POST", urlActual, async = true)
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
-    val requestJson = ???
+    val requestJson = "" // TODO
     http.send(requestJson)
   }
+
+  def queryDefaultReasoner(reasonerId: String, questionText: String): Unit = {
+    val url = getDefaultReasonerUrl(reasonerId)
+    val request = ReasonerRequest(questionText)
+    submitReasonerRequest(reasonerId, url, request, receiveResponse)
+  }
+
+
 
   def submitQuestion(): Unit = {
     val questionText = d3.select("#input").property("value").asInstanceOf[String].trim()
