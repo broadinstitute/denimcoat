@@ -2,20 +2,31 @@ package denimcoat
 
 import java.util.Date
 
+import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import org.scalajs.dom
+import org.scalajs.dom.html.Html
+import org.scalajs.dom.raw.{HTMLInputElement, XMLHttpRequest}
 import org.scalajs.dom.{Event, EventTarget}
-import org.scalajs.dom.raw.XMLHttpRequest
 import org.singlespaced.d3js.{Selection, d3}
-import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse }
 
+import scala.collection.mutable
 import scala.scalajs.js
-import scala.scalajs.js.JSON
 
 object MainJS {
 
   def printTime(selection: Selection[EventTarget]): Unit = {
     val timeNow = new Date()
     selection.html(timeNow.toString)
+  }
+
+  def getNodesFromSelection(selection: Selection[EventTarget]): Seq[EventTarget] = {
+    selection.asInstanceOf[js.Dynamic].applyDynamic("nodes")().asInstanceOf[mutable.Seq[EventTarget]].toList
+  }
+
+  def getReasonerIds: Seq[String] = {
+    val selection: Selection[EventTarget] = d3.selectAll(".reasoners")
+    val nodes = getNodesFromSelection(selection)
+    nodes.map(_.asInstanceOf[HTMLInputElement]).filter(element => element.checked).map(element => element.value)
   }
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
