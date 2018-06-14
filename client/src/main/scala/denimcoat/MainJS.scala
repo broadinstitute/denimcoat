@@ -20,7 +20,7 @@ object MainJS {
   }
 
   def getNodesFromSelection(selection: Selection[EventTarget]): Seq[EventTarget] = {
-    selection.asInstanceOf[js.Dynamic].applyDynamic("nodes")().asInstanceOf[mutable.Seq[EventTarget]].toList
+    selection.asInstanceOf[js.Dynamic].selectDynamic("nodes").asInstanceOf[mutable.Seq[EventTarget]].toList
   }
 
   def getReasonerIds: Seq[String] = {
@@ -81,7 +81,7 @@ object MainJS {
     if (questionText == "") {
       dom.window.alert("Please enter a question to submit.")
     } else {
-      dom.window.alert(questionText)
+      dom.window.alert(getReasonerIds.mkString(", "))
     }
   }
 
