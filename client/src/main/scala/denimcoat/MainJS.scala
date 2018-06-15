@@ -4,7 +4,6 @@ import java.util.Date
 
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import org.scalajs.dom
-import org.scalajs.dom.html.Html
 import org.scalajs.dom.raw.{HTMLInputElement, XMLHttpRequest}
 import org.scalajs.dom.{Event, EventTarget}
 import org.singlespaced.d3js.{Selection, d3}
@@ -25,8 +24,14 @@ object MainJS {
 
   def getReasonerIds: Seq[String] = {
     val selection: Selection[EventTarget] = d3.selectAll(".reasoners")
-    val nodes = getNodesFromSelection(selection)
-    nodes.map(_.asInstanceOf[HTMLInputElement]).filter(element => element.checked).map(element => element.value)
+    val selectionArray = selection.asInstanceOf[js.Array[js.Object]]
+    val selectionSeq: mutable.Seq[js.Object] = selectionArray
+    val inputElements = selectionSeq.flatMap { innerSelection =>
+      val innerArray = innerSelection.asInstanceOf[js.Array[js.Object]]
+      val innerSeq: mutable.Seq[js.Object] = innerArray
+      innerSeq.map(_.asInstanceOf[HTMLInputElement])
+    }
+    inputElements.filter(element => element.checked).map(element => element.value)
   }
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
@@ -47,8 +52,8 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       // TODO
-//      val answer = ??? // JSON.parse(responseJson)
-//      addAnswer(request.reasonerId, answer)
+      //      val answer = ??? // JSON.parse(responseJson)
+      //      addAnswer(request.reasonerId, answer)
       displayAnswers()
     }
   }
@@ -73,7 +78,6 @@ object MainJS {
     val request = ReasonerRequest(questionText)
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
-
 
 
   def submitQuestion(): Unit = {
