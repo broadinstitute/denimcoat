@@ -10,8 +10,14 @@ import org.singlespaced.d3js.{Selection, d3}
 
 import scala.collection.mutable
 import scala.scalajs.js
+import scala.scalajs.js.Dynamic.global
 
 object MainJS {
+
+  @deprecated("This marks not implemented pieces of code", "Sun, June 17, 2018")
+  def notYetImplemented(name: String): Unit = {
+    global.console.log(s"$name is not yet implemented")
+  }
 
   def printTime(selection: Selection[EventTarget]): Unit = {
     val timeNow = new Date()
@@ -46,11 +52,14 @@ object MainJS {
     answers += reasonerId -> response
   }
 
-  def displayAnswers(): Unit = {} // TODO
+  def displayAnswers(): Unit = {
+    notYetImplemented("displayAnswers")
+  } // TODO
 
   def receiveResponse(request: ReasonerHttpRequest): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
+      notYetImplemented("receiveResponse")
       // TODO
       //      val answer = ??? // JSON.parse(responseJson)
       //      addAnswer(request.reasonerId, answer)
@@ -69,8 +78,24 @@ object MainJS {
     http.open("POST", urlActual, async = true)
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
+    notYetImplemented("submitReasonerRequest")
     val requestJson = "" // TODO
     http.send(requestJson)
+  }
+
+  def queryRtxReasoner(reasonerId: String, questionText: String): Unit ={
+    notYetImplemented("queryRtxReasoner")
+    // TODO
+  }
+
+  def queryIndigoReasoner(reasonerId: String, questionText: String): Unit ={
+    notYetImplemented("queryIndigoReasoner")
+    // TODO
+  }
+
+  def queryRobokopReasoner(reasonerId: String, questionText: String): Unit ={
+    notYetImplemented("queryRobokopReasoner")
+    // TODO
   }
 
   def queryDefaultReasoner(reasonerId: String, questionText: String): Unit = {
@@ -85,7 +110,22 @@ object MainJS {
     if (questionText == "") {
       dom.window.alert("Please enter a question to submit.")
     } else {
-      dom.window.alert(getReasonerIds.mkString(", "))
+      val reasonerIds = getReasonerIds
+      if(reasonerIds.isEmpty) {
+        dom.window.alert("Please check at least one reasoner.")
+      } else {
+        reasonerIds.foreach{ reasonerId =>
+          if (reasonerId == "rtx") {
+            queryRtxReasoner(reasonerId, questionText);
+          } else if (reasonerId == "indigo") {
+            queryIndigoReasoner(reasonerId, questionText);
+          } else if (reasonerId == "robokop") {
+            queryRobokopReasoner(reasonerId, questionText);
+          } else {
+            queryDefaultReasoner(reasonerId, questionText);
+          }
+        }
+      }
     }
   }
 
