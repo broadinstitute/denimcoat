@@ -42,10 +42,6 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  class ReasonerHttpRequest(val reasonerId: String) extends XMLHttpRequest {
-
-  }
-
   var answers: Map[String, ReasonerResponse] = Map.empty
 
   def addAnswer(reasonerId: String, response: ReasonerResponse): Unit = {
@@ -56,7 +52,7 @@ object MainJS {
     notYetImplemented("displayAnswers")
   } // TODO
 
-  def receiveResponse(request: ReasonerHttpRequest): Event => Unit = { _: Event =>
+  def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
       notYetImplemented("receiveResponse")
@@ -69,10 +65,10 @@ object MainJS {
 
 
   def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest,
-                            responseHandler: ReasonerHttpRequest => Event => Unit,
+                            responseHandler: (XMLHttpRequest, String) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
-    val http = new ReasonerHttpRequest(reasonerId)
-    http.onreadystatechange = (_: Event) => responseHandler
+    val http = new XMLHttpRequest()
+    http.onreadystatechange = responseHandler(http, reasonerId)
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
     http.open("POST", urlActual, async = true)
@@ -116,13 +112,13 @@ object MainJS {
       } else {
         reasonerIds.foreach{ reasonerId =>
           if (reasonerId == "rtx") {
-            queryRtxReasoner(reasonerId, questionText);
+            queryRtxReasoner(reasonerId, questionText)
           } else if (reasonerId == "indigo") {
-            queryIndigoReasoner(reasonerId, questionText);
+            queryIndigoReasoner(reasonerId, questionText)
           } else if (reasonerId == "robokop") {
-            queryRobokopReasoner(reasonerId, questionText);
+            queryRobokopReasoner(reasonerId, questionText)
           } else {
-            queryDefaultReasoner(reasonerId, questionText);
+            queryDefaultReasoner(reasonerId, questionText)
           }
         }
       }
