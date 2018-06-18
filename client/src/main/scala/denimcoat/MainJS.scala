@@ -11,6 +11,7 @@ import org.singlespaced.d3js.{Selection, d3}
 import scala.collection.mutable
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
+import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._, io.circe.generic.semiauto._
 
 object MainJS {
 
@@ -63,6 +64,9 @@ object MainJS {
     }
   }
 
+  implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
+  implicit val requestEncoder: Encoder[ReasonerRequest] = deriveEncoder[ReasonerRequest]
+
 
   def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest,
                             responseHandler: (XMLHttpRequest, String) => Event => Unit,
@@ -75,7 +79,8 @@ object MainJS {
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
     notYetImplemented("submitReasonerRequest")
-    val requestJson = "" // TODO
+    val requestJson = request.asJson.toString()
+    dom.window.alert(requestJson)
     http.send(requestJson)
   }
 
