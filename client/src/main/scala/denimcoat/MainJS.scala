@@ -3,6 +3,7 @@ package denimcoat
 import java.util.Date
 
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import io.circe.Decoder.Result
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLInputElement, XMLHttpRequest}
 import org.scalajs.dom.{Event, EventTarget}
@@ -11,7 +12,11 @@ import org.singlespaced.d3js.{Selection, d3}
 import scala.collection.mutable
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
-import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._, io.circe.generic.semiauto._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+import io.circe.generic.semiauto._
 
 object MainJS {
 
@@ -53,9 +58,13 @@ object MainJS {
     notYetImplemented("displayAnswers")
   } // TODO
 
+  implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
+//  implicit val dateDecode: Decoder[Date] = deriveEncoder[Long].map
+
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
+//      decode[ReasonerResponse](responseJson)
       notYetImplemented("receiveResponse")
       // TODO
       //      val answer = ??? // JSON.parse(responseJson)
@@ -63,10 +72,6 @@ object MainJS {
       displayAnswers()
     }
   }
-
-  implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
-  implicit val requestEncoder: Encoder[ReasonerRequest] = deriveEncoder[ReasonerRequest]
-
 
   def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest,
                             responseHandler: (XMLHttpRequest, String) => Event => Unit,
