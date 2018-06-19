@@ -1,5 +1,6 @@
 package denimcoat
 
+import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
@@ -59,12 +60,13 @@ object MainJS {
   } // TODO
 
   implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
-//  implicit val dateDecode: Decoder[Date] = deriveEncoder[Long].map
+  implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
+  implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
 
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-//      decode[ReasonerResponse](responseJson)
+      decode[ReasonerResponse](responseJson)
       notYetImplemented("receiveResponse")
       // TODO
       //      val answer = ??? // JSON.parse(responseJson)
