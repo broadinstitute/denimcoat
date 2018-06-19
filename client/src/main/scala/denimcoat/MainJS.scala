@@ -62,11 +62,12 @@ object MainJS {
   implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
   implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
   implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
+  implicit val anyDecoder: Decoder[Any] = implicitly[Decoder[Any]]
 
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-      decode[ReasonerResponse](responseJson)
+      val responseEither = decode[ReasonerResponse](responseJson)
       notYetImplemented("receiveResponse")
       // TODO
       //      val answer = ??? // JSON.parse(responseJson)
