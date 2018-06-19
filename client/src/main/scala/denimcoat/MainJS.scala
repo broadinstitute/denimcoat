@@ -67,7 +67,9 @@ object MainJS {
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
+      dom.window.alert(responseJson)
       val responseEither = decode[ReasonerResponse](responseJson)
+      dom.window.alert(responseEither.toString)
       notYetImplemented("receiveResponse")
       // TODO
       //      val answer = ??? // JSON.parse(responseJson)
@@ -88,7 +90,7 @@ object MainJS {
     http.setRequestHeader("Accept", "application/json")
     notYetImplemented("submitReasonerRequest")
     val requestJson = request.asJson.toString()
-    dom.window.alert(requestJson)
+    dom.window.alert(urlActual + "\n" + requestJson)
     http.send(requestJson)
   }
 
