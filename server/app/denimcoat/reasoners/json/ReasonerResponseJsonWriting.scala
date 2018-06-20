@@ -22,7 +22,7 @@ object ReasonerResponseJsonWriting {
     "uri" -> node.uri.toString,
     "description" -> node.description,
     "symbol" -> node.symbol,
-    "node_property_list" -> node.nodePropertyList
+    "node_property_list" -> node.node_property_list
   )
 
   implicit val resultEdgePropertyWrites: Writes[EdgeProperty] =
@@ -41,38 +41,38 @@ object ReasonerResponseJsonWriting {
 
   implicit val resultEdgeWrites: Writes[Edge] = (edge: Edge) => Json.obj(
     "type" -> edge.`type`,
-    "source_id" -> edge.sourceId,
-    "target_id" -> edge.targetId,
-    "is_defined_by" -> edge.isDefinedBy,
-    "provided_by" -> edge.providedBy,
+    "source_id" -> edge.source_id,
+    "target_id" -> edge.target_id,
+    "is_defined_by" -> edge.is_defined_by,
+    "provided_by" -> edge.provided_by,
     "confidence" -> edge.confidence,
-    "edge_property_list" -> edge.edgePropertyList,
-    "origin_list" -> edge.originList
+    "edge_property_list" -> edge.edge_property_list,
+    "origin_list" -> edge.origin_list
   )
 
   implicit val resultGraphWrites: Writes[ResultGraph] = (graph: ResultGraph) => Json.obj(
-    "node_list" -> graph.nodeList,
-    "edge_list" -> graph.edgeList
+    "node_list" -> graph.node_list,
+    "edge_list" -> graph.edge_list
   )
 
   implicit val resultWrites: Writes[Result] = (result: Result) => Json.obj(
-    "@id" -> result.id.toString,
+    "@id" -> result.`@id`.toString,
     "text" -> result.text,
     "confidence" -> result.confidence,
-    "result_graph" -> result.resultGraph
+    "result_graph" -> result.result_graph
   )
 
   implicit val responseWrites: Writes[Response] = (response: Response) => Json.obj(
-   "@context" -> response.context.toString,
-    "@id" -> response.id.toString,
-    "@type" -> response.`type`,
-    "schema_version" -> response.schemaVersion,
-    "tool_version" -> response.toolVersion,
+   "@context" -> response.`@context`.toString,
+    "@id" -> response.`@id`.toString,
+    "@type" -> response.`@type`,
+    "schema_version" -> response.schema_version,
+    "tool_version" -> response.tool_version,
     "datetime" -> response.datetime,
-    "original_question_text" -> response.originalQuestionText,
-    "restated_question_text" -> response.restatedQuestionText,
-    "result_code" -> response.resultCode,
+    "original_question_text" -> response.original_question_text,
+    "restated_question_text" -> response.restated_question_text,
+    "result_code" -> response.result_code,
     "message" -> response.message,
-    "result_list" -> response.resultList
+    "result_list" -> response.result_list
   )
 }

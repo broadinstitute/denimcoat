@@ -39,7 +39,7 @@ object Avicenna extends Reasoner {
             uri = new URI(s"drug:${drug.cui}"),
             description = s"The drug ${drug.name}.",
             symbol = drug.name,
-            nodePropertyList = Seq.empty
+            node_property_list = Seq.empty
           )
           val targetNode = Node(
             id = target.cui,
@@ -48,17 +48,17 @@ object Avicenna extends Reasoner {
             uri = new URI(s"target:${target.cui}"),
             description = s"The target ${target.name}.",
             symbol = target.name,
-            nodePropertyList = Seq.empty
+            node_property_list = Seq.empty
           )
           val drugTargetEdge = Edge(
             `type` = "hasTarget",
-            sourceId = drugNode.id,
-            targetId = targetNode.id,
-            isDefinedBy = "Some smart dude",
-            providedBy = "Avicenna",
+            source_id = drugNode.id,
+            target_id = targetNode.id,
+            is_defined_by = "Some smart dude",
+            provided_by = "Avicenna",
             confidence = 1.0f,
-            edgePropertyList = Seq.empty,
-            originList = Seq.empty
+            edge_property_list = Seq.empty,
+            origin_list = Seq.empty
           )
           val diseaseNodes = target.diseases.map { disease =>
             Node(
@@ -68,30 +68,30 @@ object Avicenna extends Reasoner {
               uri = new URI(s"disease:${disease.cui}"),
               description = s"The disease ${disease.name}.",
               symbol = disease.name,
-              nodePropertyList = Seq.empty
+              node_property_list = Seq.empty
             )
           }.toSeq
           val targetDiseaseEdges = diseaseNodes.map { diseaseNode =>
             Edge(
               `type` = "isPartOfPathway",
-              sourceId = targetNode.id,
-              targetId = diseaseNode.id,
-              isDefinedBy = "Some smart dude",
-              providedBy = "Avicenna",
+              source_id = targetNode.id,
+              target_id = diseaseNode.id,
+              is_defined_by = "Some smart dude",
+              provided_by = "Avicenna",
               confidence = 1.0f,
-              edgePropertyList = Seq.empty,
-              originList = Seq.empty
+              edge_property_list = Seq.empty,
+              origin_list = Seq.empty
             )
           }
           Result(
-            id = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
+            `@id` = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
             text =
               s"Drug ${drug.name} has target ${target.name} affecting ${target.diseases.map(_.name).mkString(", ")}.",
             confidence = 1.0f,
-            resultGraph =
+            result_graph =
               ResultGraph(
-                nodeList = Seq(drugNode, targetNode) ++ diseaseNodes,
-                edgeList = Seq(drugTargetEdge) ++ targetDiseaseEdges
+                node_list = Seq(drugNode, targetNode) ++ diseaseNodes,
+                edge_list = Seq(drugTargetEdge) ++ targetDiseaseEdges
               )
           )
         }.toSeq
@@ -100,17 +100,17 @@ object Avicenna extends Reasoner {
         CoreResponse(request.text, "Invalid", "Could not parse the question", Seq.empty)
     }
     Response(
-      context = new URI(MockReasoners.baseUriContext),
-      id = MockReasoners.idUri(this.id),
-      `type` = "Very awesome type of response",
-      schemaVersion = Reasoner.apiVersion,
-      toolVersion = version,
+      `@context` = new URI(MockReasoners.baseUriContext),
+      `@id` = MockReasoners.idUri(this.id),
+      `@type` = "Very awesome type of response",
+      schema_version = Reasoner.apiVersion,
+      tool_version = version,
       datetime = new Date(),
-      originalQuestionText = request.text,
-      restatedQuestionText = coreResponse.restatedQuestion,
-      resultCode = coreResponse.resultCode,
+      original_question_text = request.text,
+      restated_question_text = coreResponse.restatedQuestion,
+      result_code = coreResponse.resultCode,
       message = coreResponse.message,
-      resultList = coreResponse.resultList
+      result_list = coreResponse.resultList
     )
   }
 

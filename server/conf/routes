@@ -4,7 +4,9 @@
 
 # Home page
 GET     /                           denimcoat.controllers.HomeController.index
++nocsrf
 POST    /reasoner/:id               denimcoat.controllers.HomeController.reasoner(id: String)
++nocsrf
 POST    /proxy/*url                 denimcoat.controllers.HomeController.proxy(url)
 
 # Prefix must match `play.assets.urlPrefix`

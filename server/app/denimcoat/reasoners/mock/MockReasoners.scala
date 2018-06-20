@@ -26,22 +26,22 @@ object MockReasoners {
 
     override def reason(request: Request): Response = {
       Response(
-        context = contextUri(id),
-        id = idUri(id),
-        `type` = typeDefault,
-        schemaVersion = Reasoner.apiVersion,
-        toolVersion = version,
+        `@context` = contextUri(id),
+        `@id` = idUri(id),
+        `@type` = typeDefault,
+        schema_version = Reasoner.apiVersion,
+        tool_version = version,
         datetime = now,
-        originalQuestionText = request.text,
-        restatedQuestionText = request.text,
-        resultCode = "Ok",
+        original_question_text = request.text,
+        restated_question_text = request.text,
+        result_code = "Ok",
         message ="Do I have an answer for you? Yes, I have!",
-        resultList = Seq(
+        result_list = Seq(
           Result(
-            id = idResultUri(id, "best"),
+            `@id` = idResultUri(id, "best"),
             text = "The answer is 42",
             confidence = 1.0f,
-            resultGraph = ResultGraph(Seq.empty, Seq.empty)
+            result_graph = ResultGraph(Seq.empty, Seq.empty)
           )
         )
       )
@@ -55,17 +55,17 @@ object MockReasoners {
 
     override def reason(request: Request): Response = {
       Response(
-        context = contextUri(id),
-        id = idUri(id),
-        `type` = typeDefault,
-        schemaVersion = "1.2.3",
-        toolVersion = version,
+        `@context` = contextUri(id),
+        `@id` = idUri(id),
+        `@type` = typeDefault,
+        schema_version = "1.2.3",
+        tool_version = version,
         datetime = now,
-        originalQuestionText = request.text,
-        restatedQuestionText = request.text,
-        resultCode = "Fatal",
+        original_question_text = request.text,
+        restated_question_text = request.text,
+        result_code = "Fatal",
         message = s"""I'm sorry, Dave, I'm afraid I can't do that.""",
-        resultList = Seq.empty
+        result_list = Seq.empty
       )
     }
 
