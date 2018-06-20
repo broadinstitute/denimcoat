@@ -140,6 +140,24 @@ object MainJS {
     }
   }
 
+  val exampleInput = "What are targets of ibuprofen?"
+
+  def setExample(): Unit = {
+    d3.select("#input").property("value", exampleInput)
+  }
+
+  def clearInput(): Unit = {
+    d3.select("#input").property("value", "")
+  }
+
+//  function setExample() {
+//    d3.select("#input").property("value", exampleInput);
+//  }
+//
+//  function clearInput() {
+//    d3.select("#input").property("value", "");
+//  }
+
   def main(args: Array[String]): Unit = {
     printTime(d3.select("#loadTime"))
 
@@ -148,6 +166,8 @@ object MainJS {
     }
 
     d3.select("#inputSubmitButton").on("click", (_: Any, _: Any, _: Any) => submitQuestion())
+    d3.select("#inputExampleButton").on("click", (_: Any, _: Any, _: Any) => setExample())
+    d3.select("#inputClearButton").on("click", (_: Any, _: Any, _: Any) => clearInput())
 
   }
 }

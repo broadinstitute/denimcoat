@@ -1,8 +1,7 @@
 package denimcoat.reasoners.json
 
-import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{Edge, EdgeProperty, Node, NodeProperty, Origin, Response, Result, ResultGraph}
-import play.api.libs.json.{JsObject, JsValue, Json, Writes}
+import denimcoat.reasoners.messages._
+import play.api.libs.json.{Json, Writes}
 
 
 object ReasonerResponseJsonWriting {

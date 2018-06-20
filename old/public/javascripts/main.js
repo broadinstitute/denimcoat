@@ -1,18 +1,3 @@
-printTime(d3.select("#loadTime"));
-setInterval(function () {
-    printTime(d3.select("#nowTime"))
-}, 200);
-
-function printTime(element) {
-    const nowTime = new Date();
-    element.html(nowTime.toLocaleTimeString());
-}
-
-d3.select("#inputSubmitButton").on("click", submitQuestion);
-d3.select("#inputExampleButton").on("click", setExample);
-d3.select("#inputClearButton").on("click", clearInput);
-
-
 function getReasonerIds() {
     return d3.selectAll(".reasoners").nodes().filter(element => element.checked).map(element => element.value);
 }
