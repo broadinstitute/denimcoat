@@ -14,7 +14,7 @@ object QuestionParser {
 
   def findEntitiesAs[E <: Entry](question: String, entries: Set[E]): Set[E] = {
     val cleanedQuestion = cleanup(question)
-    entries.filter(entry => cleanedQuestion.contains(entry.name) || cleanedQuestion.contains(entry.cui))
+    entries.filter(entry => cleanedQuestion.contains(entry.name.toLowerCase) || cleanedQuestion.contains(entry.cui))
   }
 
   def findEntities(question: String, entries: Set[Entry] = EntityCatalogue.entries): Set[Entry] =

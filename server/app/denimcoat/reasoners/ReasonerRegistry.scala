@@ -1,6 +1,6 @@
 package denimcoat.reasoners
 
-import denimcoat.reasoners.mock.{Avicenna, MockReasoners}
+import denimcoat.reasoners.mock.{Avicenna, Hippocrates, MockReasoners}
 
 object ReasonerRegistry {
 
@@ -9,6 +9,7 @@ object ReasonerRegistry {
   add(MockReasoners.deepThought)
   add(MockReasoners.hal9000)
   add(Avicenna)
+  add(Hippocrates)
 
   def add(reasoner: Reasoner): Unit = {
     reasoners += reasoner.id -> reasoner

@@ -28,16 +28,16 @@ object Avicenna extends Reasoner {
             s"${target.name} (affecting ${target.symptoms.map(_.name).mkString(", ")})"
           }.mkString("", ", ", ".")
         }"
+        val drugNode = Node(
+          id = drug.cui,
+          `type` = "drug",
+          name = drug.name,
+          uri = new URI(s"drug:${drug.cui}"),
+          description = s"The drug ${drug.name}.",
+          symbol = drug.name,
+          node_property_list = Seq.empty
+        )
         val results = drug.targets.map { target =>
-          val drugNode = Node(
-            id = drug.cui,
-            `type` = "drug",
-            name = drug.name,
-            uri = new URI(s"drug:${drug.cui}"),
-            description = s"The drug ${drug.name}.",
-            symbol = drug.name,
-            node_property_list = Seq.empty
-          )
           val targetNode = Node(
             id = target.cui,
             `type` = "target",

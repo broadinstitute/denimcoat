@@ -11,7 +11,7 @@ object EntityCatalogue {
   }
 
   case class Symptom(name: String, cui: String) extends Entry {
-
+    addSymptom(this)
   }
 
   case class Drug(name: String, cui: String, targets: Set[Target]) extends Entry {
@@ -44,12 +44,15 @@ object EntityCatalogue {
   val inflammation = Symptom("inflammation", "C0021368")
   val fever = Symptom("fever", "C0015967")
   val pain = Symptom("pain", "C0030193")
+  val oralAphthousUlcers = Symptom("ulcers aphthous oral", "C0038363")
 
   val cyclooxygenase = Target("cyclooxygenase", "C17015", Set(inflammation, fever, pain))
 
   val acetaminophen = Drug("acetaminophen", "C0000970", Set(cyclooxygenase))
   val aspirin = Drug("aspirin", "C0004057", Set(cyclooxygenase))
   val ibuprofen = Drug("ibuprofen", "CHEBI:5855", Set(cyclooxygenase))
+
+  val behcet = Disease("Behcet's disease", "C0004943", Set(oralAphthousUlcers))
 
   def byCui(cui: String): Option[Entry] = entries.find(_.cui == cui)
 
