@@ -19,16 +19,13 @@ object Avicenna extends Reasoner {
 
   def restateQuestion(drug: String): String = questionPrefix + drug + questionPostfix
 
-  case class CoreResponse(restatedQuestion: String, resultCode: String, message: String,
-                          resultList: Seq[Result])
-
   override def reason(request: Request): Response = {
     val coreResponse = parseQuestion(request.text) match {
       case Some(drug) =>
         val restatedQuestionText = restateQuestion(drug.name)
         val message = s"Drug ${drug.name} has target(s) ${
           drug.targets.map { target =>
-            s"${target.name} (affecting ${target.diseases.map(_.name).mkString(", ")})"
+            s"${target.name} (affecting ${target.symptoms.map(_.name).mkString(", ")})"
           }.mkString("", ", ", ".")
         }"
         val results = drug.targets.map { target =>
@@ -60,7 +57,7 @@ object Avicenna extends Reasoner {
             edge_property_list = Seq.empty,
             origin_list = Seq.empty
           )
-          val diseaseNodes = target.diseases.map { disease =>
+          val diseaseNodes = target.symptoms.map { disease =>
             Node(
               id = disease.cui,
               `type` = "disease",
@@ -86,7 +83,7 @@ object Avicenna extends Reasoner {
           Result(
             `@id` = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
             text =
-              s"Drug ${drug.name} has target ${target.name} affecting ${target.diseases.map(_.name).mkString(", ")}.",
+              s"Drug ${drug.name} has target ${target.name} affecting ${target.symptoms.map(_.name).mkString(", ")}.",
             confidence = 1.0f,
             result_graph =
               ResultGraph(
@@ -95,9 +92,9 @@ object Avicenna extends Reasoner {
               )
           )
         }.toSeq
-        CoreResponse(restatedQuestionText, "Ok", message, results)
+        CoreResponse.successResponse(restatedQuestionText, message, results)
       case None =>
-        CoreResponse(request.text, "Invalid", "Could not parse the question", Seq.empty)
+        CoreResponse.failureResponse(request)
     }
     Response(
       `@context` = new URI(MockReasoners.baseUriContext),
