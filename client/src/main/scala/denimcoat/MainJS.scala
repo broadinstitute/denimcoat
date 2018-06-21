@@ -49,13 +49,27 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[String, ReasonerResponse] = Map.empty
+  var answers: Map[String, Either[Error, ReasonerResponse]] = Map.empty
+  var targetNodeNames: Set[String] = Set.empty
 
-  def addAnswer(reasonerId: String, response: ReasonerResponse): Unit = {
-    answers += reasonerId -> response
+  def addAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
+    answers += reasonerId -> responseEither
+    responseEither match {
+      case Left(error) => ()
+      case Right(response) =>
+        val responseTargetNodeNames = response.result_list.to[Set].flatMap { result =>
+          val graph = result.result_graph
+          val targetIds = graph.edge_list.to[Set].map(edge => edge.target_id)
+          val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
+          nodeNames
+        }
+        targetNodeNames ++= responseTargetNodeNames
+    }
   }
 
   def displayAnswers(): Unit = {
+    d3.select("#output").property("value", targetNodeNames.mkString(", "))
+    d3.select("#answersRaw").property("value", answers.toString)
     notYetImplemented("displayAnswers")
   } // TODO
 
@@ -70,10 +84,7 @@ object MainJS {
       dom.window.alert(responseJson)
       val responseEither = decode[ReasonerResponse](responseJson)
       dom.window.alert(responseEither.toString)
-      notYetImplemented("receiveResponse")
-      // TODO
-      //      val answer = ??? // JSON.parse(responseJson)
-      //      addAnswer(request.reasonerId, answer)
+      addAnswer(reasonerId, responseEither)
       displayAnswers()
     }
   }
@@ -94,17 +105,17 @@ object MainJS {
     http.send(requestJson)
   }
 
-  def queryRtxReasoner(reasonerId: String, questionText: String): Unit ={
+  def queryRtxReasoner(reasonerId: String, questionText: String): Unit = {
     notYetImplemented("queryRtxReasoner")
     // TODO
   }
 
-  def queryIndigoReasoner(reasonerId: String, questionText: String): Unit ={
+  def queryIndigoReasoner(reasonerId: String, questionText: String): Unit = {
     notYetImplemented("queryIndigoReasoner")
     // TODO
   }
 
-  def queryRobokopReasoner(reasonerId: String, questionText: String): Unit ={
+  def queryRobokopReasoner(reasonerId: String, questionText: String): Unit = {
     notYetImplemented("queryRobokopReasoner")
     // TODO
   }
@@ -122,10 +133,10 @@ object MainJS {
       dom.window.alert("Please enter a question to submit.")
     } else {
       val reasonerIds = getReasonerIds
-      if(reasonerIds.isEmpty) {
+      if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
-        reasonerIds.foreach{ reasonerId =>
+        reasonerIds.foreach { reasonerId =>
           if (reasonerId == "rtx") {
             queryRtxReasoner(reasonerId, questionText)
           } else if (reasonerId == "indigo") {
@@ -149,14 +160,6 @@ object MainJS {
   def clearInput(): Unit = {
     d3.select("#input").property("value", "")
   }
-
-//  function setExample() {
-//    d3.select("#input").property("value", exampleInput);
-//  }
-//
-//  function clearInput() {
-//    d3.select("#input").property("value", "");
-//  }
 
   def main(args: Array[String]): Unit = {
     printTime(d3.select("#loadTime"))
