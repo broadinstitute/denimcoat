@@ -103,6 +103,9 @@ object MainJS {
     http.open("POST", urlActual, async = true)
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
+    http.setRequestHeader("Access-Control-Allow-Origin", "*")
+    http.setRequestHeader("Access-Control-Allow-Methods", "POST, GET")
+    http.setRequestHeader("Access-Control-Allow-Headers", "Content-Type")
     val requestJson = request.asJson.toString()
     http.send(requestJson)
   }
@@ -197,7 +200,7 @@ object MainJS {
         keyboardEvent.key match {
           case "Backspace" =>
             val size = inputString.size
-            if(size > 0) {
+            if (size > 0) {
               inputString = inputString.substring(0, size - 1)
             }
           case "Enter" => submitQuestion()
