@@ -1,0 +1,37 @@
+@()
+
+@main("Denimcoat") {
+  <h1>Welcome to DenimCoat!</h1>
+
+  <p id="inputDisplay">Your input: </p>
+  <p id="outputDisplay">Answer: </p>
+
+  <div>
+    <!--
+    <input type="checkbox" name="reasoner" class="reasoners" value="rtx"> RTX
+    <input type="checkbox" name="reasoner" class="reasoners" value="indigo"> Indigo
+    <input type="checkbox" name="reasoner" class="reasoners" value="robokop"> Robokop
+    <input type="checkbox" name="reasoner" class="reasoners" value="avicenna"> Avicenna
+    -->
+    <input type="checkbox" name="reasoner" class="reasoners" value="hippocrates" checked> Hippocrates
+  </div>
+
+  <div>
+    <button id="inputSubmitButton">Submit</button>
+    <button id="inputExampleOneButton">Example One</button>
+    <button id="inputExampleTwoButton">Example Two</button>
+    <button id="inputClearButton">Clear</button>
+  </div>
+
+  <!--
+  <div id="cytoscape"></div>
+
+  <table id="answersTable"></table>
+
+  <p id="answersTree"></p>
+
+  <p><textarea id="answersRaw" rows="50" cols="120"></textarea></p>
+-->
+
+  <p>This page was loaded <span id="loadTime"></span>. Now it is <span id="nowTime"></span>.</p>
+}
