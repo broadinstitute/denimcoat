@@ -6,7 +6,7 @@ import java.util.Date
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import io.circe.Decoder.Result
 import org.scalajs.dom
-import org.scalajs.dom.raw.{HTMLInputElement, XMLHttpRequest}
+import org.scalajs.dom.raw.{HTMLInputElement, KeyboardEvent, XMLHttpRequest}
 import org.scalajs.dom.{Event, EventTarget}
 import org.singlespaced.d3js.{Selection, d3}
 
@@ -52,6 +52,10 @@ object MainJS {
   var answers: Map[String, Either[Error, ReasonerResponse]] = Map.empty
   var targetNodeNames: Set[String] = Set.empty
 
+  def resetAnswers(): Unit = {
+    answers = Map.empty
+  }
+
   def addAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
     answers += reasonerId -> responseEither
     responseEither match {
@@ -68,7 +72,8 @@ object MainJS {
   }
 
   def displayAnswers(): Unit = {
-    d3.select("#output").property("value", targetNodeNames.mkString(", "))
+    outputString = targetNodeNames.mkString(", ")
+    displayOutputString()
     d3.select("#answersRaw").property("value", answers.toString)
     notYetImplemented("displayAnswers")
   } // TODO
@@ -81,9 +86,7 @@ object MainJS {
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-      dom.window.alert(responseJson)
       val responseEither = decode[ReasonerResponse](responseJson)
-      dom.window.alert(responseEither.toString)
       addAnswer(reasonerId, responseEither)
       displayAnswers()
     }
@@ -99,9 +102,7 @@ object MainJS {
     http.open("POST", urlActual, async = true)
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
-    notYetImplemented("submitReasonerRequest")
     val requestJson = request.asJson.toString()
-    dom.window.alert(urlActual + "\n" + requestJson)
     http.send(requestJson)
   }
 
@@ -126,9 +127,23 @@ object MainJS {
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
+  var inputString = ""
+  var outputString = ""
+
+  def displayInputString(): Unit = {
+    d3.select("#inputDisplay").text("Your input: " + inputString)
+  }
+
+  def displayOutputString(): Unit = {
+    d3.select("#outputDisplay").text("Answer: " + outputString)
+  }
+
+  def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    submitQuestion()
+  }
 
   def submitQuestion(): Unit = {
-    val questionText = d3.select("#input").property("value").asInstanceOf[String].trim()
+    val questionText = inputString.trim
     if (questionText == "") {
       dom.window.alert("Please enter a question to submit.")
     } else {
@@ -136,6 +151,8 @@ object MainJS {
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
+        resetAnswers()
+        displayAnswers()
         reasonerIds.foreach { reasonerId =>
           if (reasonerId == "rtx") {
             queryRtxReasoner(reasonerId, questionText)
@@ -151,14 +168,44 @@ object MainJS {
     }
   }
 
-  val exampleInput = "What are targets of ibuprofen?"
+  val exampleInput = "Behcet's disease"
 
-  def setExample(): Unit = {
-    d3.select("#input").property("value", exampleInput)
+  def setExample(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    inputString = exampleInput
+    displayInputString()
   }
 
-  def clearInput(): Unit = {
-    d3.select("#input").property("value", "")
+  def clearInput(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    inputString = ""
+    displayInputString()
+  }
+
+  def gotFocus(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    dom.window.alert("got focus!")
+  }
+
+  def handleKeypress(event: Event): Unit = {
+    event match {
+      case keyboardEvent: KeyboardEvent =>
+        keyboardEvent.key match {
+          case "Backspace" =>
+            val size = inputString.size
+            if(size > 0) {
+              inputString = inputString.substring(0, size - 1)
+            }
+          case "Enter" => submitQuestion()
+          case key: String =>
+            if (key.size > 1) {
+              dom.window.console.log(s"Don't know what to do with key '$key'.")
+            } else {
+              inputString = inputString + key
+              keyboardEvent.preventDefault()
+            }
+        }
+        keyboardEvent.stopPropagation()
+        displayInputString()
+      case _ => ()
+    }
   }
 
   def main(args: Array[String]): Unit = {
@@ -168,9 +215,13 @@ object MainJS {
       printTime(d3.select("#nowTime"))
     }
 
-    d3.select("#inputSubmitButton").on("click", (_: Any, _: Any, _: Any) => submitQuestion())
-    d3.select("#inputExampleButton").on("click", (_: Any, _: Any, _: Any) => setExample())
-    d3.select("#inputClearButton").on("click", (_: Any, _: Any, _: Any) => clearInput())
+    d3.select("#inputSubmitButton").on("click", submitQuestionClickHandler)
+    d3.select("#inputExampleButton").on("click", setExample)
+    d3.select("#inputClearButton").on("click", clearInput)
+
+    d3.select("#inputDisplay").node().asInstanceOf[HTMLInputElement].focus()
+
+    d3.select("body").node().addEventListener("keypress", handleKeypress, false)
 
   }
 }
