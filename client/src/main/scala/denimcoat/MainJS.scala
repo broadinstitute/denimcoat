@@ -54,6 +54,7 @@ object MainJS {
 
   def resetAnswers(): Unit = {
     answers = Map.empty
+    targetNodeNames = Set.empty
   }
 
   def addAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
@@ -168,10 +169,16 @@ object MainJS {
     }
   }
 
-  val exampleInput = "Behcet's disease"
+  val exampleOneInput = "type 2 diabetes mellitus"
+  val exampleTwoInput = "Behcet's disease"
 
-  def setExample(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    inputString = exampleInput
+  def setExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    inputString = exampleOneInput
+    displayInputString()
+  }
+
+  def setExampleTwo(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    inputString = exampleTwoInput
     displayInputString()
   }
 
@@ -216,7 +223,8 @@ object MainJS {
     }
 
     d3.select("#inputSubmitButton").on("click", submitQuestionClickHandler)
-    d3.select("#inputExampleButton").on("click", setExample)
+    d3.select("#inputExampleOneButton").on("click", setExampleOne)
+    d3.select("#inputExampleTwoButton").on("click", setExampleTwo)
     d3.select("#inputClearButton").on("click", clearInput)
 
     d3.select("#inputDisplay").node().asInstanceOf[HTMLInputElement].focus()

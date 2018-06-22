@@ -45,6 +45,11 @@ object EntityCatalogue {
   val fever = Symptom("fever", "C0015967")
   val pain = Symptom("pain", "C0030193")
   val oralAphthousUlcers = Symptom("ulcers aphthous oral", "C0038363")
+  val uveitis = Symptom("uveitis", "C0042164")
+  val genitalUlceration = Symptom("genital ulceration", "C0151281")
+  val hyperglycemia = Symptom("hyperglycemia", "C0020456")
+  val polydipsia = Symptom("polydipsia", "C0085602")
+  val polyphagia = Symptom("polyphagia", "C0020505")
 
   val cyclooxygenase = Target("cyclooxygenase", "C17015", Set(inflammation, fever, pain))
 
@@ -52,7 +57,9 @@ object EntityCatalogue {
   val aspirin = Drug("aspirin", "C0004057", Set(cyclooxygenase))
   val ibuprofen = Drug("ibuprofen", "CHEBI:5855", Set(cyclooxygenase))
 
-  val behcet = Disease("Behcet's disease", "C0004943", Set(oralAphthousUlcers))
+  val typeTwoDiabetesMellitus =
+    Disease("type 2 diabetes mellitus", "C0011860", Set(hyperglycemia, polydipsia, polyphagia))
+  val behcet = Disease("Behcet's disease", "C0004943", Set(oralAphthousUlcers, uveitis, genitalUlceration))
 
   def byCui(cui: String): Option[Entry] = entries.find(_.cui == cui)
 
