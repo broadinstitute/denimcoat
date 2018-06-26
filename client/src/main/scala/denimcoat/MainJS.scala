@@ -3,12 +3,12 @@ package denimcoat
 import java.net.URI
 import java.util.Date
 
+import denimcoat.d3.{D3, Selection}
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import io.circe.Decoder.Result
 import org.scalajs.dom
-import org.scalajs.dom.raw.{HTMLInputElement, KeyboardEvent, XMLHttpRequest}
+import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
 import org.scalajs.dom.{Event, EventTarget}
-import org.singlespaced.d3js.{Selection, d3}
 
 import scala.collection.mutable
 import scala.scalajs.js
@@ -26,24 +26,13 @@ object MainJS {
     global.console.log(s"$name is not yet implemented")
   }
 
-  def printTime(selection: Selection[EventTarget]): Unit = {
+  def printTime(selection: Selection[HTMLElement, _, _]): Unit = {
     val timeNow = new Date()
     selection.html(timeNow.toString)
   }
 
-  def getNodesFromSelection(selection: Selection[EventTarget]): Seq[EventTarget] = {
-    selection.asInstanceOf[js.Dynamic].selectDynamic("nodes").asInstanceOf[mutable.Seq[EventTarget]].toList
-  }
-
   def getReasonerIds: Seq[String] = {
-    val selection: Selection[EventTarget] = d3.selectAll(".reasoners")
-    val selectionArray = selection.asInstanceOf[js.Array[js.Object]]
-    val selectionSeq: mutable.Seq[js.Object] = selectionArray
-    val inputElements = selectionSeq.flatMap { innerSelection =>
-      val innerArray = innerSelection.asInstanceOf[js.Array[js.Object]]
-      val innerSeq: mutable.Seq[js.Object] = innerArray
-      innerSeq.map(_.asInstanceOf[HTMLInputElement])
-    }
+    val inputElements = D3.selectAll(".reasoners").asOf[HTMLInputElement].nodes
     inputElements.filter(element => element.checked).map(element => element.value)
   }
 
@@ -75,7 +64,6 @@ object MainJS {
   def displayAnswers(): Unit = {
     outputString = targetNodeNames.mkString(", ")
     displayOutputString()
-    d3.select("#answersRaw").property("value", answers.toString)
     notYetImplemented("displayAnswers")
   } // TODO
 
@@ -133,6 +121,18 @@ object MainJS {
 
   var inputString = ""
   var outputString = ""
+
+  def mainSvg: Selection[EventTarget] = {
+    d3.select("#mainSvg")
+  }
+
+  def createTextElement(x: Int, y: Int, text: String): Selection[EventTarget] = {
+    mainSvg.append("text").attr("x", x).attr("y", y).text(text).style("color", "yellow")
+  }
+
+  def initSvg(): Unit = {
+    val textElement = createTextElement(100, 100, "Hello, world!")
+  }
 
   def displayInputString(): Unit = {
     d3.select("#inputDisplay").text("Your input: " + inputString)
@@ -219,7 +219,7 @@ object MainJS {
   }
 
   def main(args: Array[String]): Unit = {
-    printTime(d3.select("#loadTime"))
+    printTime(D3.select("#loadTime").asOf[HTMLElement])
 
     js.timers.setInterval(200) {
       printTime(d3.select("#nowTime"))
@@ -234,5 +234,6 @@ object MainJS {
 
     d3.select("body").node().addEventListener("keypress", handleKeypress, false)
 
+    initSvg()
   }
 }
