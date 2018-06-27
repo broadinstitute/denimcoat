@@ -3,6 +3,7 @@ package denimcoat
 import java.net.URI
 import java.util.Date
 
+import denimcoat.d3.Selection.Multiplicity
 import denimcoat.d3.{D3, Selection}
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import io.circe.Decoder.Result
@@ -18,6 +19,7 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.generic.semiauto._
+import org.scalajs.dom.svg.SVG
 
 object MainJS {
 
@@ -122,24 +124,18 @@ object MainJS {
   var inputString = ""
   var outputString = ""
 
-  def mainSvg: Selection[EventTarget] = {
-    d3.select("#mainSvg")
-  }
-
-  def createTextElement(x: Int, y: Int, text: String): Selection[EventTarget] = {
-    mainSvg.append("text").attr("x", x).attr("y", y).text(text).style("color", "yellow")
-  }
+  val mainSvg: Selection[SVG, Multiplicity.Mono, EventTarget] = D3.select("#mainSvg").asOf[SVG]
 
   def initSvg(): Unit = {
-    val textElement = createTextElement(100, 100, "Hello, world!")
+    mainSvg.appendTextElement(100, 100, "Hello, world!")
   }
 
   def displayInputString(): Unit = {
-    d3.select("#inputDisplay").text("Your input: " + inputString)
+    D3.select("#inputDisplay").text("Your input: " + inputString)
   }
 
   def displayOutputString(): Unit = {
-    d3.select("#outputDisplay").text("Answer: " + outputString)
+    D3.select("#outputDisplay").text("Answer: " + outputString)
   }
 
   def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
@@ -222,17 +218,17 @@ object MainJS {
     printTime(D3.select("#loadTime").asOf[HTMLElement])
 
     js.timers.setInterval(200) {
-      printTime(d3.select("#nowTime"))
+      printTime(D3.select("#nowTime").asOf[HTMLElement])
     }
 
-    d3.select("#inputSubmitButton").on("click", submitQuestionClickHandler)
-    d3.select("#inputExampleOneButton").on("click", setExampleOne)
-    d3.select("#inputExampleTwoButton").on("click", setExampleTwo)
-    d3.select("#inputClearButton").on("click", clearInput)
+    D3.select("#inputSubmitButton").on("click", submitQuestionClickHandler: (Any, Int, js.UndefOr[Int]) => Unit)
+    D3.select("#inputExampleOneButton").on("click", setExampleOne)
+    D3.select("#inputExampleTwoButton").on("click", setExampleTwo)
+    D3.select("#inputClearButton").on("click", clearInput)
 
-    d3.select("#inputDisplay").node().asInstanceOf[HTMLInputElement].focus()
+    D3.select("#inputDisplay").asOf[HTMLInputElement].node.focus()
 
-    d3.select("body").node().addEventListener("keypress", handleKeypress, false)
+    D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
 
     initSvg()
   }
