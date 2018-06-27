@@ -41,6 +41,10 @@ case class Selection[E <: EventTarget, M <: Multiplicity, D](d3Selection: D3Sele
   def on[R](name: String, handler: (D, Int, js.UndefOr[Int]) => Unit): Selection[E, M, D] =
     Selection[E, M, D](d3Selection.on(name, handler))
 
+  def style(name: String, value: Double): Selection[E, M, D] = Selection[E, M, D](d3Selection.style(name, value))
+  def style(name: String, value: String): Selection[E, M, D] = Selection[E, M, D](d3Selection.style(name, value))
+  def style(name: String, value: Boolean): Selection[E, M, D] = Selection[E, M, D](d3Selection.style(name, value))
+
   def text(text: String): Selection[E, M, D] = Selection[E, M, D](d3Selection.text(text))
 
   def appendTextElement(x: Int, y: Int, text: String): Selection[E, M, D] = {

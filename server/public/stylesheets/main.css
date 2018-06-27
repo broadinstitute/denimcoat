@@ -14,3 +14,7 @@ body {
     display: block;
     border: solid yellow;
 }
+
+svg {
+    fill: yellow
+}

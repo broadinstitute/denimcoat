@@ -6,6 +6,7 @@ import java.util.Date
 import denimcoat.d3.Selection.Multiplicity
 import denimcoat.d3.{D3, Selection}
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.svg.MainSvg
 import io.circe.Decoder.Result
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
@@ -124,14 +125,10 @@ object MainJS {
   var inputString = ""
   var outputString = ""
 
-  val mainSvg: Selection[SVG, Multiplicity.Mono, EventTarget] = D3.select("#mainSvg").asOf[SVG]
-
-  def initSvg(): Unit = {
-    mainSvg.appendTextElement(100, 100, "Hello, world!")
-  }
-
   def displayInputString(): Unit = {
-    D3.select("#inputDisplay").text("Your input: " + inputString)
+    val inputLine = "Your input: " + inputString
+    D3.select("#inputDisplay").text(inputLine)
+    MainSvg.setInputText(inputLine)
   }
 
   def displayOutputString(): Unit = {
@@ -215,6 +212,7 @@ object MainJS {
   }
 
   def main(args: Array[String]): Unit = {
+    println("yo")
     printTime(D3.select("#loadTime").asOf[HTMLElement])
 
     js.timers.setInterval(200) {
@@ -230,6 +228,6 @@ object MainJS {
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
 
-    initSvg()
+    MainSvg.setInputText("Hello, World!")
   }
 }
