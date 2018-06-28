@@ -14,8 +14,8 @@ object MainSvg {
   val y0 = 50
   val y1 = 100
 
-  val inputLabelText = "Disease: "
-  val outputLabelText = "Symptoms: "
+  val inputLabelText = "Disease:"
+  val outputLabelText = "Symptoms:"
 
   val inputLabel: TextFacade = TextFacade.create(svg, "inputLabel", x0, y0)
   inputLabel.text = inputLabelText
