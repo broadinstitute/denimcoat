@@ -42,7 +42,7 @@ object TextFacade {
     new TextFacade(svg, dom.document.getElementById(id).asInstanceOf[Text])
 
   def create(svg: SVG, id: String, x: Int, y: Int): TextFacade = {
-    val text = new TextFacade(svg, dom.document.createElement("text").asInstanceOf[Text])
+    val text = new TextFacade(svg, SvgUtils.createSvgElement("text").asInstanceOf[Text])
     text.id = id
     text.text = "Why?"
     text.style = "fill: yellow"

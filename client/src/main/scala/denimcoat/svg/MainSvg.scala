@@ -15,6 +15,8 @@ object MainSvg {
 
   svg.appendChild(inputText.element)
 
+
+
   println(svg.childElementCount)
 
   def setInputText(text: String): Unit = inputText.text = text
