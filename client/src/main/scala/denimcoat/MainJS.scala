@@ -212,7 +212,6 @@ object MainJS {
   }
 
   def main(args: Array[String]): Unit = {
-    println("yo")
     printTime(D3.select("#loadTime").asOf[HTMLElement])
 
     js.timers.setInterval(200) {
@@ -228,6 +227,6 @@ object MainJS {
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
 
-    MainSvg.setInputText("Hello, World!")
+    displayInputString()
   }
 }

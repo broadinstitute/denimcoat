@@ -44,7 +44,6 @@ object TextFacade {
   def create(svg: SVG, id: String, x: Int, y: Int): TextFacade = {
     val text = new TextFacade(svg, SvgUtils.createSvgElement("text").asInstanceOf[Text])
     text.id = id
-    text.text = "Why?"
     text.fill = "yellow"
     text.x = x
     text.y = y

@@ -11,13 +11,9 @@ object MainSvg {
 
   val inputText: TextFacade = TextFacade.create(svg, "inputText", 100, 100)
 
-  inputText.style = "fill: yellow"
+  inputText.fill = "yellow"
 
   svg.appendChild(inputText.element)
-
-
-
-  println(svg.childElementCount)
 
   def setInputText(text: String): Unit = inputText.text = text
 
