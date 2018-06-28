@@ -3,16 +3,14 @@ package denimcoat
 import java.net.URI
 import java.util.Date
 
-import denimcoat.d3.Selection.Multiplicity
 import denimcoat.d3.{D3, Selection}
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.svg.MainSvg
 import io.circe.Decoder.Result
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
-import org.scalajs.dom.{Event, EventTarget}
+import org.scalajs.dom.Event
 
-import scala.collection.mutable
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
 import io.circe._
@@ -20,7 +18,6 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.generic.semiauto._
-import org.scalajs.dom.svg.SVG
 
 object MainJS {
 
@@ -126,13 +123,13 @@ object MainJS {
   var outputString = ""
 
   def displayInputString(): Unit = {
-    val inputLine = "Your input: " + inputString
-    D3.select("#inputDisplay").text(inputLine)
+    val inputLine = "Enter disease: " + inputString
     MainSvg.setInputText(inputLine)
   }
 
   def displayOutputString(): Unit = {
-    D3.select("#outputDisplay").text("Answer: " + outputString)
+    val outputLine = "Symptoms: " + outputString
+    MainSvg.setOutputText(outputLine)
   }
 
   def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
@@ -183,10 +180,6 @@ object MainJS {
     displayInputString()
   }
 
-  def gotFocus(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    dom.window.alert("got focus!")
-  }
-
   def handleKeypress(event: Event): Unit = {
     event match {
       case keyboardEvent: KeyboardEvent =>
@@ -222,8 +215,6 @@ object MainJS {
     D3.select("#inputExampleOneButton").on("click", setExampleOne)
     D3.select("#inputExampleTwoButton").on("click", setExampleTwo)
     D3.select("#inputClearButton").on("click", clearInput)
-
-    D3.select("#inputDisplay").asOf[HTMLInputElement].node.focus()
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
 

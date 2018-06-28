@@ -3,10 +3,8 @@
 @main("Denimcoat") {
   <h1>Welcome to DenimCoat!</h1>
 
-  <p id="inputDisplay">Your input: </p>
-  <p id="outputDisplay">Answer: </p>
-
-  <div>
+  <p>
+    Pick at least one reasoner:
     <!--
     <input type="checkbox" name="reasoner" class="reasoners" value="rtx"> RTX
     <input type="checkbox" name="reasoner" class="reasoners" value="indigo"> Indigo
@@ -14,28 +12,18 @@
     <input type="checkbox" name="reasoner" class="reasoners" value="avicenna"> Avicenna
     -->
     <input type="checkbox" name="reasoner" class="reasoners" value="hippocrates" checked> Hippocrates
-  </div>
+  </p>
 
-  <div>
+  <p>
     <button id="inputSubmitButton">Submit</button>
     <button id="inputExampleOneButton">Example One</button>
     <button id="inputExampleTwoButton">Example Two</button>
     <button id="inputClearButton">Clear</button>
-  </div>
+  </p>
 
-  <svg width="700" height="500" id="mainSvg" xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <svg width="700" height="300" id="mainSvg" xmlns="http://www.w3.org/2000/svg" version="1.1">
 
   </svg>
-
-  <!--
-  <div id="cytoscape"></div>
-
-  <table id="answersTable"></table>
-
-  <p id="answersTree"></p>
-
-  <p><textarea id="answersRaw" rows="50" cols="120"></textarea></p>
--->
 
   <p>This page was loaded <span id="loadTime"></span>. Now it is <span id="nowTime"></span>.</p>
 }
