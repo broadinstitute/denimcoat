@@ -122,15 +122,9 @@ object MainJS {
   var inputString = ""
   var outputString = ""
 
-  def displayInputString(): Unit = {
-    val inputLine = "Enter disease: " + inputString
-    MainSvg.setInputText(inputLine)
-  }
+  def displayInputString(): Unit = MainSvg.setInputText(inputString)
 
-  def displayOutputString(): Unit = {
-    val outputLine = "Symptoms: " + outputString
-    MainSvg.setOutputText(outputLine)
-  }
+  def displayOutputString(): Unit = MainSvg.setOutputText(outputString)
 
   def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitQuestion()
