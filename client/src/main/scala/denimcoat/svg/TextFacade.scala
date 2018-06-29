@@ -6,11 +6,7 @@ import org.singlespaced.d3js.d3
 
 import scala.util.Try
 
-class TextFacade(val svg: SVG, val element: Text) {
-
-  def id: String = element.getAttribute("id")
-
-  def id_=(id: String): Unit = element.setAttribute("id", id)
+class TextFacade(val svg: SVG, val element: Text) extends ElementFacade[Text] {
 
   def text: String = element.textContent
 
@@ -39,12 +35,11 @@ class TextFacade(val svg: SVG, val element: Text) {
 object TextFacade {
 
   def getById(svg: SVG, id: String): TextFacade =
-    new TextFacade(svg, dom.document.getElementById(id).asInstanceOf[Text])
+    new TextFacade(svg, SvgUtils.getSvgElementById[Text](id))
 
   def create(svg: SVG, id: String, x: Int, y: Int): TextFacade = {
-    val text = new TextFacade(svg, SvgUtils.createSvgElement("text").asInstanceOf[Text])
+    val text = new TextFacade(svg, SvgUtils.createSvgElement[Text]("text"))
     text.id = id
-    text.fill = "yellow"
     text.x = x
     text.y = y
     text

@@ -7,6 +7,8 @@ object SvgUtils {
 
   val svgNs = "http://www.w3.org/2000/svg"
 
-  def createSvgElement(name: String): SVGElement = document.createElementNS(svgNs, name).asInstanceOf[SVGElement]
+  def getSvgElementById[E <: SVGElement](id: String): E = document.getElementById(id).asInstanceOf[E]
+
+  def createSvgElement[E <: SVGElement](name: String): E = document.createElementNS(svgNs, name).asInstanceOf[E]
 
 }
