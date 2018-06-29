@@ -1,7 +1,7 @@
 package denimcoat.svg
 
+import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
-import org.scalajs.dom.raw.SVGRect
 import org.scalajs.dom.svg.SVG
 
 object MainSvg {
@@ -29,7 +29,10 @@ object MainSvg {
   val outputField: TextFacade = TextFacade.create(svg, "outputText", x1, y1)
   svg.appendChild(outputField.element)
 
-  def setInputText(text: String): Unit = inputField.edit(_.set(text))
+
+  def inputString: String = inputField.text
+  def inputString_=(text: String): Unit = inputField.text = text
+  def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 
   def setOutputText(text: String): Unit = outputField.text = text
 
