@@ -4,6 +4,11 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+line {
+    stroke: yellow;
+    stroke-width: 2px;
+}
+
 .treeBranch {
     margin-left: 2ex;
 }
