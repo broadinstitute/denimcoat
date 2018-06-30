@@ -24,11 +24,6 @@ class TextFacade(val svg: SVG, val element: Text) extends ElementFacade[Text] {
 
   def fill_=(fill: String): Unit = element.setAttribute("fill", fill)
 
-  def style: String = element.getAttribute("style")
-
-  def style_=(style: String): Unit = {
-    element.setAttribute("style", style)
-  }
 
 }
 

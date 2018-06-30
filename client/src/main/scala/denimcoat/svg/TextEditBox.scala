@@ -22,6 +22,8 @@ class TextEditBox(svg: SVG, id: String, x0: Int, y0: Int) extends TextEditable {
 
   svg.appendChild(cursor.element)
 
+  cursor.style = "stroke: yellow; stroke-width: 2"
+
   def x: Int = textFacade.x
 
   def x_=(x: Int): Unit = textFacade.x = x
