@@ -1,24 +1,28 @@
 package denimcoat.svg
 
+import denimcoat.svg.ElementFacade.Visibility
+
 import denimcoat.viewmodels.{TextEditable, TextWithCursor}
 import org.scalajs.dom.svg.{SVG, Text}
 
 class TextEditBox(svg: SVG, id: String, x0: Int, y0: Int) extends TextEditable {
 
   private val textFacade = TextFacade.create(svg, id, x0, y0)
-  private val shadowTextFacade = TextFacade.create(svg, id + "-shadow", x0, y0)
+  private val spacerTextFacade = TextFacade.create(svg, id + "-shadow", x0, y0)
   private var textWithCursor: TextWithCursor = TextWithCursor.empty
 
-  svg.appendChild(shadowTextFacade.element)
+  spacerTextFacade.visibility = Visibility.hidden
 
-  val shadowBox = shadowTextFacade.element.getBBox()
+  svg.appendChild(spacerTextFacade.element)
+
+  val shadowBox = spacerTextFacade.element.getBBox()
 
   val x1: Int = (shadowBox.x + shadowBox.width).toInt
   val y1: Int = (shadowBox.y).toInt
   val x2: Int = (shadowBox.x + shadowBox.width).toInt
   val y2: Int = (shadowBox.y + shadowBox.height).toInt
 
-  private val cursor = LineFacade.create(svg, id+ "-cursor", x1, y1, x2, y2)
+  private val cursor = LineFacade.create(svg, id + "-cursor", x1, y1, x2, y2)
 
   svg.appendChild(cursor.element)
 
@@ -37,12 +41,13 @@ class TextEditBox(svg: SVG, id: String, x0: Int, y0: Int) extends TextEditable {
 
   private def updateTextFacades: Unit = {
     textFacade.text = textWithCursor.text
-    shadowTextFacade.text = textWithCursor.preCursorText
-    val shadowBox = shadowTextFacade.element.getBBox()
-    val x1: Int = (shadowBox.x + shadowBox.width).toInt
-    val y1: Int = (shadowBox.y).toInt
-    val x2: Int = (shadowBox.x + shadowBox.width).toInt
-    val y2: Int = (shadowBox.y + shadowBox.height).toInt
+    val spacerTextRaw = textWithCursor.preCursorText
+    spacerTextFacade.text = if (spacerTextRaw.trim.size > 0) spacerTextRaw else spacerTextRaw + ":"
+    val spacerBox = spacerTextFacade.element.getBBox()
+    val x1: Int = (spacerBox.x + spacerBox.width).toInt
+    val y1: Int = (spacerBox.y).toInt
+    val x2: Int = (spacerBox.x + spacerBox.width).toInt
+    val y2: Int = (spacerBox.y + spacerBox.height).toInt
     cursor.x1 = x1
     cursor.y1 = y1
     cursor.x2 = x2
