@@ -4,7 +4,7 @@ import org.scalajs.dom.svg.{Line, SVG, Text}
 
 import scala.util.Try
 
-class LineFacade(val svg: SVG, val element: Line) extends ElementFacade[Line] {
+class LineFacade(val svg: SVG, val element: Line) extends StylableElementFacade[Line] {
   def x1: Int = Try(element.getAttribute("x1").toInt).fold(Function.const(0), identity)
 
   def x1_=(x: Int): Unit = element.setAttribute("x1", x.toString)

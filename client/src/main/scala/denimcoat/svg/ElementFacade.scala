@@ -1,6 +1,6 @@
 package denimcoat.svg
 
-import org.scalajs.dom.raw.SVGElement
+import org.scalajs.dom.raw.{Attr, SVGElement}
 import org.scalajs.dom.svg.SVG
 
 trait ElementFacade[E <: SVGElement] {
@@ -12,10 +12,5 @@ trait ElementFacade[E <: SVGElement] {
 
   def id_=(id: String): Unit = element.setAttribute("id", id)
 
-  def style: String = element.getAttribute("style")
-
-  def style_=(style: String): Unit = {
-    element.setAttribute("style", style)
-  }
 }
 
