@@ -6,7 +6,7 @@ import org.singlespaced.d3js.d3
 
 import scala.util.Try
 
-class TextFacade(val svg: SVG, val element: Text) extends ElementFacade[Text] {
+class TextFacade(val svg: SVG, val element: Text) extends StylableElementFacade[Text] {
 
   def text: String = element.textContent
 
