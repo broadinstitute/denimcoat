@@ -21,11 +21,11 @@ object MainSvg {
   val inputLabel: TextFacade = TextFacade.create(svg, "inputLabel", x0, y0)
   inputLabel.text = inputLabelText
   svg.appendChild(inputLabel.element)
-  val inputField: TextEditBox = new TextEditBox(svg, "inputField", x1, y0)
+  val inputField: TextEditBox = TextEditBox.create(svg, "inputField", x1, y0)
   svg.appendChild(inputField.element)
   val outputLabel: TextFacade = TextFacade.create(svg, "outputText", x0, y1)
-  outputLabel.text = outputLabelText
   svg.appendChild(outputLabel.element)
+  outputLabel.text = outputLabelText
   val outputField: TextFacade = TextFacade.create(svg, "outputText", x1, y1)
   svg.appendChild(outputField.element)
 

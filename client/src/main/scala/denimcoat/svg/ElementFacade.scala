@@ -9,6 +9,10 @@ trait ElementFacade[E <: SVGElement] {
 
   def element: E
 
+  def appendChild[EC <: SVGElement](child: ElementFacade[EC]): Unit = {
+    element.appendChild(child.element)
+  }
+
   def id: String = element.getAttribute("id")
 
   def id_=(id: String): Unit = element.setAttribute("id", id)
