@@ -4,9 +4,9 @@ import denimcoat.svg.ElementFacade.Visibility
 import denimcoat.viewmodels.{TextEditable, TextWithCursor}
 import org.scalajs.dom
 import org.scalajs.dom.raw.SVGGElement
-import org.scalajs.dom.svg.{SVG, Text}
+import org.scalajs.dom.svg.{SVG, Text, G}
 
-class TextEditBox(val svg: SVG, val element: SVGGElement) extends ElementFacade[SVGGElement] with TextEditable {
+class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with TextEditable {
 
   private val textFacade = TextFacade.create(svg, id, 0, 0)
   private val cursorSpacerTextFacade = TextFacade.create(svg, id + "-spacer", 0, 0)

@@ -1,16 +1,19 @@
 package denimcoat.svg
 
 import denimcoat.svg.ElementFacade.Visibility
-import org.scalajs.dom.raw.{Attr, SVGElement}
-import org.scalajs.dom.svg.SVG
+import org.scalajs.dom.svg.{Element, SVG}
 
-trait ElementFacade[E <: SVGElement] {
+trait ElementFacade[E <: Element] {
   def svg: SVG
 
   def element: E
 
-  def appendChild[EC <: SVGElement](child: ElementFacade[EC]): Unit = {
+  protected def appendChild[EC <: Element](child: ElementFacade[EC]): Unit = {
     element.appendChild(child.element)
+  }
+
+  protected def removeChild[EC <: Element](child: ElementFacade[EC]): Unit = {
+    element.removeChild(child.element)
   }
 
   def id: String = element.getAttribute("id")

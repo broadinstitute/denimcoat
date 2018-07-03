@@ -26,16 +26,25 @@ object MainSvg {
   val outputLabel: TextFacade = TextFacade.create(svg, "outputText", x0, y1)
   svg.appendChild(outputLabel.element)
   outputLabel.text = outputLabelText
-  val outputField: TextFacade = TextFacade.create(svg, "outputText", x1, y1)
-  svg.appendChild(outputField.element)
 
+  var outputBoxes: Set[SelectableLabelBox] = Set.empty
 
   def inputString: String = inputField.text
+
   def inputString_=(text: String): Unit = inputField.text = text
+
   def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 
-  def setOutputText(text: String): Unit = outputField.text = text
-
-  def setOutputItems(items: Set[String]): Unit = outputField.text = items.mkString(", ")
+  def setOutputItems(items: Set[String]): Unit = {
+    outputBoxes.foreach(box => svg.removeChild(box.element))
+    outputBoxes = items.zipWithIndex.map { case (item, index) =>
+      val outputBox = SelectableLabelBox.create(svg)
+      outputBox.text = item
+      outputBox.x = x1 + 170 * index
+      outputBox.y = y1
+      svg.appendChild(outputBox.element)
+      outputBox
+    }
+  }
 
 }
