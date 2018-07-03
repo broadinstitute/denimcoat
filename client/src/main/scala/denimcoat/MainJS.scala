@@ -64,8 +64,7 @@ object MainJS {
   }
 
   def displayAnswers(): Unit = {
-    outputString = targetNodeNames.mkString(", ")
-    displayOutputString()
+    displayOutputItems()
     notYetImplemented("displayAnswers")
   } // TODO
 
@@ -121,9 +120,7 @@ object MainJS {
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
-  var outputString = ""
-
-  def displayOutputString(): Unit = MainSvg.setOutputText(outputString)
+  def displayOutputItems(): Unit = MainSvg.setOutputItems(targetNodeNames)
 
   def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitQuestion()

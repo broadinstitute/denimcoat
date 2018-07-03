@@ -1,8 +1,6 @@
 package denimcoat.svg
 
-import org.scalajs.dom
 import org.scalajs.dom.svg.{SVG, Text}
-import org.singlespaced.d3js.d3
 
 import scala.util.Try
 
@@ -23,7 +21,6 @@ class TextFacade(val svg: SVG, val element: Text) extends StylableElementFacade[
   def fill: String = element.getAttribute("fill")
 
   def fill_=(fill: String): Unit = element.setAttribute("fill", fill)
-
 
 }
 

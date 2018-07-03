@@ -36,4 +36,6 @@ object MainSvg {
 
   def setOutputText(text: String): Unit = outputField.text = text
 
+  def setOutputItems(items: Set[String]): Unit = outputField.text = items.mkString(", ")
+
 }
