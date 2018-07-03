@@ -8,14 +8,19 @@ import org.scalajs.dom.svg.{SVG, Text, G}
 
 class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with TextEditable {
 
+//  private val frame = RectangleFacade.create(svg)
   private val textFacade = TextFacade.create(svg, id, 0, 0)
   private val cursorSpacerTextFacade = TextFacade.create(svg, id + "-spacer", 0, 0)
   private var textWithCursor: TextWithCursor = TextWithCursor.empty
+
+//  frame.width = 100
+//  frame.height = 30
 
   textFacade.style.whiteSpace = "pre"
   cursorSpacerTextFacade.style.whiteSpace = "pre"
   cursorSpacerTextFacade.visibility = Visibility.hidden
 
+//  appendChild(frame)
   appendChild(textFacade)
   appendChild(cursorSpacerTextFacade)
 
@@ -29,6 +34,7 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   def x: Double = textFacade.x
 
   def x_=(x: Double): Unit = {
+//    frame.x = x
     textFacade.x = x
     cursorSpacerTextFacade.x = x
     updateCursor()
@@ -37,6 +43,7 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   def y: Double = textFacade.y
 
   def y_=(y: Double): Unit = {
+//    frame.y = y
     textFacade.y = y
     cursorSpacerTextFacade.y = y
     updateCursor()

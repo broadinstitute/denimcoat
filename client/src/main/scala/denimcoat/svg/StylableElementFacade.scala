@@ -1,9 +1,10 @@
 package denimcoat.svg
 
-import org.scalajs.dom.raw.{CSSStyleDeclaration, SVGElement, SVGStylable}
+import org.scalajs.dom.css.StyleDeclaration
+import org.scalajs.dom.svg.{Element, Stylable}
 
-trait StylableElementFacade[E <: SVGElement with SVGStylable] extends ElementFacade[E] {
+trait StylableElementFacade[E <: Element with Stylable] extends ElementFacade[E] {
 
-  def style: CSSStyleDeclaration = element.style
+  def style: StyleDeclaration = element.style
 
 }
