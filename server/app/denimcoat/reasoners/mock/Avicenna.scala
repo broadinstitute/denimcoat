@@ -20,7 +20,7 @@ object Avicenna extends Reasoner {
   def restateQuestion(drug: String): String = questionPrefix + drug + questionPostfix
 
   override def reason(request: Request): Response = {
-    val coreResponse = parseQuestion(request.text) match {
+    val coreResponse = parseQuestion(request.items.head) match {
       case Some(drug) =>
         val restatedQuestionText = restateQuestion(drug.name)
         val message = s"Drug ${drug.name} has target(s) ${
@@ -103,7 +103,7 @@ object Avicenna extends Reasoner {
       schema_version = Reasoner.apiVersion,
       tool_version = version,
       datetime = new Date(),
-      original_question_text = request.text,
+      original_question_text = request.items.head,
       restated_question_text = coreResponse.restatedQuestion,
       result_code = coreResponse.resultCode,
       message = coreResponse.message,

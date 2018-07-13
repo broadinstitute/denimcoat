@@ -118,7 +118,7 @@ object MainJS {
 
   def queryDefaultReasoner(reasonerId: String, questionText: String): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
-    val request = ReasonerRequest(questionText)
+    val request = ReasonerRequest(Seq(questionText))
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 

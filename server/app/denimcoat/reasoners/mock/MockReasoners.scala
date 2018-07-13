@@ -32,8 +32,8 @@ object MockReasoners {
         schema_version = Reasoner.apiVersion,
         tool_version = version,
         datetime = now,
-        original_question_text = request.text,
-        restated_question_text = request.text,
+        original_question_text = request.items.mkString(", "),
+        restated_question_text = request.items.mkString(", "),
         result_code = "Ok",
         message ="Do I have an answer for you? Yes, I have!",
         result_list = Seq(
@@ -61,8 +61,8 @@ object MockReasoners {
         schema_version = "1.2.3",
         tool_version = version,
         datetime = now,
-        original_question_text = request.text,
-        restated_question_text = request.text,
+        original_question_text = request.items.mkString(", "),
+        restated_question_text = request.items.mkString(", "),
         result_code = "Fatal",
         message = s"""I'm sorry, Dave, I'm afraid I can't do that.""",
         result_list = Seq.empty

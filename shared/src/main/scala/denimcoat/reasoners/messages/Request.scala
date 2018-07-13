@@ -3,10 +3,10 @@ package denimcoat.reasoners.messages
 import java.net.URI
 import java.util.Date
 
-case class Request(text: String, timestamp: Date)
+case class Request(items: Seq[String], timestamp: Date)
 
 object Request {
-  def apply(text: String): Request = Request(text, new Date())
+  def apply(items: Seq[String]): Request = Request(items, new Date())
 }
 
 case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
