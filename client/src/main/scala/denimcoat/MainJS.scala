@@ -40,16 +40,16 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[String, Either[Error, ReasonerResponse]] = Map.empty
-  var targetNodeNames: Set[String] = Set.empty
+  var symptomAnswers: Map[String, Either[Error, ReasonerResponse]] = Map.empty
+  var symptoms: Set[String] = Set.empty
 
-  def resetAnswers(): Unit = {
-    answers = Map.empty
-    targetNodeNames = Set.empty
+  def resetSymptomAnswers(): Unit = {
+    symptomAnswers = Map.empty
+    symptoms = Set.empty
   }
 
-  def addAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
-    answers += reasonerId -> responseEither
+  def addSymptomAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
+    symptomAnswers += reasonerId -> responseEither
     responseEither match {
       case Left(error) => ()
       case Right(response) =>
@@ -59,14 +59,13 @@ object MainJS {
           val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
-        targetNodeNames ++= responseTargetNodeNames
+        symptoms ++= responseTargetNodeNames
     }
   }
 
   def displayAnswers(): Unit = {
-    displayOutputItems()
-    notYetImplemented("displayAnswers")
-  } // TODO
+    displaySymptoms()
+  }
 
   implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
   implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
@@ -77,7 +76,7 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseEither = decode[ReasonerResponse](responseJson)
-      addAnswer(reasonerId, responseEither)
+      addSymptomAnswer(reasonerId, responseEither)
       displayAnswers()
     }
   }
@@ -120,22 +119,22 @@ object MainJS {
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
-  def displayOutputItems(): Unit = MainSvg.setOutputItems(targetNodeNames)
+  def displaySymptoms(): Unit = MainSvg.setOutputItems(symptoms)
 
-  def submitQuestionClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    submitQuestion()
+  def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    submitDisease()
   }
 
-  def submitQuestion(): Unit = {
-    val questionText = MainSvg.inputString.trim
+  def submitDisease(): Unit = {
+    val questionText = MainSvg.diseaseString.trim
     if (questionText == "") {
-      dom.window.alert("Please enter a question to submit.")
+      dom.window.alert("Please enter a disease to submit.")
     } else {
       val reasonerIds = getReasonerIds
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
-        resetAnswers()
+        resetSymptomAnswers()
         displayAnswers()
         reasonerIds.foreach { reasonerId =>
           if (reasonerId == "rtx") {
@@ -152,19 +151,19 @@ object MainJS {
     }
   }
 
-  val exampleOneInput = "type 2 diabetes mellitus"
-  val exampleTwoInput = "Behcet's disease"
+  val exampleOneDisease = "type 2 diabetes mellitus"
+  val exampleTwoDisease = "Behcet's disease"
 
-  def setExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = exampleOneInput
+  def setDiseaseExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    MainSvg.diseaseString = exampleOneDisease
   }
 
-  def setExampleTwo(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = exampleTwoInput
+  def setDiseaseExampleTwo(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    MainSvg.diseaseString = exampleTwoDisease
   }
 
-  def clearInput(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = ""
+  def clearDisease(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
+    MainSvg.diseaseString = ""
   }
 
   def handleKeypress(event: Event): Unit = {
@@ -175,7 +174,7 @@ object MainJS {
             MainSvg.editInputString(edit)
             keyboardEvent.preventDefault()
           case KeyMapper.SpecialActions.enter =>
-            submitQuestion()
+            submitDisease()
             keyboardEvent.preventDefault()
             keyboardEvent.stopPropagation()
           case _ => ()
@@ -191,14 +190,14 @@ object MainJS {
       printTime(D3.select("#nowTime").asOf[HTMLElement])
     }
 
-    D3.select("#inputSubmitButton").on("click", submitQuestionClickHandler: (Any, Int, js.UndefOr[Int]) => Unit)
-    D3.select("#inputExampleOneButton").on("click", setExampleOne)
-    D3.select("#inputExampleTwoButton").on("click", setExampleTwo)
-    D3.select("#inputClearButton").on("click", clearInput)
+    D3.select("#diseaseSubmitButton").on("click", submitDiseaseClickHandler: (Any, Int, js.UndefOr[Int]) => Unit)
+    D3.select("#diseaseExampleOneButton").on("click", setDiseaseExampleOne)
+    D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
+    D3.select("#diseaseClearButton").on("click", clearDisease)
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
 
-    MainSvg.inputString = ""
+    MainSvg.diseaseString = ""
 
   }
 }

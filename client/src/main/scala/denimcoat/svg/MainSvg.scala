@@ -29,9 +29,9 @@ object MainSvg {
 
   var outputBoxes: Set[SelectableLabelBox] = Set.empty
 
-  def inputString: String = inputField.text
+  def diseaseString: String = inputField.text
 
-  def inputString_=(text: String): Unit = inputField.text = text
+  def diseaseString_=(text: String): Unit = inputField.text = text
 
   def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 

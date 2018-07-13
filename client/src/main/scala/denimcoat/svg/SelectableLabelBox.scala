@@ -31,7 +31,7 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
 
   def selected_=(selected: Boolean): Unit = {
     selectedFlag = selected
-    label.style.fill = if (selectedFlag) "orange" else "yellow"
+    label.style.fill = if (selectedFlag) "red" else "yellow"
   }
 }
 
