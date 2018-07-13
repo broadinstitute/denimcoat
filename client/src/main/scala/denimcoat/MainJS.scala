@@ -4,6 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
+import denimcoat.mvp.Workflow
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
@@ -40,18 +41,20 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var symptomAnswers: Map[String, Either[Error, ReasonerResponse]] = Map.empty
-  var symptoms: Set[String] = Set.empty
+  var answers: Map[Workflow.Step, Map[String, Either[Error, ReasonerResponse]]] =
+    Workflow.steps.map(step => (step, Map.empty[String, Either[Error, ReasonerResponse]])).toMap
+  var items: Map[Workflow.Step, Set[String]] = Workflow.steps.map(step => (step, Set.empty[String])).toMap
 
-  def resetSymptomAnswers(): Unit = {
-    symptomAnswers = Map.empty
-    symptoms = Set.empty
+  def resetAnswers(step: Workflow.Step): Unit = {
+    answers += (step -> Map.empty)
+    items += (step -> Set.empty)
   }
 
-  def addSymptomAnswer(reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
-    symptomAnswers += reasonerId -> responseEither
+  def addAnswer(step: Workflow.Step, reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
+    val stepAnswers = answers(step)
+    answers += (step -> (stepAnswers + (reasonerId -> responseEither)))
     responseEither match {
-      case Left(error) => ()
+      case Left(_) => ()
       case Right(response) =>
         val responseTargetNodeNames = response.result_list.to[Set].flatMap { result =>
           val graph = result.result_graph
@@ -59,7 +62,7 @@ object MainJS {
           val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
-        symptoms ++= responseTargetNodeNames
+        items += step -> (items(step) ++ responseTargetNodeNames )
     }
   }
 
@@ -76,7 +79,7 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseEither = decode[ReasonerResponse](responseJson)
-      addSymptomAnswer(reasonerId, responseEither)
+      addAnswer(Workflow.Step.symptom, reasonerId, responseEither)
       displayAnswers()
     }
   }
@@ -119,7 +122,7 @@ object MainJS {
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
-  def displaySymptoms(): Unit = MainSvg.setOutputItems(symptoms)
+  def displaySymptoms(): Unit = MainSvg.setOutputItems(items(Workflow.Step.symptom))
 
   def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitDisease()
@@ -134,7 +137,7 @@ object MainJS {
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
-        resetSymptomAnswers()
+        resetAnswers(Workflow.Step.symptom)
         displayAnswers()
         reasonerIds.foreach { reasonerId =>
           if (reasonerId == "rtx") {
