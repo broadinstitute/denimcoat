@@ -1,44 +1,34 @@
 package denimcoat.mvp
 
-import denimcoat.reasoners.knowledge.{Category, Relation}
+import denimcoat.reasoners.knowledge.{Category, Identifiable, Relation}
 
 object Workflow {
 
-  trait ItemSetInfo {
+  trait ItemSetInfo extends Identifiable {
     def category: Category
     def previousItemsOpt: Option[ItemSetInfo]
     def relationToPreviousOpt: Option[Relation]
   }
 
-  case class StartItemSetInfo(category: Category) extends ItemSetInfo {
+  case class StartItemSetInfo(id: String, label: String, category: Category) extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = None
     override val relationToPreviousOpt: Option[Relation] = None
   }
 
-  case class ResultItemsSetInfo(category: Category, previousItems: ItemSetInfo, relationToPrevious: Relation)
-  // TODO
-
-  case class Step(id: String, label: String) {
-    def nextOpt: Option[Step] = Workflow.getNextStep(this)
-    def next: Step = nextOpt.get
-    def previousOpt: Option[Step] = Workflow.getPreviousStep(this)
-    def previous: Step = previousOpt.get
+  case class ResultItemSetInfo(id: String, label: String, category: Category, previousItems: ItemSetInfo,
+                               relationToPrevious: Relation)
+  extends ItemSetInfo {
+    override val previousItemsOpt: Option[ItemSetInfo] = Some(previousItems)
+    override val relationToPreviousOpt: Option[Relation] = Some(relationToPrevious)
   }
 
-  object Step {
-    val complexDisease = Step("complexDisease", "complex disease")
-    val symptom = Step("symptom", "symptom")
-    val rareDisease = Step("rareDisease", "rare disease")
-  }
+  val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("complexDisease", "complex disease", Category.disease)
+  val resultItemSetInfo0: ResultItemSetInfo =
+    ResultItemSetInfo("symptoms", "symptoms", Category.symptom, startItemSetInfo, Relation.hasSymptom)
+  val resultItemSetInfo1: ResultItemSetInfo =
+    ResultItemSetInfo("mendelianDisease", "Mendelian Disease", Category.disease, resultItemSetInfo0,
+      Relation.isSymptomOf)
 
-  val steps: Seq[Step] = Seq(Step.complexDisease, Step.symptom, Step.rareDisease)
-  val firstStep: Step = steps.head
-  val stepsById: Map[String, Step] = steps.map(step => (step.id, step)).toMap
-  val stepsByLabel: Map[String, Step] = steps.map(step => (step.id, step)).toMap
-  val nextByStep: Map[Step, Step] = steps.dropRight(1).zip(steps.drop(1)).toMap
-  val previousByStep: Map[Step, Step] = steps.drop(1).zip(steps.dropRight(1)).toMap
-
-  def getStep(string: String): Option[Step] = stepsById.get(string).orElse(stepsByLabel.get(string))
-  def getNextStep(step: Step): Option[Step] = nextByStep.get(step)
-  def getPreviousStep(step: Step): Option[Step] = previousByStep.get(step)
+  val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1)
+  val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
 }

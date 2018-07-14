@@ -41,18 +41,20 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.Step, Map[String, Either[Error, ReasonerResponse]]] =
-    Workflow.steps.map(step => (step, Map.empty[String, Either[Error, ReasonerResponse]])).toMap
-  var items: Map[Workflow.Step, Set[String]] = Workflow.steps.map(step => (step, Set.empty[String])).toMap
+  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[Error, ReasonerResponse]]] =
+    Workflow.resultItemSetInfos.map(itemSet => (itemSet, Map.empty[String, Either[Error, ReasonerResponse]])).toMap
+  var items: Map[Workflow.ItemSetInfo, Set[String]] =
+    Workflow.itemSetInfos.map(itemSet => (itemSet, Set.empty[String])).toMap
 
-  def resetAnswers(step: Workflow.Step): Unit = {
-    answers += (step -> Map.empty)
-    items += (step -> Set.empty)
+  def resetAnswers(resultItemSet: Workflow.ResultItemSetInfo): Unit = {
+    answers += (resultItemSet -> Map.empty)
+    items += (resultItemSet -> Set.empty)
   }
 
-  def addAnswer(step: Workflow.Step, reasonerId: String, responseEither: Either[Error, ReasonerResponse]): Unit = {
-    val stepAnswers = answers(step)
-    answers += (step -> (stepAnswers + (reasonerId -> responseEither)))
+  def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
+                responseEither: Either[Error, ReasonerResponse]): Unit = {
+    val itemSetAnswers = answers(itemSet)
+    answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseEither)))
     responseEither match {
       case Left(_) => ()
       case Right(response) =>
@@ -62,12 +64,12 @@ object MainJS {
           val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
-        items += step -> (items(step) ++ responseTargetNodeNames )
+        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames )
     }
   }
 
   def displayAnswers(): Unit = {
-    displaySymptoms()
+    displayResultSet0()
   }
 
   implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
@@ -79,7 +81,7 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseEither = decode[ReasonerResponse](responseJson)
-      addAnswer(Workflow.Step.symptom, reasonerId, responseEither)
+      addAnswer(Workflow.resultItemSetInfo0, reasonerId, responseEither)
       displayAnswers()
     }
   }
@@ -122,7 +124,8 @@ object MainJS {
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
-  def displaySymptoms(): Unit = MainSvg.setOutputItems(items(Workflow.Step.symptom))
+  // TODO generalize
+  def displayResultSet0(): Unit = MainSvg.setOutputItems(items(Workflow.resultItemSetInfo0))
 
   def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitDisease()
@@ -137,7 +140,7 @@ object MainJS {
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
-        resetAnswers(Workflow.Step.symptom)
+        resetAnswers(Workflow.resultItemSetInfo0)
         displayAnswers()
         reasonerIds.foreach { reasonerId =>
           if (reasonerId == "rtx") {
