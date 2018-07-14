@@ -1,6 +1,22 @@
 package denimcoat.mvp
 
+import denimcoat.reasoners.knowledge.{Category, Relation}
+
 object Workflow {
+
+  trait ItemSetInfo {
+    def category: Category
+    def previousItemsOpt: Option[ItemSetInfo]
+    def relationToPreviousOpt: Option[Relation]
+  }
+
+  case class StartItemSetInfo(category: Category) extends ItemSetInfo {
+    override val previousItemsOpt: Option[ItemSetInfo] = None
+    override val relationToPreviousOpt: Option[Relation] = None
+  }
+
+  case class ResultItemsSetInfo(category: Category, previousItems: ItemSetInfo, relationToPrevious: Relation)
+  // TODO
 
   case class Step(id: String, label: String) {
     def nextOpt: Option[Step] = Workflow.getNextStep(this)
