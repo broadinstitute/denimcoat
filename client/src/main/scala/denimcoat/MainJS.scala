@@ -1,6 +1,5 @@
 package denimcoat
 
-import java.net.URI
 import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
@@ -10,18 +9,12 @@ import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => Rea
 import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
-import io.circe.Decoder.Result
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
 import org.scalajs.dom.Event
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe.generic.semiauto._
 
 object MainJS {
 
@@ -42,8 +35,8 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[Error, ReasonerResponse]]] =
-    Workflow.resultItemSetInfos.map(itemSet => (itemSet, Map.empty[String, Either[Error, ReasonerResponse]])).toMap
+  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ReasonerResponse]]] =
+    Workflow.resultItemSetInfos.map(itemSet => (itemSet, Map.empty[String, Either[String, ReasonerResponse]])).toMap
   var items: Map[Workflow.ItemSetInfo, Set[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Set.empty[String])).toMap
 
@@ -53,7 +46,7 @@ object MainJS {
   }
 
   def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
-                responseEither: Either[Error, ReasonerResponse]): Unit = {
+                responseEither: Either[String, ReasonerResponse]): Unit = {
     val itemSetAnswers = answers(itemSet)
     answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseEither)))
     responseEither match {
@@ -73,17 +66,10 @@ object MainJS {
     displayResultSet0()
   }
 
-  implicit val dateEncoder: Encoder[Date] = (date: Date) => date.getTime.asJson
-  implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
-  implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
-  implicit val anyDecoder: Decoder[Any] = implicitly[Decoder[Any]]
-  implicit val relationEncoder: Encoder[Relation] = (relation: Relation) => relation.id.asJson
-  implicit val relationDecoder: Decoder[Relation] = implicitly[Decoder[String]].map(Relation.fromId).map(_.get)
-
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-      val responseEither = decode[ReasonerResponse](responseJson)
+      val responseEither = JsonIO.decodeResponse(responseJson)
       addAnswer(Workflow.resultItemSetInfo0, reasonerId, responseEither)
       displayAnswers()
     }
@@ -102,7 +88,7 @@ object MainJS {
     http.setRequestHeader("Access-Control-Allow-Origin", "*")
     http.setRequestHeader("Access-Control-Allow-Methods", "POST, GET")
     http.setRequestHeader("Access-Control-Allow-Headers", "Content-Type")
-    val requestJson = request.asJson.toString()
+    val requestJson = JsonIO.encodeRequest(request)
     http.send(requestJson)
   }
 
@@ -204,7 +190,7 @@ object MainJS {
     D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
     D3.select("#diseaseClearButton").on("click", clearDisease)
 
-    D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, false)
+    D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 
     MainSvg.diseaseString = ""
 
