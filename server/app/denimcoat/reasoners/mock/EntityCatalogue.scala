@@ -2,8 +2,6 @@ package denimcoat.reasoners.mock
 
 object EntityCatalogue {
 
-  case class Group(name: String)
-
   trait Entry {
     def name: String
 
