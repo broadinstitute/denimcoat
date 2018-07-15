@@ -22,4 +22,9 @@ object Relation {
     override def reverse: Reversible = hasSymptom
   }
 
+  val knownRelations: Set[Relation] = Set[Relation](hasSymptom, isSymptomOf)
+
+  val relationsById: Map[String, Relation] = knownRelations.map(relation => (relation.id, relation)).toMap
+
+  def fromId(id: String): Option[Relation] = relationsById.get(id)
 }

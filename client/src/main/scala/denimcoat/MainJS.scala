@@ -5,6 +5,7 @@ import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
+import denimcoat.reasoners.knowledge.Relation
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
@@ -76,6 +77,8 @@ object MainJS {
   implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
   implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
   implicit val anyDecoder: Decoder[Any] = implicitly[Decoder[Any]]
+  implicit val relationEncoder: Encoder[Relation] = (relation: Relation) => relation.id.asJson
+  implicit val relationDecoder: Decoder[Relation] = implicitly[Decoder[String]].map(Relation.fromId).map(_.get)
 
   def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
@@ -118,9 +121,9 @@ object MainJS {
     // TODO
   }
 
-  def queryDefaultReasoner(reasonerId: String, questionText: String): Unit = {
+  def queryDefaultReasoner(reasonerId: String, questionText: String, relation: Relation): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
-    val request = ReasonerRequest(Seq(questionText))
+    val request = ReasonerRequest(Seq(questionText), relation)
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
@@ -150,7 +153,7 @@ object MainJS {
           } else if (reasonerId == "robokop") {
             queryRobokopReasoner(reasonerId, questionText)
           } else {
-            queryDefaultReasoner(reasonerId, questionText)
+            queryDefaultReasoner(reasonerId, questionText, Relation.hasSymptom)
           }
         }
       }
