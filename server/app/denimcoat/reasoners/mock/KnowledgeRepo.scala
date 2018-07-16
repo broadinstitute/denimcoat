@@ -1,11 +1,8 @@
 package denimcoat.reasoners.mock
 
 import denimcoat.reasoners.knowledge.{Category, Identifiable, Relation}
-import denimcoat.reasoners.mock.EntityCatalogue.Symptom
 
 object KnowledgeRepo {
-
-  case class Entity(id: String, label: String) extends Identifiable
 
   trait EntitySet {
     var entities: Set[Entity] = Set.empty
@@ -44,7 +41,7 @@ object KnowledgeRepo {
 
   val relationMap: Map[Entity, Map[Relation, Set[Entity]]] = {
     import KnowledgeRepo.{Diseases => D, Symptoms => S}
-    import denimcoat.reasoners.knowledge.{ Relation => R }
+    import denimcoat.reasoners.knowledge.{Relation => R}
     Map(
       D.typeTwoDiabetesMellitus -> Map(R.hasSymptom -> Set(S.hyperglycemia, S.polydipsia, S.polyphagia)),
       D.behcet -> Map(R.hasSymptom -> Set(S.oralAphthousUlcers, S.inflammation, S.genitalUlceration))
