@@ -33,6 +33,17 @@ case class Graph[N, C, R](nodes: Set[N], n2c: Map[N, C], c2n: Map[C, Set[N]], ed
     copy(nodes = nodesNew, edges = edgesNew, outEdges = outEdgesNew, inEdges = inEdgesNew)
   }
 
+  def withEdges(start: N, relation: R, ends: Iterable[N]): Graph[N, C, R] = {
+    var graph = this
+    for(end <- ends) {
+      graph = graph.withEdge(start, relation, end)
+    }
+    graph
+  }
+
+  def withEdges(start: N, relation: R, endsHead: N, endsTail: N*): Graph[N, C, R] =
+    withEdges(start, relation, endsHead +: endsTail)
+
 }
 
 object Graph {
