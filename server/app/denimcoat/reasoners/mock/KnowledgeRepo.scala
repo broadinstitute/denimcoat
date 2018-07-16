@@ -23,6 +23,7 @@ object KnowledgeRepo {
     val category: Category = Category.disease
     val typeTwoDiabetesMellitus: Entity = newEntity("typeTwoDiabetesMellitus", "type 2 diabetes mellitus")
     val behcet: Entity = newEntity("behcetsDisease", "Behcet's disease")
+    val ms: Entity = newEntity("multipleSklerosis", "multiple sklerosis")
   }
 
   object Symptoms extends EntitySet {
@@ -36,6 +37,7 @@ object KnowledgeRepo {
     val hyperglycemia: Entity = newEntity("hyperglycemia")
     val polydipsia: Entity = newEntity("polydipsia")
     val polyphagia: Entity = newEntity("polyphagia")
+    val cnsLesions: Entity = newEntity("cnsLesions", "CNS lesions")
   }
 
   val entitySets: Set[EntitySet] = Set(Diseases, Symptoms)
@@ -45,8 +47,11 @@ object KnowledgeRepo {
     import denimcoat.reasoners.knowledge.{Relation => R}
     Map(
       D.typeTwoDiabetesMellitus -> Map(R.hasSymptom -> Set(S.hyperglycemia, S.polydipsia, S.polyphagia)),
-      D.behcet -> Map(R.hasSymptom -> Set(S.oralAphthousUlcers, S.inflammation, S.genitalUlceration))
-    )
+      D.behcet -> Map(
+        R.hasSymptom -> Set(S.oralAphthousUlcers, S.inflammation, S.genitalUlceration, S.uveitis, S.cnsLesions)
+      ),
+        D.ms -> Map(R.hasSymptom -> Set(S.cnsLesions))
+      )
   }
 
   type Graph = denimcoat.util.Graph[Entity, Category, Relation]
@@ -59,12 +64,12 @@ object KnowledgeRepo {
         graph = graph.withNode(entity, entitySet.category)
       }
     }
-    for((start, relationsEndsMap) <- relationMap) {
-      for((relation, ends) <-  relationsEndsMap) {
-        for(end <- ends) {
+    for ((start, relationsEndsMap) <- relationMap) {
+      for ((relation, ends) <- relationsEndsMap) {
+        for (end <- ends) {
           graph = graph.withEdge(start, relation, end)
           relation match {
-            case reversible : Relation.Reversible => graph = graph.withEdge(end, reversible.reverse, start)
+            case reversible: Relation.Reversible => graph = graph.withEdge(end, reversible.reverse, start)
             case _ => ()
           }
         }
@@ -75,7 +80,7 @@ object KnowledgeRepo {
 
   val index = Index[Entity](Seq(_.id, _.label))
 
-  for(entity <- graph.nodes) {
+  for (entity <- graph.nodes) {
     index.add(entity)
   }
 }
