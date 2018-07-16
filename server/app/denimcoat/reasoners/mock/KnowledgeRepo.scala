@@ -1,6 +1,7 @@
 package denimcoat.reasoners.mock
 
 import denimcoat.reasoners.knowledge.{Category, Identifiable, Relation}
+import denimcoat.util.Index
 
 object KnowledgeRepo {
 
@@ -21,7 +22,7 @@ object KnowledgeRepo {
   object Diseases extends EntitySet {
     val category: Category = Category.disease
     val typeTwoDiabetesMellitus: Entity = newEntity("typeTwoDiabetesMellitus", "type 2 diabetes mellitus")
-    val behcet: Entity = newEntity("behcet", "behcet")
+    val behcet: Entity = newEntity("behcetsDisease", "Behcet's disease")
   }
 
   object Symptoms extends EntitySet {
@@ -47,7 +48,9 @@ object KnowledgeRepo {
       D.behcet -> Map(R.hasSymptom -> Set(S.oralAphthousUlcers, S.inflammation, S.genitalUlceration))
     )
   }
+
   type Graph = denimcoat.util.Graph[Entity, Category, Relation]
+  type Edge = denimcoat.util.Graph.Edge[Entity, Category]
 
   val graph: Graph = {
     var graph = denimcoat.util.Graph.empty[Entity, Category, Relation]
@@ -70,4 +73,9 @@ object KnowledgeRepo {
     graph
   }
 
+  val index = Index[Entity](Seq(_.id, _.label))
+
+  for(entity <- graph.nodes) {
+    index.add(entity)
+  }
 }
