@@ -4,6 +4,7 @@ import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
+import denimcoat.mvp.Workflow.ResultItemSetInfo
 import denimcoat.reasoners.knowledge.Relation
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.svg.MainSvg
@@ -11,7 +12,8 @@ import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
-import org.scalajs.dom.Event
+import org.scalajs.dom.{Event, MouseEvent}
+import org.scalajs.dom.html.Button
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
@@ -58,7 +60,7 @@ object MainJS {
           val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
-        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames )
+        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames)
     }
   }
 
@@ -118,6 +120,10 @@ object MainJS {
 
   def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitDisease()
+  }
+
+  def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
+    dom.window.alert(s"Submit $resultItemSetInfo.")
   }
 
   def submitDisease(): Unit = {
@@ -189,6 +195,15 @@ object MainJS {
     D3.select("#diseaseExampleOneButton").on("click", setDiseaseExampleOne)
     D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
     D3.select("#diseaseClearButton").on("click", clearDisease)
+
+    val submitButtonSetElement = dom.document.getElementById("submitButtonSet")
+    Workflow.resultItemSetInfos.foreach { resultItemSetInfo =>
+      val button = dom.document.createElement("button").asInstanceOf[Button]
+      button.textContent = resultItemSetInfo.relationToPrevious.label
+      button.onclick = (_: MouseEvent) => submit(resultItemSetInfo)
+      submitButtonSetElement.appendChild(button)
+    }
+
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 
