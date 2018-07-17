@@ -11,19 +11,13 @@ import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
+import org.scalajs.dom.html.Button
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
 import org.scalajs.dom.{Event, MouseEvent}
-import org.scalajs.dom.html.Button
 
 import scala.scalajs.js
-import scala.scalajs.js.Dynamic.global
 
 object MainJS {
-
-  @deprecated("This marks not implemented pieces of code", "Sun, June 17, 2018")
-  def notYetImplemented(name: String): Unit = {
-    global.console.log(s"$name is not yet implemented")
-  }
 
   def printTime(selection: Selection[HTMLElement, _, _]): Unit = {
     val timeNow = new Date()
@@ -94,24 +88,9 @@ object MainJS {
     http.send(requestJson)
   }
 
-  def queryRtxReasoner(reasonerId: String, questionText: String): Unit = {
-    notYetImplemented("queryRtxReasoner")
-    // TODO
-  }
-
-  def queryIndigoReasoner(reasonerId: String, questionText: String): Unit = {
-    notYetImplemented("queryIndigoReasoner")
-    // TODO
-  }
-
-  def queryRobokopReasoner(reasonerId: String, questionText: String): Unit = {
-    notYetImplemented("queryRobokopReasoner")
-    // TODO
-  }
-
-  def queryDefaultReasoner(reasonerId: String, questionText: String, relation: Relation): Unit = {
+  def queryDefaultReasoner(reasonerId: String, startItems: Seq[String], relation: Relation): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
-    val request = ReasonerRequest(Seq(questionText), relation)
+    val request = ReasonerRequest(startItems, relation)
     submitReasonerRequest(reasonerId, url, request, receiveResponse)
   }
 
@@ -138,15 +117,7 @@ object MainJS {
         resetAnswers(Workflow.resultItemSetInfo0)
         displayAnswers()
         reasonerIds.foreach { reasonerId =>
-          if (reasonerId == "rtx") {
-            queryRtxReasoner(reasonerId, questionText)
-          } else if (reasonerId == "indigo") {
-            queryIndigoReasoner(reasonerId, questionText)
-          } else if (reasonerId == "robokop") {
-            queryRobokopReasoner(reasonerId, questionText)
-          } else {
-            queryDefaultReasoner(reasonerId, questionText, Relation.hasSymptom)
-          }
+          queryDefaultReasoner(reasonerId, Seq(questionText), Relation.hasSymptom)
         }
       }
     }
