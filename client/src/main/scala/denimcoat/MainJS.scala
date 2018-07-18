@@ -101,10 +101,6 @@ object MainJS {
   def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
     MainSvg.setOutputItems(resultItemSetInfo, items(resultItemSetInfo))
 
-  def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    submitDisease()
-  }
-
   def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
     val inputItemsInfo = resultItemSetInfo.previousItems
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
@@ -119,24 +115,6 @@ object MainJS {
         displayAnswers(resultItemSetInfo)
         reasonerIds.foreach { reasonerId =>
           queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
-        }
-      }
-    }
-  }
-
-  def submitDisease(): Unit = {
-    val questionText = MainSvg.inputString.trim
-    if (questionText == "") {
-      dom.window.alert("Please enter a disease to submit.")
-    } else {
-      val reasonerIds = getReasonerIds
-      if (reasonerIds.isEmpty) {
-        dom.window.alert("Please check at least one reasoner.")
-      } else {
-        resetAnswers(Workflow.resultItemSetInfo0)
-        displayAnswers(Workflow.resultItemSetInfo0)
-        reasonerIds.foreach { reasonerId =>
-          queryDefaultReasoner(reasonerId, Seq(questionText), Workflow.resultItemSetInfo0)
         }
       }
     }
@@ -165,7 +143,7 @@ object MainJS {
             MainSvg.editInputString(edit)
             keyboardEvent.preventDefault()
           case KeyMapper.SpecialActions.enter =>
-            submitDisease()
+            submit(Workflow.resultItemSetInfo0)
             keyboardEvent.preventDefault()
             keyboardEvent.stopPropagation()
           case _ => ()
@@ -181,7 +159,6 @@ object MainJS {
       printTime(D3.select("#nowTime").asOf[HTMLElement])
     }
 
-    D3.select("#diseaseSubmitButton").on("click", submitDiseaseClickHandler: (Any, Int, js.UndefOr[Int]) => Unit)
     D3.select("#diseaseExampleOneButton").on("click", setDiseaseExampleOne)
     D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
     D3.select("#diseaseClearButton").on("click", clearDisease)
