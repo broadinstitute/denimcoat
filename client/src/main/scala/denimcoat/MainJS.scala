@@ -33,12 +33,12 @@ object MainJS {
 
   var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ReasonerResponse]]] =
     Workflow.resultItemSetInfos.map(itemSet => (itemSet, Map.empty[String, Either[String, ReasonerResponse]])).toMap
-  var items: Map[Workflow.ItemSetInfo, Set[String]] =
-    Workflow.itemSetInfos.map(itemSet => (itemSet, Set.empty[String])).toMap
+  var items: Map[Workflow.ItemSetInfo, Seq[String]] =
+    Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
   def resetAnswers(resultItemSet: Workflow.ResultItemSetInfo): Unit = {
     answers += (resultItemSet -> Map.empty)
-    items += (resultItemSet -> Set.empty)
+    items += (resultItemSet -> Seq.empty)
   }
 
   def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
@@ -54,7 +54,7 @@ object MainJS {
           val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
-        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames)
+        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames).distinct
     }
   }
 
@@ -102,6 +102,8 @@ object MainJS {
   }
 
   def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
+    val inputItems = resultItemSetInfo.previousItems
+
     dom.window.alert(s"Submit $resultItemSetInfo.")
   }
 

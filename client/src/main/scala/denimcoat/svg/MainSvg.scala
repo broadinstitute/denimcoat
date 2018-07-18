@@ -1,5 +1,7 @@
 package denimcoat.svg
 
+import denimcoat.mvp.Workflow
+import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.svg.SVG
@@ -10,24 +12,63 @@ object MainSvg {
 
   val svg: SVG = dom.document.getElementById(id).asInstanceOf[SVG]
 
-  val x0 = 30
-  val x1 = 120
-  val y0 = 50
-  val y1 = 100
+  def yOfRow(row: Int): Double = 50.0 + 50.0 * row
 
-  val inputLabelText = "Disease:"
-  val outputLabelText = "Symptoms:"
+  val xLabel = 30.0
 
-  val inputLabel: TextFacade = TextFacade.create(svg, "inputLabel", x0, y0)
-  inputLabel.text = inputLabelText
-  svg.appendChild(inputLabel.element)
-  val inputField: TextEditBox = TextEditBox.create(svg, "inputField", x1, y0)
-  svg.appendChild(inputField.element)
-  val outputLabel: TextFacade = TextFacade.create(svg, "outputText", x0, y1)
-  svg.appendChild(outputLabel.element)
-  outputLabel.text = outputLabelText
+  def xOfItem(iItem: Int): Double = 200.0 + 170.0 * iItem
 
-  var outputBoxes: Set[SelectableLabelBox] = Set.empty
+  trait Row {
+    def itemSetInfo : ItemSetInfo
+    def svg: SVG
+    def iRow: Int
+    def label: TextFacade
+  }
+
+  class InputRow(val itemSetInfo: StartItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
+                 val textEditBox: TextEditBox)
+    extends Row {
+  }
+
+  object InputRow {
+    def create(itemSetInfo: StartItemSetInfo, svg: SVG, iRow: Int): InputRow = {
+      val y = yOfRow(iRow)
+      val label = TextFacade.create(svg, "inputRow" + iRow, xLabel, y)
+      label.text = itemSetInfo.label + ":"
+      svg.appendChild(label.element)
+      val textEditBox = TextEditBox.create(svg, "textEditBow" + iRow, xOfItem(0), y)
+      svg.appendChild(textEditBox.element)
+      new InputRow(itemSetInfo, svg, iRow, label, textEditBox)
+    }
+  }
+
+  class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
+                  var items: Seq[SelectableLabelBox])
+    extends Row
+
+  object ResultRow {
+    def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
+      val y = yOfRow(iRow)
+      val label = TextFacade.create(svg, "resultRow" + iRow, xLabel, y)
+      label.text = itemSetInfo.label + ":"
+      svg.appendChild(label.element)
+      val items = Seq.empty[SelectableLabelBox]
+      new ResultRow(itemSetInfo, svg, iRow, label, items)
+    }
+  }
+
+  val rows: Seq[Row] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>
+    itemSetInfo match {
+      case startItemSetInfo: StartItemSetInfo => InputRow.create(startItemSetInfo, svg, iRow)
+      case resultItemSetInfo: ResultItemSetInfo => ResultRow.create(resultItemSetInfo, svg, iRow)
+    }
+  }
+
+  val rowsByInfo: Map[ItemSetInfo, Row] = rows.map(row => (row.itemSetInfo, row)).toMap
+
+  var outputBoxes: Seq[SelectableLabelBox] = rowsByInfo(Workflow.resultItemSetInfo0).asInstanceOf[ResultRow].items
+
+  val inputField: TextEditBox = rowsByInfo(Workflow.startItemSetInfo).asInstanceOf[InputRow].textEditBox
 
   def diseaseString: String = inputField.text
 
@@ -35,13 +76,13 @@ object MainSvg {
 
   def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 
-  def setOutputItems(items: Set[String]): Unit = {
+  def setOutputItems(items: Seq[String]): Unit = {
     outputBoxes.foreach(box => svg.removeChild(box.element))
     outputBoxes = items.zipWithIndex.map { case (item, index) =>
       val outputBox = SelectableLabelBox.create(svg)
       outputBox.text = item
-      outputBox.x = x1 + 170 * index
-      outputBox.y = y1
+      outputBox.x = xOfItem(index)
+      outputBox.y = yOfRow(1)
       svg.appendChild(outputBox.element)
       outputBox
     }
