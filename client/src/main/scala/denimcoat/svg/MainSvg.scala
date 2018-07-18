@@ -2,6 +2,7 @@ package denimcoat.svg
 
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
+import denimcoat.svg.MainSvg.svg
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.svg.SVG
@@ -23,11 +24,15 @@ object MainSvg {
     def svg: SVG
     def iRow: Int
     def label: TextFacade
+    def items: Seq[String]
+    def selectedItems: Seq[String]
   }
 
   class InputRow(val itemSetInfo: StartItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
                  val textEditBox: TextEditBox)
     extends Row {
+    override def items: Seq[String] = Seq(textEditBox.text)
+    override def selectedItems: Seq[String] = Seq(textEditBox.text)
   }
 
   object InputRow {
@@ -43,8 +48,22 @@ object MainSvg {
   }
 
   class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
-                  var items: Seq[SelectableLabelBox])
-    extends Row
+                  var itemBoxes: Seq[SelectableLabelBox])
+    extends Row {
+    def items: Seq[String] = itemBoxes.map(_.text)
+    def items_=(items: Seq[String]): Unit = {
+      itemBoxes.foreach(box => svg.removeChild(box.element))
+      itemBoxes = items.zipWithIndex.map { case (item, index) =>
+        val outputBox = SelectableLabelBox.create(svg)
+        outputBox.text = item
+        outputBox.x = xOfItem(index)
+        outputBox.y = yOfRow(iRow)
+        svg.appendChild(outputBox.element)
+        outputBox
+      }
+    }
+    override def selectedItems: Seq[String] = itemBoxes.filter(_.selected).map(_.text)
+  }
 
   object ResultRow {
     def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
@@ -66,26 +85,22 @@ object MainSvg {
 
   val rowsByInfo: Map[ItemSetInfo, Row] = rows.map(row => (row.itemSetInfo, row)).toMap
 
-  var outputBoxes: Seq[SelectableLabelBox] = rowsByInfo(Workflow.resultItemSetInfo0).asInstanceOf[ResultRow].items
+  val resultRowsByInfo: Map[ResultItemSetInfo, ResultRow] = rowsByInfo.collect {
+    case (resultItemSetInfo: ResultItemSetInfo, resultRow: ResultRow) => (resultItemSetInfo, resultRow)
+  }
 
-  val inputField: TextEditBox = rowsByInfo(Workflow.startItemSetInfo).asInstanceOf[InputRow].textEditBox
+  val inputRow: InputRow = rowsByInfo(Workflow.startItemSetInfo).asInstanceOf[InputRow]
 
-  def diseaseString: String = inputField.text
+  val inputField: TextEditBox = inputRow.textEditBox
 
-  def diseaseString_=(text: String): Unit = inputField.text = text
+  def inputString: String = inputField.text
+
+  def inputString_=(text: String): Unit = inputField.text = text
 
   def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 
-  def setOutputItems(items: Seq[String]): Unit = {
-    outputBoxes.foreach(box => svg.removeChild(box.element))
-    outputBoxes = items.zipWithIndex.map { case (item, index) =>
-      val outputBox = SelectableLabelBox.create(svg)
-      outputBox.text = item
-      outputBox.x = xOfItem(index)
-      outputBox.y = yOfRow(1)
-      svg.appendChild(outputBox.element)
-      outputBox
-    }
+  def setOutputItems(resultItemSetInfo: ResultItemSetInfo, items: Seq[String]): Unit = {
+    resultRowsByInfo(resultItemSetInfo).items = items
   }
 
 }

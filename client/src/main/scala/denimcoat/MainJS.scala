@@ -32,7 +32,8 @@ object MainJS {
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
   var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ReasonerResponse]]] =
-    Workflow.resultItemSetInfos.map(itemSet => (itemSet, Map.empty[String, Either[String, ReasonerResponse]])).toMap
+    Workflow.resultItemSetInfos.map(itemSet =>
+      (itemSet, Map.empty[String, Either[String, ReasonerResponse]])).toMap
   var items: Map[Workflow.ItemSetInfo, Seq[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
@@ -58,24 +59,26 @@ object MainJS {
     }
   }
 
-  def displayAnswers(): Unit = {
-    displayResultSet0()
+  def displayAnswers(resultItemSetInfo: ResultItemSetInfo): Unit = {
+    displayResultSet(resultItemSetInfo)
   }
 
-  def receiveResponse(request: XMLHttpRequest, reasonerId: String): Event => Unit = { _: Event =>
+  def receiveResponse(request: XMLHttpRequest, reasonerId: String,
+                      resultItemSetInfo: ResultItemSetInfo): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseEither = JsonIO.decodeResponse(responseJson)
-      addAnswer(Workflow.resultItemSetInfo0, reasonerId, responseEither)
-      displayAnswers()
+      addAnswer(resultItemSetInfo, reasonerId, responseEither)
+      displayAnswers(resultItemSetInfo)
     }
   }
 
-  def submitReasonerRequest(reasonerId: String, url: String, request: ReasonerRequest,
-                            responseHandler: (XMLHttpRequest, String) => Event => Unit,
+  def submitReasonerRequest(reasonerId: String, resultItemSetInfo: ResultItemSetInfo, url: String,
+                            request: ReasonerRequest,
+                            responseHandler: (XMLHttpRequest, String, ResultItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
-    http.onreadystatechange = responseHandler(http, reasonerId)
+    http.onreadystatechange = responseHandler(http, reasonerId, resultItemSetInfo)
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
     http.open("POST", urlActual, async = true)
@@ -88,27 +91,41 @@ object MainJS {
     http.send(requestJson)
   }
 
-  def queryDefaultReasoner(reasonerId: String, startItems: Seq[String], relation: Relation): Unit = {
+  def queryDefaultReasoner(reasonerId: String, startItems: Seq[String],
+                           resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
-    val request = ReasonerRequest(startItems, relation)
-    submitReasonerRequest(reasonerId, url, request, receiveResponse)
+    val request = ReasonerRequest(startItems, resultItemSetInfo.relationToPrevious)
+    submitReasonerRequest(reasonerId, resultItemSetInfo, url, request, receiveResponse)
   }
 
-  // TODO generalize
-  def displayResultSet0(): Unit = MainSvg.setOutputItems(items(Workflow.resultItemSetInfo0))
+  def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
+    MainSvg.setOutputItems(resultItemSetInfo, items(resultItemSetInfo))
 
   def submitDiseaseClickHandler(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     submitDisease()
   }
 
   def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
-    val inputItems = resultItemSetInfo.previousItems
-
-    dom.window.alert(s"Submit $resultItemSetInfo.")
+    val inputItemsInfo = resultItemSetInfo.previousItems
+    val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
+    if(selectedItems.isEmpty) {
+      dom.window.alert("No item(s) entered or selected.")
+    } else {
+      val reasonerIds = getReasonerIds
+      if (reasonerIds.isEmpty) {
+        dom.window.alert("Please check at least one reasoner.")
+      } else {
+        resetAnswers(resultItemSetInfo)
+        displayAnswers(resultItemSetInfo)
+        reasonerIds.foreach { reasonerId =>
+          queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
+        }
+      }
+    }
   }
 
   def submitDisease(): Unit = {
-    val questionText = MainSvg.diseaseString.trim
+    val questionText = MainSvg.inputString.trim
     if (questionText == "") {
       dom.window.alert("Please enter a disease to submit.")
     } else {
@@ -117,9 +134,9 @@ object MainJS {
         dom.window.alert("Please check at least one reasoner.")
       } else {
         resetAnswers(Workflow.resultItemSetInfo0)
-        displayAnswers()
+        displayAnswers(Workflow.resultItemSetInfo0)
         reasonerIds.foreach { reasonerId =>
-          queryDefaultReasoner(reasonerId, Seq(questionText), Relation.hasSymptom)
+          queryDefaultReasoner(reasonerId, Seq(questionText), Workflow.resultItemSetInfo0)
         }
       }
     }
@@ -129,15 +146,15 @@ object MainJS {
   val exampleTwoDisease = "Behcet's disease"
 
   def setDiseaseExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.diseaseString = exampleOneDisease
+    MainSvg.inputString = exampleOneDisease
   }
 
   def setDiseaseExampleTwo(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.diseaseString = exampleTwoDisease
+    MainSvg.inputString = exampleTwoDisease
   }
 
   def clearDisease(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.diseaseString = ""
+    MainSvg.inputString = ""
   }
 
   def handleKeypress(event: Event): Unit = {
@@ -180,7 +197,7 @@ object MainJS {
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 
-    MainSvg.diseaseString = ""
+    MainSvg.inputString = ""
 
   }
 }
