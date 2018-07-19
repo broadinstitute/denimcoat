@@ -21,6 +21,7 @@ object KnowledgeRepo {
 
   object Diseases extends EntitySet {
     val category: Category = Category.disease
+    val typeOneDiabetesMellitus: Entity = newEntity("typeOneDiabetesMellitus", "type 1 diabetes mellitus")
     val typeTwoDiabetesMellitus: Entity = newEntity("typeTwoDiabetesMellitus", "type 2 diabetes mellitus")
     val behcet: Entity = newEntity("behcetsDisease", "Behcet's disease")
     val ms: Entity = newEntity("multipleSklerosis", "multiple sklerosis")
@@ -40,18 +41,32 @@ object KnowledgeRepo {
     val cnsLesions: Entity = newEntity("cnsLesions", "CNS lesions")
   }
 
-  val entitySets: Set[EntitySet] = Set(Diseases, Symptoms)
+  object Variants extends EntitySet {
+    val category: Category = Category.variant
+    val rs3135388T: Entity = newEntity("rs3135388T", "rs3135388(T)")
+    val rs12722489G: Entity = newEntity("rs12722489G", "rs12722489(G)")
+    val rs2104286A: Entity = newEntity("rs2104286A", "rs2104286(A)")
+  }
+
+  val entitySets: Set[EntitySet] = Set(Diseases, Symptoms, Variants)
 
   val relationMap: Map[Entity, Map[Relation, Set[Entity]]] = {
-    import KnowledgeRepo.{Diseases => D, Symptoms => S}
+    import KnowledgeRepo.{Diseases => D, Symptoms => S, Variants => V}
     import denimcoat.reasoners.knowledge.{Relation => R}
     Map(
+      D.typeOneDiabetesMellitus -> Map(
+        R.hasSymptom -> Set(S.hyperglycemia, S.polydipsia, S.polyphagia),
+        R.isPromotedBy -> Set(V.rs2104286A)
+      ),
       D.typeTwoDiabetesMellitus -> Map(R.hasSymptom -> Set(S.hyperglycemia, S.polydipsia, S.polyphagia)),
       D.behcet -> Map(
         R.hasSymptom -> Set(S.oralAphthousUlcers, S.inflammation, S.genitalUlceration, S.uveitis, S.cnsLesions)
       ),
-        D.ms -> Map(R.hasSymptom -> Set(S.cnsLesions))
+      D.ms -> Map(
+        R.hasSymptom -> Set(S.cnsLesions),
+        R.isPromotedBy -> Set(V.rs3135388T, V.rs12722489G, V.rs2104286A)
       )
+    )
   }
 
   type Graph = denimcoat.util.Graph[Entity, Category, Relation]
@@ -78,7 +93,7 @@ object KnowledgeRepo {
     graph
   }
 
-  val index = Index[Entity](Seq(_.id, _.label))
+  val index: Index[Entity] = Index[Entity](Seq(_.id, _.label))
 
   for (entity <- graph.nodes) {
     index.add(entity)

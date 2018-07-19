@@ -10,4 +10,5 @@ object Category {
 
   val disease = Category("disease")
   val symptom = Category("symptom")
+  val variant = Category("variant")
 }

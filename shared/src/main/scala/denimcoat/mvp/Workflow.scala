@@ -22,13 +22,16 @@ object Workflow {
     override val relationToPreviousOpt: Option[Relation] = Some(relationToPrevious)
   }
 
-  val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("complexDisease", "complex disease", Category.disease)
+  val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", Category.disease)
   val resultItemSetInfo0: ResultItemSetInfo =
-    ResultItemSetInfo("symptoms", "symptoms", Category.symptom, startItemSetInfo, Relation.hasSymptom)
+    ResultItemSetInfo("symptom", "symptom", Category.symptom, startItemSetInfo, Relation.hasSymptom)
   val resultItemSetInfo1: ResultItemSetInfo =
-    ResultItemSetInfo("mendelianDisease", "Mendelian Disease", Category.disease, resultItemSetInfo0,
+    ResultItemSetInfo("disease", "disease", Category.disease, resultItemSetInfo0,
       Relation.isSymptomOf)
+  val resultItemSetInfo2: ResultItemSetInfo =
+    ResultItemSetInfo("variant", "variant", Category.variant, resultItemSetInfo1,
+      Relation.isPromotedBy)
 
-  val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1)
+  val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2)
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
 }
