@@ -2,7 +2,7 @@ package denimcoat.gears.providers
 
 import denimcoat.gears.{Consumer, Event}
 
-trait AbstractProvider[T] extends Provider[T] {
+trait NotificationProviderImpl[T] extends Provider[T] {
 
   var valueOpt: Option[T] = None
   var consumers: Set[Consumer[T]] = Set.empty
