@@ -1,33 +1,43 @@
 package denimcoat.gears
 
+import denimcoat.gears.Event.Cascade
+
 import scala.util.Random
 
 trait Event[+T] {
-  def time: Long
-
-  def random: Long
-
+  def cascade: Cascade
   def valueOpt: Option[T]
 }
 
 object Event {
 
-  case class NoValidValue(time: Long, random: Long) extends Event[Nothing] {
+
+  trait Cascade {
+    def time: Long
+    def random: Long
+  }
+
+  case class InvalidationCascade(time: Long, random: Long) extends Cascade {
+    def createNewEvent(): NoValidValue = NoValidValue(this)
+  }
+
+  case class RevalidationCascade(time: Long, random: Long) extends Cascade {
+    def createNewEvent[T](value: T): ValidValue[T] = ValidValue(this, value)
+  }
+
+  object InvalidationCascade {
+    def createNew(): InvalidationCascade = InvalidationCascade(System.currentTimeMillis(), Random.nextLong())
+  }
+
+  object RevalidationCascade {
+    def createNew(): RevalidationCascade = RevalidationCascade(System.currentTimeMillis(), Random.nextLong())
+  }
+
+  case class NoValidValue(cascade: InvalidationCascade) extends Event[Nothing] {
     override def valueOpt: None.type = None
   }
 
-  object NoValidValue {
-    def createNew: NoValidValue = NoValidValue(System.currentTimeMillis(), Random.nextLong())
-  }
-
-  case class ValidValue[+T](time: Long, random: Long, value: T) extends Event[T] {
+  case class ValidValue[+T](cascade: RevalidationCascade, value: T) extends Event[T] {
     override def valueOpt: Some[T] = Some(value)
   }
-
-  object ValidValue {
-    def createNew[T](value: T): ValidValue[T] = ValidValue(System.currentTimeMillis(), Random.nextLong(), value)
-  }
-
-
-
 }
