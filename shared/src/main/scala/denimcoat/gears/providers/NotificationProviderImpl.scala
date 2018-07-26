@@ -28,6 +28,8 @@ trait NotificationProviderImpl[T] extends Provider[T] {
     }
   }
 
+  protected def setValueOpt(valueOpt: Option[T]): Unit = valueOpt.fold(invalidateValue())(revalidateValue)
+
   def get: Option[T] = valueOpt
 
   def addConsumer(consumer: Consumer[T]): Unit = consumers += consumer

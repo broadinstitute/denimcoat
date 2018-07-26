@@ -1,6 +1,5 @@
 package denimcoat.gears.providers
 
-import denimcoat.gears.Event.{NoValidValue, ValidValue}
 import denimcoat.gears.{Consumer, Event}
 
 trait Function1Provider[-T1, +R] extends Provider[R] with Consumer[T1] {
@@ -10,10 +9,7 @@ trait Function1Provider[-T1, +R] extends Provider[R] with Consumer[T1] {
 object Function1Provider {
   class Impl[-T1, R](val function: T1 => R) extends Function1Provider[T1, R] with NotificationProviderImpl[R] {
     override def receive(event: Event[T1]): Unit = {
-      event match {
-        case NoValidValue(_) => ??? // TODO
-        case ValidValue(_, value) => ???  // TODO
-      }
+      setValueOpt(event.valueOpt.map(function))
     }
   }
 }

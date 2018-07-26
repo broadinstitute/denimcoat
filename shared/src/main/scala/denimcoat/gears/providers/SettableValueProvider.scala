@@ -6,4 +6,6 @@ class SettableValueProvider[T] extends NotificationProviderImpl[T] {
 
   def unsetValue(): Unit = invalidateValue()
 
+  override def setValueOpt(valueOpt: Option[T]): Unit = super.setValueOpt(valueOpt)
+
 }
