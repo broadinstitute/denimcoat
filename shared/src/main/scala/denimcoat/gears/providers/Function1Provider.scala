@@ -7,6 +7,9 @@ trait Function1Provider[-T1, +R] extends Provider[R] with Consumer[T1] {
 }
 
 object Function1Provider {
+
+  def apply[T1, R](function: T1 => R): Function1Provider[T1, R] = new Impl(function)
+
   class Impl[-T1, R](val function: T1 => R) extends Function1Provider[T1, R] with NotificationProviderImpl[R] {
     override def receive(event: Event[T1]): Unit = {
       setValueOpt(event.valueOpt.map(function))
