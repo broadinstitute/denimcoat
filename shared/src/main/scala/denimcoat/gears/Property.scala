@@ -2,15 +2,13 @@ package denimcoat.gears
 
 import denimcoat.gears.providers.{Provider, SettableValueProvider}
 
-class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) {
+class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) extends Provider[T] {
 
   protected val setterConsumer: Consumer[T] = (event: Event[T]) => setValueOption(event.valueOpt)
 
   protected var setterProviderOpt: Option[Provider[T]] = None
 
   protected val getterProvider: SettableValueProvider[T] = new SettableValueProvider[T]
-
-  def asProvider: Provider[T] = getterProvider
 
   protected def set(value: T): Unit = {
     setterAction(value)
@@ -38,4 +36,10 @@ class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) {
   def setProvider(provider: Provider[T]): Unit = setProviderOpt(Some(provider))
 
   def unsetProvider(): Unit = setProviderOpt(None)
+
+  override def get: Option[T] = getterProvider.get
+
+  override def addConsumer(consumer: Consumer[T]): Unit = getterProvider.addConsumer(consumer)
+
+  override def removeConsumer(consumer: Consumer[T]): Unit = getterProvider.removeConsumer(consumer)
 }
