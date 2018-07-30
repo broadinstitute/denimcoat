@@ -15,7 +15,15 @@ trait Function2Provider[-T1, -T2, +R] extends Provider[R] {
 
 object Function2Provider {
 
-  def apply[T1, T2, R](function: (T1, T2) => R): Function2Provider[T1, T2, R] = new Impl(function)
+  def apply[T1, T2, R](function: (T1, T2) => R): Function2Provider[T1, T2, R] = new Impl[T1, T2, R](function)
+
+  def apply[T1, T2, R](provider1: Provider[T1],
+                       provider2: Provider[T2])(function: (T1, T2) => R): Function2Provider[T1, T2, R] = {
+    val resultProvider = new Impl[T1, T2, R](function)
+    provider1.addConsumer(resultProvider.consumer1)
+    provider2.addConsumer(resultProvider.consumer2)
+    resultProvider
+  }
 
   class Impl[T1, T2, R](val function: (T1, T2) => R)
     extends Function2Provider[T1, T2, R] with NotificationProviderImpl[R] {

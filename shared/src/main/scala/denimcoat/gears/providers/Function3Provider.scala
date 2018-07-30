@@ -20,6 +20,15 @@ object Function3Provider {
 
   def apply[T1, T2, T3, R](function: (T1, T2, T3) => R): Function3Provider[T1, T2, T3, R] = new Impl(function)
 
+  def apply[T1, T2, T3, R](provider1: Provider[T1], provider2: Provider[T2],
+                           provider3: Provider[T3])(function: (T1, T2, T3) => R): Function3Provider[T1, T2, T3, R] = {
+    val resultProvider = new Impl[T1, T2, T3, R](function)
+    provider1.addConsumer(resultProvider.consumer1)
+    provider2.addConsumer(resultProvider.consumer2)
+    provider3.addConsumer(resultProvider.consumer3)
+    resultProvider
+  }
+
   class Impl[T1, T2, T3, R](val function: (T1, T2, T3) => R)
     extends Function3Provider[T1, T2, T3, R] with NotificationProviderImpl[R] {
     var input1Opt: Option[T1] = None
