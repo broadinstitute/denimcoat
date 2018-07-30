@@ -2,7 +2,7 @@ package denimcoat.gears.syntax
 
 import denimcoat.gears.providers.{Function1Provider, Function2Provider, Provider}
 
-object DoubleProviderOpsEnabling {
+trait DoubleProviderOpsEnabling {
 
   implicit class DoubleProviderOpsEnabler(provider: Provider[Double]) {
 
@@ -42,3 +42,5 @@ object DoubleProviderOpsEnabling {
     def /(provider: Provider[Double]): Provider[Double] = Function1Provider(provider)(value / _)
   }
 }
+
+object DoubleProviderOpsEnabling extends DoubleProviderOpsEnabling

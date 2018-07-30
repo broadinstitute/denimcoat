@@ -1,8 +1,8 @@
 package denimcoat.svg
 
+import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
-import denimcoat.svg.MainSvg.svg
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.svg.SVG
@@ -56,8 +56,8 @@ object MainSvg {
       itemBoxes = items.zipWithIndex.map { case (item, index) =>
         val outputBox = SelectableLabelBox.create(svg)
         outputBox.text = item
-        outputBox.x = xOfItem(index)
-        outputBox.y = yOfRow(iRow)
+        outputBox.x := xOfItem(index)
+        outputBox.y := yOfRow(iRow)
         svg.appendChild(outputBox.element)
         outputBox
       }

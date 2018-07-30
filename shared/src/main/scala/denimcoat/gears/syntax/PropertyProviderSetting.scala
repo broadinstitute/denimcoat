@@ -3,7 +3,7 @@ package denimcoat.gears.syntax
 import denimcoat.gears.Property
 import denimcoat.gears.providers.{ConstantProvider, Provider}
 
-object PropertyProviderSetting {
+trait PropertyProviderSetting {
 
   implicit class PropertyProviderSetter[T](property: Property[T]) {
     def :=(provider: Provider[T]): Unit = {
@@ -14,5 +14,6 @@ object PropertyProviderSetting {
       property.setProvider(ConstantProvider(value))
     }
   }
-
 }
+
+object PropertyProviderSetting extends PropertyProviderSetting

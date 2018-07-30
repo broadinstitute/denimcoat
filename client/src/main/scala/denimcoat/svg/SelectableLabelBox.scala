@@ -1,5 +1,6 @@
 package denimcoat.svg
 
+import denimcoat.gears.Property
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.svg.{G, SVG}
 
@@ -13,13 +14,8 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
     selected = !selected
   }
 
-  def x: Double = label.x
-
-  def x_=(x: Double): Unit = label.x = x
-
-  def y: Double = label.y
-
-  def y_=(y: Double): Unit = label.y = y
+  val x: Property[Double] = Property(label.x = _)
+  val y: Property[Double] = Property(label.y = _)
 
   def text: String = label.text
 

@@ -43,3 +43,9 @@ class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) e
 
   override def removeConsumer(consumer: Consumer[T]): Unit = getterProvider.removeConsumer(consumer)
 }
+
+object Property {
+
+  def apply[T](setterAction: T => Unit, unsetterAction: () => Unit = () => ()): Property[T] =
+    new Property[T](setterAction, unsetterAction)
+}
