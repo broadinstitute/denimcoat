@@ -1,6 +1,6 @@
 package denimcoat.gears.providers
 
-class SettableValueProvider[T] extends NotificationProviderImpl[T] {
+class Var[T] extends NotificationProviderImpl[T] {
 
   def setValue(value: T): Unit = revalidateValue(value)
 
@@ -8,4 +8,14 @@ class SettableValueProvider[T] extends NotificationProviderImpl[T] {
 
   override def setValueOpt(valueOpt: Option[T]): Unit = super.setValueOpt(valueOpt)
 
+}
+
+object Var {
+  def apply[T](): Var[T] = new Var[T]
+
+  def apply[T](value: T): Var[T] = {
+    val variable = new Var[T]
+    variable.setValue(value)
+    variable
+  }
 }

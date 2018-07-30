@@ -3,16 +3,16 @@ package denimcoat.gears.providers
 import denimcoat.gears.Event.RevalidationCascade
 import denimcoat.gears.{Consumer, Event}
 
-trait ConstantProvider[+T] extends Provider[T] {
+trait Val[+T] extends Provider[T] {
   def value: T
 
   override def get: Option[T] = Some(value)
 }
 
-object ConstantProvider {
-  def apply[T](value: T): ConstantProvider[T] = Impl[T](value)
+object Val {
+  def apply[T](value: T): Val[T] = Impl[T](value)
 
-  case class Impl[T](value: T) extends ConstantProvider[T] {
+  case class Impl[T](value: T) extends Val[T] {
     val eventOnEnter: Event.ValidValue[T] = RevalidationCascade.createNew().createNewEvent(value)
     var consumers: Set[Consumer[T]] = Set.empty
 

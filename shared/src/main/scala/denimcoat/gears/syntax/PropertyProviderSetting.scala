@@ -1,7 +1,7 @@
 package denimcoat.gears.syntax
 
 import denimcoat.gears.Property
-import denimcoat.gears.providers.{ConstantProvider, Provider}
+import denimcoat.gears.providers.{Val, Provider}
 
 trait PropertyProviderSetting {
 
@@ -11,7 +11,7 @@ trait PropertyProviderSetting {
     }
 
     def :=(value: T): Unit = {
-      property.setProvider(ConstantProvider(value))
+      property.setProvider(Val(value))
     }
   }
 }

@@ -1,5 +1,6 @@
 package denimcoat.svg
 
+import denimcoat.gears.providers.Val
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
@@ -50,19 +51,19 @@ object MainSvg {
   class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
                   var itemBoxes: Seq[SelectableLabelBox])
     extends Row {
-    def items: Seq[String] = itemBoxes.map(_.text)
+    def items: Seq[String] = itemBoxes.map(_.text.get.get)
     def items_=(items: Seq[String]): Unit = {
       itemBoxes.foreach(box => svg.removeChild(box.element))
       itemBoxes = items.zipWithIndex.map { case (item, index) =>
         val outputBox = SelectableLabelBox.create(svg)
-        outputBox.text = item
+        outputBox.text := item
         outputBox.x := xOfItem(index)
         outputBox.y := yOfRow(iRow)
         svg.appendChild(outputBox.element)
         outputBox
       }
     }
-    override def selectedItems: Seq[String] = itemBoxes.filter(_.selected).map(_.text)
+    override def selectedItems: Seq[String] = itemBoxes.filter(_.selected.get.get).map(_.text.get.get)
   }
 
   object ResultRow {

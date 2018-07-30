@@ -1,6 +1,6 @@
 package denimcoat.gears
 
-import denimcoat.gears.providers.{Provider, SettableValueProvider}
+import denimcoat.gears.providers.{Provider, Var}
 
 class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) extends Provider[T] {
 
@@ -8,7 +8,7 @@ class Property[T](val setterAction: T => Unit, val unsetterAction: () => Unit) e
 
   protected var setterProviderOpt: Option[Provider[T]] = None
 
-  protected val getterProvider: SettableValueProvider[T] = new SettableValueProvider[T]
+  protected val getterProvider: Var[T] = new Var[T]
 
   protected def set(value: T): Unit = {
     setterAction(value)
