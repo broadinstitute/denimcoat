@@ -26,7 +26,7 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   appendChild(textFacade)
   appendChild(cursorSpacerTextFacade)
 
-  private val cursor = LineFacade.create(svg, id + "-cursor", 0, 0, 0, 0)
+  private val cursor = LineFacade.create(svg, id + "-cursor", 0.0, 0.0, 0.0, 0.0)
 
   appendChild(cursor)
 
@@ -71,10 +71,10 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
       val y1: Double = spacerBox.y
       val x2: Double = spacerBox.x + spacerBox.width
       val y2: Double = spacerBox.y + spacerBox.height
-      cursor.x1 = x1
-      cursor.y1 = y1
-      cursor.x2 = x2
-      cursor.y2 = y2
+      cursor.x1 := x1  //  TODO
+      cursor.y1 := y1
+      cursor.x2 := x2
+      cursor.y2 := y2
     }
   }
 
