@@ -8,6 +8,9 @@ class Var[T] extends NotificationProviderImpl[T] {
 
   override def setValueOpt(valueOpt: Option[T]): Unit = super.setValueOpt(valueOpt)
 
+  def modify(function: T => T): Unit = {
+    setValueOpt(valueOpt.map(function))
+  }
 }
 
 object Var {

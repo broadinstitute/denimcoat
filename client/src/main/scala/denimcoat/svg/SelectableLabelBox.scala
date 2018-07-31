@@ -15,7 +15,7 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
   val selectedVar: Var[Boolean] = Var(false)
 
   element.onclick = (_: MouseEvent) => {
-    selectedVar.setValue(!selectedVar.get.get)
+    selectedVar.modify(!_)
   }
 
   val x: Property[Double] = Property(label.x = _)

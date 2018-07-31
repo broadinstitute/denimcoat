@@ -1,5 +1,5 @@
 package denimcoat.gears.syntax
 
-object AllImplicits extends DoubleProviderOpsEnabling with PropertyProviderSetting {
+object AllImplicits extends DoubleProviderOpsEnabling with StringProviderOpsEnabling with PropertyProviderSetting {
 
 }

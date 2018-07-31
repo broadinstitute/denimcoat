@@ -1,6 +1,5 @@
 package denimcoat.svg
 
-import denimcoat.gears.providers.Val
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}

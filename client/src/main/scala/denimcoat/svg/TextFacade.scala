@@ -1,8 +1,10 @@
 package denimcoat.svg
 
+import denimcoat.gears.providers.Provider
 import org.scalajs.dom.svg.{SVG, Text}
 
 import scala.util.Try
+import denimcoat.gears.syntax.AllImplicits._
 
 class TextFacade(val svg: SVG, val element: Text) extends StylableElementFacade[Text] {
 
@@ -29,9 +31,9 @@ object TextFacade {
   def getById(svg: SVG, id: String): TextFacade =
     new TextFacade(svg, SvgUtils.getSvgElementById[Text](id))
 
-  def create(svg: SVG, id: String, x: Double, y: Double): TextFacade = {
+  def create(svg: SVG, id: Provider[String], x: Double, y: Double): TextFacade = {
     val text = new TextFacade(svg, SvgUtils.createSvgElement[Text]("text"))
-    text.id = id
+    text.id := id
     text.x = x
     text.y = y
     text

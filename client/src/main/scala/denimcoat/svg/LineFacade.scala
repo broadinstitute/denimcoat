@@ -1,8 +1,10 @@
 package denimcoat.svg
 
+import denimcoat.gears.providers.Provider
 import org.scalajs.dom.svg.{Line, SVG, Text}
 
 import scala.util.Try
+import denimcoat.gears.syntax.AllImplicits._
 
 class LineFacade(val svg: SVG, val element: Line) extends StylableElementFacade[Line] {
   def x1: Double = Try(element.getAttribute("x1").toDouble).fold(Function.const(0.0), identity)
@@ -27,9 +29,9 @@ object LineFacade {
   def getById(svg: SVG, id: String): LineFacade =
     new LineFacade(svg, SvgUtils.getSvgElementById[Line](id))
 
-  def create(svg: SVG, id: String, x1: Double, y1: Double, x2: Double, y2: Double): LineFacade = {
+  def create(svg: SVG, id: Provider[String], x1: Double, y1: Double, x2: Double, y2: Double): LineFacade = {
     val line = new LineFacade(svg, SvgUtils.createSvgElement[Line]("line"))
-    line.id = id
+    line.id := id
     line.x1 = x1
     line.y1 = y1
     line.x2 = x2
