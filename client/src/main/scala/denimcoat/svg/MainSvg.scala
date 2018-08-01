@@ -20,11 +20,16 @@ object MainSvg {
   def xOfItem(iItem: Int): Double = 200.0 + 170.0 * iItem
 
   trait Row {
-    def itemSetInfo : ItemSetInfo
+    def itemSetInfo: ItemSetInfo
+
     def svg: SVG
+
     def iRow: Int
+
     def label: TextFacade
+
     def items: Seq[String]
+
     def selectedItems: Seq[String]
   }
 
@@ -32,6 +37,7 @@ object MainSvg {
                  val textEditBox: TextEditBox)
     extends Row {
     override def items: Seq[String] = Seq(textEditBox.text)
+
     override def selectedItems: Seq[String] = Seq(textEditBox.text)
   }
 
@@ -51,17 +57,28 @@ object MainSvg {
                   var itemBoxes: Seq[SelectableLabelBox])
     extends Row {
     def items: Seq[String] = itemBoxes.map(_.text.get.get)
+
     def items_=(items: Seq[String]): Unit = {
       itemBoxes.foreach(box => svg.removeChild(box.element))
       itemBoxes = items.zipWithIndex.map { case (item, index) =>
         val outputBox = SelectableLabelBox.create(svg)
         outputBox.text := item
-        outputBox.x := xOfItem(index)
+        //        outputBox.x := xOfItem(index)
         outputBox.y := yOfRow(iRow)
         svg.appendChild(outputBox.element)
         outputBox
       }
+      if (itemBoxes.nonEmpty) {
+        itemBoxes.head.x := xOfItem(0)
+        itemBoxes.sliding(2).foreach { case Seq(box1, box2) =>
+          val width = box1.element.getBBox().width
+          val padding = 20
+          val offset = width + padding
+          box2.x := box1.x + offset
+        }
+      }
     }
+
     override def selectedItems: Seq[String] = itemBoxes.filter(_.selected.get.get).map(_.text.get.get)
   }
 
