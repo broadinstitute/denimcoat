@@ -21,9 +21,8 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
   val x: Property[Double] = Property(label.x = _)
   val y: Property[Double] = Property(label.y = _)
   val text: Property[String] = Property(label.text = _)
-  val selected: Property[Boolean] = Property(selected => label.style.fill = if (selected) "red" else "yellow")
 
-  selected := selectedVar
+  label.style.fill := selectedVar.map(if(_) "red" else "yellow")
 }
 
 object SelectableLabelBox {

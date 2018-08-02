@@ -8,7 +8,7 @@ class RectangleFacade(val svg: SVG, val element: RectElement) extends StylableEl
   val x: Property[Double] = Property[Double](x => element.x.baseVal.value = x)
   val y: Property[Double] = Property[Double](y => element.y.baseVal.value = y)
   val width: Property[Double] = Property[Double](width => element.width.baseVal.value = width)
-  val heightProp: Property[Double] = Property[Double](height => element.height.baseVal.value = height)
+  val height: Property[Double] = Property[Double](height => element.height.baseVal.value = height)
 }
 
 object RectangleFacade {

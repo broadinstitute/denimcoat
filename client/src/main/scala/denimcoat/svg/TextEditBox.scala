@@ -1,12 +1,12 @@
 package denimcoat.svg
 
 import denimcoat.gears.providers.Provider
-import denimcoat.svg.ElementFacade.Visibility
-import denimcoat.viewmodels.{TextEditable, TextWithCursor}
-import org.scalajs.dom
-import org.scalajs.dom.raw.SVGGElement
-import org.scalajs.dom.svg.{G, SVG, Text}
 import denimcoat.gears.syntax.AllImplicits._
+import denimcoat.svg.ElementFacade.Visibility
+import denimcoat.svg.Style.WhiteSpace
+import denimcoat.viewmodels.{TextEditable, TextWithCursor}
+import org.scalajs.dom.raw.SVGGElement
+import org.scalajs.dom.svg.{G, SVG}
 
 class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with TextEditable {
 
@@ -18,8 +18,8 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
 //  frame.width = 100
 //  frame.height = 30
 
-  textFacade.style.whiteSpace = "pre"
-  cursorSpacerTextFacade.style.whiteSpace = "pre"
+  textFacade.style.whiteSpace := WhiteSpace.pre
+  cursorSpacerTextFacade.style.whiteSpace := WhiteSpace.pre
   cursorSpacerTextFacade.visibility := Visibility.hidden
 
 //  appendChild(frame)
@@ -30,8 +30,8 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
 
   appendChild(cursor)
 
-  cursor.style.stroke = "yellow"
-  cursor.style.width = "2"
+  cursor.style.stroke := "yellow"
+  cursor.style.width := "2"
 
   def x: Double = textFacade.x
 

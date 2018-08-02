@@ -19,11 +19,6 @@ class TextFacade(val svg: SVG, val element: Text) extends StylableElementFacade[
   def y: Double = Try(element.getAttribute("y").toDouble).fold(Function.const(0.0), identity)
 
   def y_=(y: Double): Unit = element.setAttribute("y", y.toString)
-
-  def fill: String = element.getAttribute("fill")
-
-  def fill_=(fill: String): Unit = element.setAttribute("fill", fill)
-
 }
 
 object TextFacade {

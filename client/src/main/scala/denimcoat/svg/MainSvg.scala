@@ -79,7 +79,7 @@ object MainSvg {
       }
     }
 
-    override def selectedItems: Seq[String] = itemBoxes.filter(_.selected.get.get).map(_.text.get.get)
+    override def selectedItems: Seq[String] = itemBoxes.filter(_.selectedVar.get.get).map(_.text.get.get)
   }
 
   object ResultRow {
