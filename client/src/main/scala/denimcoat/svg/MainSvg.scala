@@ -45,7 +45,7 @@ object MainSvg {
     def create(itemSetInfo: StartItemSetInfo, svg: SVG, iRow: Int): InputRow = {
       val y = yOfRow(iRow)
       val label = TextFacade.create(svg, "inputRow" + iRow, xLabel, y)
-      label.text = itemSetInfo.label + ":"
+      label.text := itemSetInfo.label + ":"
       svg.appendChild(label.element)
       val textEditBox = TextEditBox.create(svg, "textEditBow" + iRow, xOfItem(0), y)
       svg.appendChild(textEditBox.element)
@@ -86,7 +86,7 @@ object MainSvg {
     def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
       val y = yOfRow(iRow)
       val label = TextFacade.create(svg, "resultRow" + iRow, xLabel, y)
-      label.text = itemSetInfo.label + ":"
+      label.text := itemSetInfo.label + ":"
       svg.appendChild(label.element)
       val items = Seq.empty[SelectableLabelBox]
       new ResultRow(itemSetInfo, svg, iRow, label, items)
