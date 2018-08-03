@@ -21,4 +21,10 @@ object Var {
     variable.setValue(value)
     variable
   }
+
+  def apply[T](valueOpt: Option[T]): Var[T] = {
+    val variable = new Var[T]
+    variable.setValueOpt(valueOpt)
+    variable
+  }
 }

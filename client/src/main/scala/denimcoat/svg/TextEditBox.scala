@@ -1,6 +1,6 @@
 package denimcoat.svg
 
-import denimcoat.gears.providers.{Provider, Var}
+import denimcoat.gears.providers.{Provider, TriggeredRefreshProvider, Var}
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.svg.ElementFacade.Visibility
 import denimcoat.svg.Style.WhiteSpace
@@ -10,19 +10,14 @@ import org.scalajs.dom.svg.{G, SVG}
 
 class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with TextEditable {
 
-  //  private val frame = RectangleFacade.create(svg)
-  private val textFacade = TextFacade.create(svg, id, 0, 0)
-  private val cursorSpacerTextFacade = TextFacade.create(svg, id + "-spacer", 0, 0)
-  private var textWithCursor: TextWithCursor = TextWithCursor.empty
-
-  //  frame.width = 100
-  //  frame.height = 30
+  private val textFacade = TextFacade.create(svg, id, 0.0, 0.0)
+  private val cursorSpacerTextFacade = TextFacade.create(svg, id + "-spacer", 0.0, 0.0)
+  private val textWithCursor: Var[TextWithCursor] = Var[TextWithCursor](TextWithCursor.empty)
 
   textFacade.style.whiteSpace := WhiteSpace.pre
   cursorSpacerTextFacade.style.whiteSpace := WhiteSpace.pre
   cursorSpacerTextFacade.visibility := Visibility.hidden
 
-  //  appendChild(frame)
   appendChild(textFacade)
   appendChild(cursorSpacerTextFacade)
 
@@ -36,7 +31,6 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   def x: Double = textFacade.x.get.get
 
   def x_=(x: Double): Unit = {
-    //    frame.x = x
     textFacade.x := x
     cursorSpacerTextFacade.x := x
     updateCursor()
@@ -45,20 +39,19 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   def y: Double = textFacade.y.get.get
 
   def y_=(y: Double): Unit = {
-    //    frame.y = y
     textFacade.y := y
     cursorSpacerTextFacade.y := y
     updateCursor()
   }
 
-  def text: String = textWithCursor.text
+  def text: String = textWithCursor.get.get.text
 
-  val spacerBoxVar = new Var[SVGRect]
+  private val spacerBoxVar = TriggeredRefreshProvider[SVGRect](() => cursorSpacerTextFacade.element.getBBox())
 
   private def updateCursor(): Unit = {
     if (element.ownerSVGElement != null) {
-      textFacade.text := textWithCursor.text
-      val spacerTextRaw = textWithCursor.preCursorText
+      textFacade.text := textWithCursor.map(_.text)
+      val spacerTextRaw = textWithCursor.get.get.preCursorText
       cursorSpacerTextFacade.text := (
         if (spacerTextRaw.isEmpty) {
           val thinCharacter = ":"
@@ -70,7 +63,7 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
           spacerTextRaw
         }
         )
-      spacerBoxVar.setValue(cursorSpacerTextFacade.element.getBBox())
+      spacerBoxVar.trigger()
       cursor.x1 := spacerBoxVar.map(box => box.x + box.width)
       cursor.y1 := spacerBoxVar.map(box => box.y)
       cursor.x2 := spacerBoxVar.map(box => box.x + box.width)
@@ -79,12 +72,12 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   }
 
   def text_=(text: String): Unit = {
-    textWithCursor = TextWithCursor.from(text)
+    textWithCursor.setValue(TextWithCursor.from(text))
     updateCursor()
   }
 
   override def edit(mod: TextWithCursor => TextWithCursor): Unit = {
-    textWithCursor = mod(textWithCursor)
+    textWithCursor.modify(mod)
     updateCursor()
   }
 }
