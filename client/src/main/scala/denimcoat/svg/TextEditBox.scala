@@ -15,6 +15,8 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   private val cursorSpacerTextFacade = TextFacade.create(svg, id + "-spacer", 0.0, 0.0)
   private val textWithCursor: Var[TextWithCursor] = Var[TextWithCursor](TextWithCursor.empty)
   private val spacerBoxVar = TriggeredRefreshProvider[SVGRect](() => cursorSpacerTextFacade.element.getBBox())
+  textWithCursor.addConsumer(spacerBoxVar.asConsumer)
+  cursorSpacerTextFacade.addConsumer(spacerBoxVar.asConsumer)
 
   textFacade.style.whiteSpace := WhiteSpace.pre
   cursorSpacerTextFacade.style.whiteSpace := WhiteSpace.pre
@@ -37,8 +39,6 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   val y: Property[Double] = textFacade.y
   cursorSpacerTextFacade.y := y
   y.addConsumer(spacerBoxVar.asConsumer)
-
-  def text: String = textWithCursor.get.get.text
 
   private def spacerTextMangle(spacerTextRaw: String): String = {
     if (spacerTextRaw.isEmpty) {
@@ -63,6 +63,8 @@ class TextEditBox(val svg: SVG, val element: G) extends ElementFacade[G] with Te
   private def updateCursor(): Unit = {
     spacerBoxVar.trigger()
   }
+
+  def text: String = textWithCursor.get.get.text
 
   def text_=(text: String): Unit = {
     textWithCursor.setValue(TextWithCursor.from(text))

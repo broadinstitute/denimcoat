@@ -20,7 +20,11 @@ object TriggeredRefreshProvider {
 
     val delegate: Var[T] = Var(optFromGenerator)
 
-    override def trigger(): Unit = delegate.setValueOpt(optFromGenerator)
+    override def trigger(): Unit = {
+      val valueOpt = optFromGenerator
+      delegate.setValueOpt(valueOpt)
+      println("Refreshed value: " + valueOpt)
+    }
 
     override def get: Option[T] = delegate.get
 
