@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result, ResultGraph}
+import denimcoat.reasoners.messages.{Edge, Node, DefaultRequest, Response, Result, ResultGraph}
 import denimcoat.reasoners.mock.EntityCatalogue.Drug
 
 object Avicenna extends Reasoner {
@@ -19,7 +19,7 @@ object Avicenna extends Reasoner {
 
   def restateQuestion(drug: String): String = questionPrefix + drug + questionPostfix
 
-  override def reason(request: Request): Response = {
+  override def reason(request: DefaultRequest): Response = {
     val coreResponse = parseQuestion(request.items.head) match {
       case Some(drug) =>
         val restatedQuestionText = restateQuestion(drug.name)

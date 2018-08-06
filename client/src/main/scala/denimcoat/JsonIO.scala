@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
-import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.reasoners.messages.{DefaultRequest => ReasonerRequest, Response => ReasonerResponse}
 import io.circe.{Decoder, Encoder, Error}
 import io.circe.parser.decode
 import io.circe.generic.auto._

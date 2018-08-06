@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{Request, Response, Result, ResultGraph}
+import denimcoat.reasoners.messages.{DefaultRequest, Response, Result, ResultGraph}
 
 object MockReasoners {
 
@@ -24,7 +24,7 @@ object MockReasoners {
   val deepThought: Reasoner = new Reasoner {
     override val id: String = "deepThought"
 
-    override def reason(request: Request): Response = {
+    override def reason(request: DefaultRequest): Response = {
       Response(
         `@context` = contextUri(id),
         `@id` = idUri(id),
@@ -53,7 +53,7 @@ object MockReasoners {
   val hal9000: Reasoner = new Reasoner {
     override val id: String = "hal9000"
 
-    override def reason(request: Request): Response = {
+    override def reason(request: DefaultRequest): Response = {
       Response(
         `@context` = contextUri(id),
         `@id` = idUri(id),

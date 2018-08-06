@@ -3,7 +3,7 @@ package denimcoat.reasoners.json
 import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
-import denimcoat.reasoners.messages.Request
+import denimcoat.reasoners.messages.DefaultRequest
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsValue, Reads}
 
@@ -21,10 +21,10 @@ object ReasonerRequestJsonReading {
     }
   }
 
-  implicit val requestReads: Reads[Request] = (
+  implicit val requestReads: Reads[DefaultRequest] = (
     (JsPath \ "items").read[Seq[String]] and
       (JsPath \ "relation").read[Relation] and
       (JsPath \ "timestamp").read[Long].map(new Date(_))
-    ) (Request(_, _, _))
+    ) (DefaultRequest(_, _, _))
 
 }

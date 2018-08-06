@@ -5,11 +5,15 @@ import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
 
-case class Request(items: Seq[String], relation: Relation, timestamp: Date)
+sealed trait Request
 
-object Request {
-  def apply(items: Seq[String], relation: Relation): Request = Request(items, relation, new Date())
+case class DefaultRequest(items: Seq[String], relation: Relation, timestamp: Date) extends Request
+
+object DefaultRequest {
+  def apply(items: Seq[String], relation: Relation): DefaultRequest = DefaultRequest(items, relation, new Date())
 }
+
+case class BioThingsRequest() extends Request
 
 case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
 

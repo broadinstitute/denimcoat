@@ -6,7 +6,7 @@ import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.ResultItemSetInfo
 import denimcoat.reasoners.knowledge.Relation
-import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.reasoners.messages.{DefaultRequest => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
