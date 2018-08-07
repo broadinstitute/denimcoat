@@ -8,6 +8,7 @@ import denimcoat.mvp.Workflow.ResultItemSetInfo
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
 import denimcoat.reasoners.mvp.BioThingsExplorerUtils
 import denimcoat.svg.MainSvg
+import denimcoat.util.NamesAndIds
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
@@ -51,7 +52,9 @@ object MainJS {
       case Right(response) =>
         val responseTargetNodeNames = { val result = response.result_list
           val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
-          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
+          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map{node =>
+            NamesAndIds.fromStrings(Set(node.name, node.id)).toString
+          }
           nodeNames
         }
         items += itemSet -> (items(itemSet) ++ responseTargetNodeNames).distinct
@@ -99,7 +102,7 @@ object MainJS {
 
   def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    startItems.foreach{startItem =>
+    startItems.flatMap(NamesAndIds.parse(_).getId("omim")).foreach{startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
       submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
     }
@@ -138,8 +141,8 @@ object MainJS {
     }
   }
 
-  val exampleOneDisease = "type 2 diabetes mellitus"
-  val exampleTwoDisease = "Behcet's disease"
+  val exampleOneDisease = "type 2 diabetes mellitus; omim:125853"
+  val exampleTwoDisease = "Behcet's disease; omim:109650"
 
   def setDiseaseExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     MainSvg.inputString = exampleOneDisease
