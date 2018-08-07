@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result, ResultGraph}
+import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result}
 import denimcoat.reasoners.mock.EntityCatalogue.Drug
 
 object Avicenna extends Reasoner {
@@ -32,40 +32,40 @@ object Avicenna extends Reasoner {
           id = drug.cui,
           `type` = "drug",
           name = drug.name,
-          uri = new URI(s"drug:${drug.cui}"),
-          description = s"The drug ${drug.name}.",
-          symbol = drug.name,
-          node_property_list = Seq.empty
+          uri = Some(new URI(s"drug:${drug.cui}")),
+          description = Some(s"The drug ${drug.name}."),
+          symbol = Some(drug.name),
+          node_property_list = Some(Seq.empty)
         )
         val results = drug.targets.map { target =>
           val targetNode = Node(
             id = target.cui,
             `type` = "target",
             name = target.name,
-            uri = new URI(s"target:${target.cui}"),
-            description = s"The target ${target.name}.",
-            symbol = target.name,
-            node_property_list = Seq.empty
+            uri = Some(new URI(s"target:${target.cui}")),
+            description = Some(s"The target ${target.name}."),
+            symbol = Some(target.name),
+            node_property_list = Some(Seq.empty)
           )
           val drugTargetEdge = Edge(
             `type` = "hasTarget",
             source_id = drugNode.id,
             target_id = targetNode.id,
-            is_defined_by = "Some smart dude",
+            is_defined_by = Some("Some smart dude"),
             provided_by = "Avicenna",
-            confidence = 1.0f,
-            edge_property_list = Seq.empty,
-            origin_list = Seq.empty
+            confidence = Some(1.0f),
+            edge_property_list = Some(Seq.empty),
+            origin_list = Some(Seq.empty)
           )
           val diseaseNodes = target.symptoms.map { disease =>
             Node(
               id = disease.cui,
               `type` = "disease",
               name = disease.name,
-              uri = new URI(s"disease:${disease.cui}"),
-              description = s"The disease ${disease.name}.",
-              symbol = disease.name,
-              node_property_list = Seq.empty
+              uri = Some(new URI(s"disease:${disease.cui}")),
+              description = Some(s"The disease ${disease.name}."),
+              symbol = Some(disease.name),
+              node_property_list = Some(Seq.empty)
             )
           }.toSeq
           val targetDiseaseEdges = diseaseNodes.map { diseaseNode =>
@@ -73,41 +73,40 @@ object Avicenna extends Reasoner {
               `type` = "isPartOfPathway",
               source_id = targetNode.id,
               target_id = diseaseNode.id,
-              is_defined_by = "Some smart dude",
+              is_defined_by = Some("Some smart dude"),
               provided_by = "Avicenna",
-              confidence = 1.0f,
-              edge_property_list = Seq.empty,
-              origin_list = Seq.empty
+              confidence = Some(1.0f),
+              edge_property_list = Some(Seq.empty),
+              origin_list = Some(Seq.empty)
             )
           }
           Result(
-            `@id` = new URI(s"drugtarget:${drug.cui}:${target.cui}"),
+            `@id` = Some(new URI(s"drugtarget:${drug.cui}:${target.cui}")),
             text =
-              s"Drug ${drug.name} has target ${target.name} affecting ${target.symptoms.map(_.name).mkString(", ")}.",
-            confidence = 1.0f,
-            result_graph =
-              ResultGraph(
-                node_list = Seq(drugNode, targetNode) ++ diseaseNodes,
-                edge_list = Seq(drugTargetEdge) ++ targetDiseaseEdges
-              )
+              Some(
+                s"Drug ${drug.name} has target ${target.name} affecting ${target.symptoms.map(_.name).mkString(", ")}."
+              ),
+            confidence = Some(1.0f),
+            node_list = Seq(drugNode, targetNode) ++ diseaseNodes,
+            edge_list = Seq(drugTargetEdge) ++ targetDiseaseEdges
           )
-        }.toSeq
+        }.toSeq.head
         CoreResponse.successResponse(restatedQuestionText, message, results)
       case None =>
         CoreResponse.failureResponse(request)
     }
     Response(
-      `@context` = new URI(MockReasoners.baseUriContext),
-      `@id` = MockReasoners.idUri(this.id),
-      `@type` = "Very awesome type of response",
-      schema_version = Reasoner.apiVersion,
-      tool_version = version,
-      datetime = new Date(),
-      original_question_text = request.items.head,
-      restated_question_text = coreResponse.restatedQuestion,
-      result_code = coreResponse.resultCode,
-      message = coreResponse.message,
-      result_list = coreResponse.resultList
+      `@context` = Some(new URI(MockReasoners.baseUriContext)),
+      `@id` = Some(MockReasoners.idUri(this.id)),
+      `@type` = Some("Very awesome type of response"),
+      schema_version = Some(Reasoner.apiVersion),
+      tool_version = Some(version),
+      datetime = Some(new Date()),
+      original_question_text = Some(request.items.head),
+      restated_question_text = Some(coreResponse.restatedQuestion),
+      result_code = Some(coreResponse.resultCode),
+      message = Some(coreResponse.message),
+      result_list = coreResponse.resultList.get
     )
   }
 

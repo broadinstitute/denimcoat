@@ -49,20 +49,16 @@ object ReasonerResponseJsonWriting {
     "origin_list" -> edge.origin_list
   )
 
-  implicit val resultGraphWrites: Writes[ResultGraph] = (graph: ResultGraph) => Json.obj(
-    "node_list" -> graph.node_list,
-    "edge_list" -> graph.edge_list
-  )
-
   implicit val resultWrites: Writes[Result] = (result: Result) => Json.obj(
     "@id" -> result.`@id`.toString,
     "text" -> result.text,
     "confidence" -> result.confidence,
-    "result_graph" -> result.result_graph
+    "node_list" -> result.node_list,
+    "edge_list" -> result.edge_list
   )
 
   implicit val responseWrites: Writes[Response] = (response: Response) => Json.obj(
-   "@context" -> response.`@context`.toString,
+    "@context" -> response.`@context`.toString,
     "@id" -> response.`@id`.toString,
     "@type" -> response.`@type`,
     "schema_version" -> response.schema_version,

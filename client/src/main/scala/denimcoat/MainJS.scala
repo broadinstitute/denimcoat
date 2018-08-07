@@ -49,10 +49,9 @@ object MainJS {
     responseEither match {
       case Left(_) => ()
       case Right(response) =>
-        val responseTargetNodeNames = response.result_list.to[Set].flatMap { result =>
-          val graph = result.result_graph
-          val targetIds = graph.edge_list.to[Set].map(edge => edge.target_id)
-          val nodeNames = graph.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
+        val responseTargetNodeNames = { val result = response.result_list
+          val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
+          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map(node => node.name)
           nodeNames
         }
         items += itemSet -> (items(itemSet) ++ responseTargetNodeNames).distinct
@@ -69,6 +68,7 @@ object MainJS {
       val responseJson = request.responseText
       dom.window.alert(responseJson)
       val responseEither = JsonIO.decodeResponse(responseJson)
+      dom.window.alert(responseEither.toString)
       addAnswer(resultItemSetInfo, reasonerId, responseEither)
       displayAnswers(resultItemSetInfo)
     }
@@ -101,7 +101,6 @@ object MainJS {
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
     startItems.foreach{startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
-      println("B:" + url)
       submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
     }
   }

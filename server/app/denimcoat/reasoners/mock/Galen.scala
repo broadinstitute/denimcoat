@@ -5,7 +5,7 @@ import java.util.Date
 
 import denimcoat.reasoners.Reasoner
 import denimcoat.reasoners.knowledge.{Category, Relation}
-import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result, ResultGraph}
+import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result}
 
 object Galen extends Reasoner {
   override def id: String = "galen"
@@ -27,10 +27,10 @@ object Galen extends Reasoner {
       id = entity.id,
       `type` = category.id,
       name = entity.label,
-      uri = new URI(s"${category.id}:${entity.id}"),
-      description = s"The ${category.label} ${entity.label}.",
-      symbol = entity.id,
-      node_property_list = Seq.empty
+      uri = Some(new URI(s"${category.id}:${entity.id}")),
+      description = Some(s"The ${category.label} ${entity.label}."),
+      symbol = Some(entity.id),
+      node_property_list = Some(Seq.empty)
     )
   }
 
@@ -54,36 +54,34 @@ object Galen extends Reasoner {
         `type` = relation.id,
         source_id = diseaseNode.id,
         target_id = symptomNode.id,
-        is_defined_by = "Some smart dude",
+        is_defined_by = Some("Some smart dude"),
         provided_by = "Hippocrates",
-        confidence = 1.0f,
-        edge_property_list = Seq.empty,
-        origin_list = Seq.empty
+        confidence = Some(1.0f),
+        edge_property_list = Some(Seq.empty),
+        origin_list = Some(Seq.empty)
       )
       val result = Result(
-        `@id` = new URI(Seq(subjectCategory, objectCategory, subjectEntity, objectEntity).map(_.id).mkString(":")),
-        text = message,
-        confidence = 1.0f,
-        result_graph =
-          ResultGraph(
-            node_list = Seq(diseaseNode, symptomNode),
-            edge_list = Seq(diseaseSymptomEdge)
-          )
+        `@id` =
+          Some(new URI(Seq(subjectCategory, objectCategory, subjectEntity, objectEntity).map(_.id).mkString(":"))),
+        text = Some(message),
+        confidence = Some(1.0f),
+        node_list = Seq(diseaseNode, symptomNode),
+        edge_list = Seq(diseaseSymptomEdge)
       )
-      CoreResponse.successResponse(restatedQuestionText, message, Seq(result))
+      CoreResponse.successResponse(restatedQuestionText, message, result)
     }
     Response(
-      `@context` = new URI(MockReasoners.baseUriContext),
-      `@id` = MockReasoners.idUri(this.id),
-      `@type` = "Very awesome type of response",
-      schema_version = Reasoner.apiVersion,
-      tool_version = version,
-      datetime = new Date(),
-      original_question_text = request.items.mkString(", "),
-      restated_question_text = coreResponses.map(_.restatedQuestion).mkString(", "),
-      result_code = coreResponses.headOption.map(_.resultCode).getOrElse("No result found"),
-      message = coreResponses.map(_.message).mkString(", "),
-      result_list = coreResponses.flatMap(_.resultList).toSeq
+      `@context` = Some(new URI(MockReasoners.baseUriContext)),
+      `@id` = Some(MockReasoners.idUri(this.id)),
+      `@type` = Some("Very awesome type of response"),
+      schema_version = Some(Reasoner.apiVersion),
+      tool_version = Some(version),
+      datetime = Some(new Date()),
+      original_question_text = Some(request.items.mkString(", ")),
+      restated_question_text = Some(coreResponses.map(_.restatedQuestion).mkString(", ")),
+      result_code = Some(coreResponses.headOption.map(_.resultCode).getOrElse("No result found")),
+      message = Some(coreResponses.map(_.message).mkString(", ")),
+      result_list = coreResponses.flatMap(_.resultList).toSeq.head
     )
   }
 }
