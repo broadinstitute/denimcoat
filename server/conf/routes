@@ -6,8 +6,9 @@
 GET     /                           denimcoat.controllers.HomeController.index
 +nocsrf
 POST    /reasoner/:id               denimcoat.controllers.HomeController.reasoner(id: String)
+GET     /proxy/*url                 denimcoat.controllers.HomeController.proxyGet(url)
 +nocsrf
-POST    /proxy/*url                 denimcoat.controllers.HomeController.proxy(url)
+POST    /proxy/*url                 denimcoat.controllers.HomeController.proxyPost(url)
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

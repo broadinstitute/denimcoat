@@ -5,8 +5,8 @@ import java.util.Date
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.ResultItemSetInfo
-import denimcoat.reasoners.knowledge.Relation
-import denimcoat.reasoners.messages.{DefaultRequest => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.reasoners.mvp.BioThingsExplorerUtils
 import denimcoat.svg.MainSvg
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
@@ -67,6 +67,7 @@ object MainJS {
                       resultItemSetInfo: ResultItemSetInfo): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
+      dom.window.alert(responseJson)
       val responseEither = JsonIO.decodeResponse(responseJson)
       addAnswer(resultItemSetInfo, reasonerId, responseEither)
       displayAnswers(resultItemSetInfo)
@@ -74,28 +75,42 @@ object MainJS {
   }
 
   def submitReasonerRequest(reasonerId: String, resultItemSetInfo: ResultItemSetInfo, url: String,
-                            request: ReasonerRequest,
+                            requestOpt: Option[ReasonerRequest],
                             responseHandler: (XMLHttpRequest, String, ResultItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
     http.onreadystatechange = responseHandler(http, reasonerId, resultItemSetInfo)
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
-    http.open("POST", urlActual, async = true)
+    val protocol = if (requestOpt.isEmpty) "GET" else "POST"
+    http.open(protocol, urlActual, async = true)
     http.setRequestHeader("Content-type", "application/json")
     http.setRequestHeader("Accept", "application/json")
     http.setRequestHeader("Access-Control-Allow-Origin", "*")
     http.setRequestHeader("Access-Control-Allow-Methods", "POST, GET")
     http.setRequestHeader("Access-Control-Allow-Headers", "Content-Type")
-    val requestJson = JsonIO.encodeRequest(request)
-    http.send(requestJson)
+    requestOpt match {
+      case Some(request) =>
+        val requestJson = JsonIO.encodeRequest(request)
+        http.send(requestJson)
+      case None => http.send()
+    }
+  }
+
+  def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
+                             resultItemSetInfo: ResultItemSetInfo): Unit = {
+    startItems.foreach{startItem =>
+      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
+      println("B:" + url)
+      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
+    }
   }
 
   def queryDefaultReasoner(reasonerId: String, startItems: Seq[String],
                            resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
     val request = ReasonerRequest(startItems, resultItemSetInfo.relationToPrevious)
-    submitReasonerRequest(reasonerId, resultItemSetInfo, url, request, receiveResponse)
+    submitReasonerRequest(reasonerId, resultItemSetInfo, url, Some(request), receiveResponse)
   }
 
   def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
@@ -104,7 +119,7 @@ object MainJS {
   def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
     val inputItemsInfo = resultItemSetInfo.previousItems
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
-    if(selectedItems.isEmpty) {
+    if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")
     } else {
       val reasonerIds = getReasonerIds
@@ -114,7 +129,11 @@ object MainJS {
         resetAnswers(resultItemSetInfo)
         displayAnswers(resultItemSetInfo)
         reasonerIds.foreach { reasonerId =>
-          queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
+          if (reasonerId == "biothings") {
+            queryBioThingsExplorer(reasonerId, selectedItems, resultItemSetInfo)
+          } else {
+            queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
+          }
         }
       }
     }
