@@ -69,9 +69,7 @@ object MainJS {
                       resultItemSetInfo: ResultItemSetInfo): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-      dom.window.alert(responseJson)
       val responseEither = JsonIO.decodeResponse(responseJson)
-      dom.window.alert(responseEither.toString)
       addAnswer(resultItemSetInfo, reasonerId, responseEither)
       displayAnswers(resultItemSetInfo)
     }
