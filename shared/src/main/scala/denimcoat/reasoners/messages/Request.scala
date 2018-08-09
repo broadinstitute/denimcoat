@@ -27,6 +27,10 @@ case class Edge(`type`: String, source_id: String, target_id: String, is_defined
 case class Result(`@id`: Option[URI], text: Option[String], confidence: Option[Float], node_list: Seq[Node],
                   edge_list: Seq[Edge])
 
+object Result {
+  def empty: Result = Result(None, None, None, Seq.empty, Seq.empty)
+}
+
 case class Response(`@context`: Option[URI], `@id`: Option[URI], `@type`: Option[String],
                     schema_version: Option[String], tool_version: Option[String], datetime: Option[Date],
                     original_question_text: Option[String], restated_question_text: Option[String],

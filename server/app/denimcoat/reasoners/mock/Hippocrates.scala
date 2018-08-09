@@ -76,9 +76,9 @@ object Hippocrates extends Reasoner {
       datetime = Some(new Date()),
       original_question_text = Some(request.items.mkString(", ")),
       restated_question_text = Some(coreResponse.map(_.restatedQuestion).mkString(", ")),
-      result_code = Some(coreResponse.head.resultCode),
+      result_code = coreResponse.headOption.map(_.resultCode),
       message = Some(coreResponse.map(_.message).mkString(", ")),
-      result_list = coreResponse.flatMap(_.resultList).head
+      result_list = coreResponse.flatMap(_.resultList).headOption.getOrElse(Result.empty)
     )
   }
 }

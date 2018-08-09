@@ -4,7 +4,7 @@ case class NamesAndIds(names: Set[String], ids: Map[String, String]) {
 
   override def toString: String = {
     val idStrings = ids.map {
-      case (key, value) => key +  ":" + value
+      case (key, value) => key + ":" + value
     }
     (names ++ idStrings).mkString("; ")
   }
@@ -23,13 +23,13 @@ object NamesAndIds {
 
   def fromStrings(strings: Iterable[String]): NamesAndIds = {
     val grouped = strings.groupBy(_.contains(':'))
-    val names = grouped(false).toSet
-    val ids = grouped(true).map { part =>
+    val names = grouped.get(false).map(_.toSet).getOrElse(Set.empty)
+    val ids = grouped.get(true).map(_.map { part =>
       val colonPos = part.indexOf(':')
       val key = part.substring(0, colonPos).trim
       val value = part.substring(colonPos + 1).trim
       (key, value)
-    }.toMap
+    }.toMap).getOrElse(Map.empty)
     NamesAndIds(names, ids)
   }
 

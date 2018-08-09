@@ -81,7 +81,7 @@ object Galen extends Reasoner {
       restated_question_text = Some(coreResponses.map(_.restatedQuestion).mkString(", ")),
       result_code = Some(coreResponses.headOption.map(_.resultCode).getOrElse("No result found")),
       message = Some(coreResponses.map(_.message).mkString(", ")),
-      result_list = coreResponses.flatMap(_.resultList).toSeq.head
+      result_list = coreResponses.flatMap(_.resultList).toSeq.headOption.getOrElse(Result.empty)
     )
   }
 }

@@ -50,9 +50,10 @@ object MainJS {
     responseEither match {
       case Left(_) => ()
       case Right(response) =>
-        val responseTargetNodeNames = { val result = response.result_list
+        val responseTargetNodeNames = {
+          val result = response.result_list
           val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
-          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map{node =>
+          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map { node =>
             NamesAndIds.fromStrings(Set(node.name, node.id)).toString
           }
           nodeNames
@@ -100,7 +101,7 @@ object MainJS {
 
   def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    startItems.flatMap(NamesAndIds.parse(_).getId("omim")).foreach{startItem =>
+    startItems.flatMap(NamesAndIds.parse(_).getId("omim.disease")).foreach { startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
       submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
     }
@@ -139,8 +140,8 @@ object MainJS {
     }
   }
 
-  val exampleOneDisease = "type 2 diabetes mellitus; omim:125853"
-  val exampleTwoDisease = "Behcet's disease; omim:109650"
+  val exampleOneDisease = "type 2 diabetes mellitus; omim.disease:125853"
+  val exampleTwoDisease = "Behcet's disease; omim.disease:109650"
 
   def setDiseaseExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
     MainSvg.inputString = exampleOneDisease
