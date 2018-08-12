@@ -37,7 +37,10 @@ lazy val sharedJs = shared.js
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.5",
-  organization := "com.example"
+  organization := "com.example",
+  libraryDependencies ++= Seq(
+    "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+  )
 )
 
 // loads the server project at sbt startup

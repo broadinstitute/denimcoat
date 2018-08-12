@@ -5,6 +5,7 @@ import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
 import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
+import denimcoat.reasoners.mvp.MonarchInitiativeUtils
 import io.circe.{Decoder, Encoder, Error}
 import io.circe.parser.decode
 import io.circe.generic.auto._
@@ -26,5 +27,9 @@ object JsonIO {
   }
 
   def encodeRequest(request: ReasonerRequest): String = request.asJson.toString
+
+  def decodeMonarchResponse(responseString: String): Either[String, MonarchInitiativeUtils.Response] = {
+    decode[MonarchInitiativeUtils.Response](responseString).left.map(errorToString)
+  }
 
 }
