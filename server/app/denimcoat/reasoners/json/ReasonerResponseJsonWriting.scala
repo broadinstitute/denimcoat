@@ -1,24 +1,28 @@
 package denimcoat.reasoners.json
 
+import java.net.URI
+
 import denimcoat.reasoners.messages._
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{JsString, JsValue, Json, Writes}
 
 
 object ReasonerResponseJsonWriting {
+
+  implicit val uriWrites: Writes[URI] = (uri: URI) => JsString(uri.toString)
 
   implicit val resultNodeProptertyWrites: Writes[NodeProperty] =
     (property: NodeProperty) => Json.obj(
       "type" -> property.`type`,
       "name" -> property.name,
       "value" -> property.value.toString,
-      "uri" -> property.uri.toString
+      "uri" -> property.uri
     )
 
   implicit val resultNodeWrites: Writes[Node] = (node: Node) => Json.obj(
     "id" -> node.id,
     "type" -> node.`type`,
     "name" -> node.name,
-    "uri" -> node.uri.toString,
+    "uri" -> node.uri,
     "description" -> node.description,
     "symbol" -> node.symbol,
     "node_property_list" -> node.node_property_list
@@ -29,7 +33,7 @@ object ReasonerResponseJsonWriting {
       "type" -> property.`type`,
       "name" -> property.name,
       "value" -> property.value.toString,
-      "uri" -> property.uri.toString
+      "uri" -> property.uri
     )
 
   implicit val resultOriginWrites: Writes[Origin] = (origin: Origin) => Json.obj(
@@ -50,7 +54,7 @@ object ReasonerResponseJsonWriting {
   )
 
   implicit val resultWrites: Writes[Result] = (result: Result) => Json.obj(
-    "@id" -> result.`@id`.toString,
+    "@id" -> result.`@id`,
     "text" -> result.text,
     "confidence" -> result.confidence,
     "node_list" -> result.node_list,
@@ -58,8 +62,8 @@ object ReasonerResponseJsonWriting {
   )
 
   implicit val responseWrites: Writes[Response] = (response: Response) => Json.obj(
-    "@context" -> response.`@context`.toString,
-    "@id" -> response.`@id`.toString,
+    "@context" -> response.`@context`,
+    "@id" -> response.`@id`,
     "@type" -> response.`@type`,
     "schema_version" -> response.schema_version,
     "tool_version" -> response.tool_version,

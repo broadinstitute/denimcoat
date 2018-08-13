@@ -70,11 +70,13 @@ object MainSvg {
       }
       if (itemBoxes.nonEmpty) {
         itemBoxes.head.x := xOfItem(0)
-        itemBoxes.sliding(2).foreach { case Seq(box1, box2) =>
-          val width = box1.element.getBBox().width
-          val padding = 20
-          val offset = width + padding
-          box2.x := box1.x + offset
+        if(itemBoxes.size > 1) {
+          itemBoxes.sliding(2).foreach { case Seq(box1, box2) =>
+            val width = box1.element.getBBox().width
+            val padding = 20
+            val offset = width + padding
+            box2.x := box1.x + offset
+          }
         }
       }
     }
