@@ -107,6 +107,15 @@ object MainJS {
     }
   }
 
+  def queryMonarchInitiative(reasonerId: String, startItems: Seq[String],
+                             resultItemSetInfo: ResultItemSetInfo): Unit = {
+    startItems.flatMap(NamesAndIds.parse(_).getId("hp")).foreach { startItem =>
+      ???
+//      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
+//      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
+    }
+  }
+
   def queryDefaultReasoner(reasonerId: String, startItems: Seq[String],
                            resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)

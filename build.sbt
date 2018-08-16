@@ -25,7 +25,8 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
     "org.singlespaced" %%% "scalajs-d3" % "0.3.4",
     "io.circe" %%% "circe-core" % circeVersion,
     "io.circe" %%% "circe-generic" % circeVersion,
-    "io.circe" %%% "circe-parser" % circeVersion
+    "io.circe" %%% "circe-parser" % circeVersion,
+    "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
   ),
   scalacOptions += "-P:scalajs:sjsDefinedByDefault"
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
@@ -38,9 +39,6 @@ lazy val sharedJs = shared.js
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.5",
   organization := "com.example",
-  libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-  )
 )
 
 // loads the server project at sbt startup
