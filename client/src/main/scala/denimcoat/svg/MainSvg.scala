@@ -1,10 +1,12 @@
 package denimcoat.svg
 
+import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
+import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.svg.SVG
 
 object MainSvg {
@@ -54,7 +56,7 @@ object MainSvg {
   }
 
   class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
-                  var itemBoxes: Seq[SelectableLabelBox])
+                  val button: LabelledButton, var itemBoxes: Seq[SelectableLabelBox])
     extends Row {
     def items: Seq[String] = itemBoxes.map(_.text.get.get)
 
@@ -90,8 +92,13 @@ object MainSvg {
       val label = TextFacade.create(svg, "resultRow" + iRow, xLabel, y)
       label.text := itemSetInfo.label + ":"
       svg.appendChild(label.element)
+      val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
+      button.text := itemSetInfo.relationToPrevious.label
+      button.x := xLabel - 20
+      button.y := y - 25
+      svg.appendChild(button.element)
       val items = Seq.empty[SelectableLabelBox]
-      new ResultRow(itemSetInfo, svg, iRow, label, items)
+      new ResultRow(itemSetInfo, svg, iRow, label, button, items)
     }
   }
 

@@ -8,7 +8,7 @@ import denimcoat.gears.syntax.AllImplicits._
 
 class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] {
 
-  private val label = TextFacade.create(svg, "blub", 0, 0)
+  private val label = TextFacade.create(svg, "blub", 0.0, 0.0)
 
   appendChild(label)
 

@@ -192,15 +192,6 @@ object MainJS {
     D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
     D3.select("#diseaseClearButton").on("click", clearDisease)
 
-    val submitButtonSetElement = dom.document.getElementById("submitButtonSet")
-    Workflow.resultItemSetInfos.foreach { resultItemSetInfo =>
-      val button = dom.document.createElement("button").asInstanceOf[Button]
-      button.textContent = resultItemSetInfo.relationToPrevious.label
-      button.onclick = (_: MouseEvent) => submit(resultItemSetInfo)
-      submitButtonSetElement.appendChild(button)
-    }
-
-
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 
     MainSvg.inputString = ""
