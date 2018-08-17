@@ -1,14 +1,20 @@
 package denimcoat.svg
 
-import denimcoat.gears.Property
-import denimcoat.gears.providers.Provider
+import denimcoat.gears.{Consumer, Event, Property}
+import denimcoat.gears.providers.{Function3Provider, Provider, Var}
 import denimcoat.gears.syntax.AllImplicits._
-import org.scalajs.dom.svg.{SVG, Text}
+import org.scalajs.dom.svg.{SVG, Text, Transform}
 
-class TextFacade(val svg: SVG, val element: Text) extends StylableElementFacade[Text] {
+class TextFacade(val svg: SVG, val element: Text)
+  extends StylableElementFacade[Text] with TransformableFacade[Text] {
   val text: Property[String] = Property[String](element.textContent = _)
   val x: Property[Double] = Property[Double](x => element.setAttribute("x", x.toString))
   val y: Property[Double] = Property[Double](y => element.setAttribute("y", y.toString))
+  val angle: Var[Double] = Var[Double]()
+
+  val rotation: Provider[Transform] = Function3Provider(x, y, angle)(TransformableFacade.createRotation)
+  val rotationUpdater: Consumer[Transform] = (event: Event[Transform]) => setTransformOpt(event.valueOpt)
+
 }
 
 object TextFacade {
