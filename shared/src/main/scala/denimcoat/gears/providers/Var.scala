@@ -1,6 +1,8 @@
 package denimcoat.gears.providers
 
-class Var[T] extends NotificationProviderImpl[T] {
+import denimcoat.gears.{Consumer, Event}
+
+class Var[T] extends NotificationProviderImpl[T] with Consumer[T] {
 
   def setValue(value: T): Unit = revalidateValue(value)
 
@@ -11,6 +13,8 @@ class Var[T] extends NotificationProviderImpl[T] {
   def modify(function: T => T): Unit = {
     setValueOpt(valueOpt.map(function))
   }
+
+  override def receive(event: Event[T]): Unit = setValueOpt(event.valueOpt)
 }
 
 object Var {

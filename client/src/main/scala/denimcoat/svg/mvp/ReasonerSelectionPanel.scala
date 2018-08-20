@@ -10,7 +10,7 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G, val reasonerId: Strin
   val x: Var[Double] = Var[Double]()
   val y: Var[Double] = Var[Double]()
 
-  val reasonerIdLabel: TextFacade = TextFacade.create(svg, id, x, y)
+  val reasonerIdLabel: TextFacade = TextFacade.create(svg, id, x + 20, y + 100)
   reasonerIdLabel.text := reasonerId
   reasonerIdLabel.angle.setValue(90.0)  // TODO
 
