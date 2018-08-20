@@ -25,7 +25,7 @@ object MainJS {
     selection.html(timeNow.toString)
   }
 
-  def getReasonerIds: Seq[String] = {
+  def getSelectedReasonerIds: Seq[String] = {
     val inputElements = D3.selectAll(".reasoners").asOf[HTMLInputElement].nodes
     inputElements.filter(element => element.checked).map(element => element.value)
   }
@@ -132,7 +132,7 @@ object MainJS {
     if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")
     } else {
-      val reasonerIds = getReasonerIds
+      val reasonerIds = getSelectedReasonerIds
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {

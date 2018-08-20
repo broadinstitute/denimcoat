@@ -4,6 +4,7 @@ import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
+import denimcoat.svg.mvp.{ReasonerList, SpaceLayout}
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
@@ -14,6 +15,10 @@ object MainSvg {
   val id = "mainSvg"
 
   val svg: SVG = dom.document.getElementById(id).asInstanceOf[SVG]
+
+  val nReasoners: Int = ReasonerList.list.size
+  val nRows: Int = Workflow.itemSetInfos.size
+  val spaceLayout: SpaceLayout = SpaceLayout(nReasoners, nRows)
 
   def yOfRow(row: Int): Double = 50.0 + 50.0 * row
 
@@ -72,7 +77,7 @@ object MainSvg {
       }
       if (itemBoxes.nonEmpty) {
         itemBoxes.head.x := xOfItem(0)
-        if(itemBoxes.size > 1) {
+        if (itemBoxes.size > 1) {
           itemBoxes.sliding(2).foreach { case Seq(box1, box2) =>
             val width = box1.element.getBBox().width
             val padding = 20
