@@ -25,9 +25,8 @@ object MainJS {
     selection.html(timeNow.toString)
   }
 
-  def getSelectedReasonerIds: Seq[String] = {
-    val inputElements = D3.selectAll(".reasoners").asOf[HTMLInputElement].nodes
-    inputElements.filter(element => element.checked).map(element => element.value)
+  def getSelectedReasonerIds(itemInfo: Workflow.ItemSetInfo): Seq[String] = {
+    MainSvg.selectedReasoners(itemInfo)
   }
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
@@ -132,7 +131,7 @@ object MainJS {
     if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")
     } else {
-      val reasonerIds = getSelectedReasonerIds
+      val reasonerIds = getSelectedReasonerIds(resultItemSetInfo)
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {

@@ -12,8 +12,12 @@ class TextFacade(val svg: SVG, val element: Text)
   val y: Property[Double] = Property[Double](y => element.setAttribute("y", y.toString))
   val angle: Var[Double] = Var[Double]()
 
-  val rotation: Provider[Transform] = Function3Provider(x, y, angle)(TransformableFacade.createRotation)
+  val rotation: Provider[Transform] = Function3Provider(x, y, angle)(
+    (x: Double, y: Double, angle: Double) => TransformableFacade.createRotation(svg, angle, x, y)
+  )
   val rotationUpdater: Consumer[Transform] = (event: Event[Transform]) => setTransformOpt(event.valueOpt)
+
+  rotation.addConsumer(rotationUpdater)
 
 }
 

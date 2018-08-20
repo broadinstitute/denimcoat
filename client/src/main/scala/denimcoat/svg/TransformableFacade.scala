@@ -1,15 +1,15 @@
 package denimcoat.svg
 
-import org.scalajs.dom.svg.{Element, Transform, Transformable}
+import org.scalajs.dom.svg.{Element, SVG, Transform, Transformable}
 
 trait TransformableFacade[E <: Element with Transformable] extends ElementFacade[E] {
 
   def addRotation(angle: Double, cx: Double, cy: Double): Unit = {
-    addTransform(TransformableFacade.createRotation(angle, cx, cy))
+    addTransform(TransformableFacade.createRotation(svg, angle, cx, cy))
   }
 
   def onlyRotate(angle: Double, cx: Double, cy: Double): Unit = {
-    setSingleTransform(TransformableFacade.createRotation(angle, cx, cy))
+    setSingleTransform(TransformableFacade.createRotation(svg, angle, cx, cy))
   }
 
   def addTransform(transform: Transform): Unit = {
@@ -32,8 +32,8 @@ trait TransformableFacade[E <: Element with Transformable] extends ElementFacade
 
 object TransformableFacade {
 
-  def createRotation(angle: Double, cx: Double, cy: Double): Transform = {
-    val transform = new Transform
+  def createRotation(svg: SVG, angle: Double, cx: Double, cy: Double): Transform = {
+    val transform = svg.createSVGTransform()
     transform.setRotate(angle, cx, cy)
     transform
   }

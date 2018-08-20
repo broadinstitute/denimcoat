@@ -4,7 +4,7 @@ import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
-import denimcoat.svg.mvp.{ReasonerList, SpaceLayout}
+import denimcoat.svg.mvp.{ReasonerList, ReasonerSelectionPanel, SpaceLayout}
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
@@ -19,12 +19,6 @@ object MainSvg {
   val nReasoners: Int = ReasonerList.list.size
   val nRows: Int = Workflow.itemSetInfos.size
   val spaceLayout: SpaceLayout = SpaceLayout(nReasoners, nRows)
-
-  def yOfRow(row: Int): Double = 50.0 + 50.0 * row
-
-  val xLabel = 30.0
-
-  def xOfItem(iItem: Int): Double = 200.0 + 170.0 * iItem
 
   trait Row {
     def itemSetInfo: ItemSetInfo
@@ -50,11 +44,11 @@ object MainSvg {
 
   object InputRow {
     def create(itemSetInfo: StartItemSetInfo, svg: SVG, iRow: Int): InputRow = {
-      val y = yOfRow(iRow)
-      val label = TextFacade.create(svg, "inputRow" + iRow, xLabel, y)
+      val y = spaceLayout.yOfItemsRow(iRow)
+      val label = TextFacade.create(svg, "inputRow" + iRow, spaceLayout.xItemsLabel, y)
       label.text := itemSetInfo.label + ":"
       svg.appendChild(label.element)
-      val textEditBox = TextEditBox.create(svg, "textEditBow" + iRow, xOfItem(0), y)
+      val textEditBox = TextEditBox.create(svg, "textEditBow" + iRow, spaceLayout.xOfItem(0), y)
       svg.appendChild(textEditBox.element)
       new InputRow(itemSetInfo, svg, iRow, label, textEditBox)
     }
@@ -71,12 +65,12 @@ object MainSvg {
         val outputBox = SelectableLabelBox.create(svg)
         outputBox.text := item
         //        outputBox.x := xOfItem(index)
-        outputBox.y := yOfRow(iRow)
+        outputBox.y := spaceLayout.yOfItemsRow(iRow)
         svg.appendChild(outputBox.element)
         outputBox
       }
       if (itemBoxes.nonEmpty) {
-        itemBoxes.head.x := xOfItem(0)
+        itemBoxes.head.x := spaceLayout.xOfItem(0)
         if (itemBoxes.size > 1) {
           itemBoxes.sliding(2).foreach { case Seq(box1, box2) =>
             val width = box1.element.getBBox().width
@@ -93,18 +87,32 @@ object MainSvg {
 
   object ResultRow {
     def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
-      val y = yOfRow(iRow)
-      val label = TextFacade.create(svg, "resultRow" + iRow, xLabel, y)
+      val yItems = spaceLayout.yOfItemsRow(iRow)
+      val label = TextFacade.create(svg, "resultRow" + iRow, spaceLayout.xItemsLabel, yItems)
       label.text := itemSetInfo.label + ":"
       svg.appendChild(label.element)
       val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
       button.text := itemSetInfo.relationToPrevious.label
-      button.x := xLabel - 20
-      button.y := y - 25
+      button.x := spaceLayout.xButtons
+      button.y := yItems - 25
       svg.appendChild(button.element)
       val items = Seq.empty[SelectableLabelBox]
       new ResultRow(itemSetInfo, svg, iRow, label, button, items)
     }
+  }
+
+  val reasonerSelectionPanels: Seq[ReasonerSelectionPanel] =
+    ReasonerList.list.zipWithIndex.map { case (ReasonerList.Entry(id, name), iReasoner) =>
+      val panel = ReasonerSelectionPanel.create(svg, id, name, spaceLayout, iReasoner)
+      svg.appendChild(panel.element)
+      panel
+    }
+
+  val reasonerSelectionPanelsById: Map[String, ReasonerSelectionPanel] =
+    reasonerSelectionPanels.map(panel => (panel.reasonerId, panel)).toMap
+
+  def selectedReasoners(itemInfo: Workflow.ItemSetInfo): Seq[String] = {
+    reasonerSelectionPanels.filter(_.selected(itemInfo)).map(_.reasonerId)
   }
 
   val rows: Seq[Row] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>
