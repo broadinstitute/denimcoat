@@ -12,9 +12,8 @@ class MonarchInitiativeResponseJsonParseTest extends FunSuite {
   }
 
   test("Read Sample response.") {
-    val sampleDataFile = "api.monarchinitiative.org.json"
-    val stream = getClass.getResourceAsStream(sampleDataFile)
-    println("Monarch response length: " + stream.toString)
+    val sampleResponseJson = MonarchInitiativeSampleResponseJson.all
+    println("Monarch response length: " + sampleResponseJson.size)
   }
 
 }
