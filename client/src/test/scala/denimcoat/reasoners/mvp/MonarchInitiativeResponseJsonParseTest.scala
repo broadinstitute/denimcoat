@@ -1,19 +1,16 @@
 package denimcoat.reasoners.mvp
 
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
-
+import denimcoat.JsonIO
 import org.scalatest.FunSuite
 
 class MonarchInitiativeResponseJsonParseTest extends FunSuite {
 
-  test("Hello, World!") {
-    println("Hello, World!")
-  }
-
-  test("Read Sample response.") {
-    val sampleResponseJson = MonarchInitiativeSampleResponseJson.all
-    println("Monarch response length: " + sampleResponseJson.size)
+  test("decode sample response") {
+    val responseEither = JsonIO.decodeMonarchResponse(MonarchInitiativeSampleResponseJson.responseString)
+    responseEither match {
+      case Left(message) => fail(message)
+      case Right(response) => println(response)
+    }
   }
 
 }

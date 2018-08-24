@@ -2,10 +2,11 @@ package denimcoat.reasoners.mvp
 
 object MonarchInitiativeSampleResponseJson {
 
-  val all: String =
+  val responseString: String =
     Seq(
-      part00, part01, part02, part03, part04, part05, part06, part07, part08, part09, part10, part11, part12, part13
-    ).mkString("/n")
+      part00, part01, part02, part03, part04, part05, part06, part07, part08, part09, part10, part11, part12,
+      part13, part14
+    ).mkString("\n")
 
   def part00: String =
 """
@@ -14001,7 +14002,7 @@ object MonarchInitiativeSampleResponseJson {
           "synonyms": null,
           "description": null
 """
-  def part15: String =
+  def part14: String =
 """
         }
       ],
