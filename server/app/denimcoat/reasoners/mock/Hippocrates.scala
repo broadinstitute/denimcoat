@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{Edge, Node, Request, Response, Result}
+import denimcoat.reasoners.messages.{Edge, Node, DefaultRequest, DefaultResponse, Result}
 import denimcoat.reasoners.mock.EntityCatalogue.{Disease, Symptom}
 
 object Hippocrates extends Reasoner {
@@ -20,7 +20,7 @@ object Hippocrates extends Reasoner {
 
   def restateQuestion(disease: String): String = questionPrefix + disease + questionPostfix
 
-  override def reason(request: Request): Response = {
+  override def reason(request: DefaultRequest): DefaultResponse = {
     val coreResponse = request.items.flatMap(parseQuestion).map { disease: Disease =>
       val restatedQuestionText = restateQuestion(disease.name)
       val message = s"Disease ${disease.name} has symptom(s) ${
@@ -67,7 +67,7 @@ object Hippocrates extends Reasoner {
       }.toSeq
       CoreResponse.successResponse(restatedQuestionText, message, results.head)
     }
-    Response(
+    DefaultResponse(
       `@context` = Some(new URI(MockReasoners.baseUriContext)),
       `@id` = Some(MockReasoners.idUri(this.id)),
       `@type` = Some("Very awesome type of response"),

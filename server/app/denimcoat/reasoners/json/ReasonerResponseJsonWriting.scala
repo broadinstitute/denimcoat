@@ -61,7 +61,7 @@ object ReasonerResponseJsonWriting {
     "edge_list" -> result.edge_list
   )
 
-  implicit val responseWrites: Writes[Response] = (response: Response) => Json.obj(
+  implicit val responseWrites: Writes[DefaultResponse] = (response: DefaultResponse) => Json.obj(
     "@context" -> response.`@context`,
     "@id" -> response.`@id`,
     "@type" -> response.`@type`,

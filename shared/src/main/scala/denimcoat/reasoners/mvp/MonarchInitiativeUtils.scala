@@ -1,9 +1,15 @@
 package denimcoat.reasoners.mvp
 
+import denimcoat.reasoners.messages.ResponseBase
+
 object MonarchInitiativeUtils {
 
   val sampleUrl: String = "https://api.monarchinitiative.org/api/bioentity/phenotype/HP:0000855/diseases/?" +
     "unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true&use_compact_associations=false"
+
+  def phenotypeToDiseaseUrl(phenotypeId: String): String =
+    s"https://api.monarchinitiative.org/api/bioentity/phenotype/$phenotypeId/diseases/?" +
+      "unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true&use_compact_associations=false"
 
   case class FacetCounts(subject_closure: Map[String, Int])
 
@@ -26,5 +32,6 @@ object MonarchInitiativeUtils {
                          publications: Option[Seq[Publication]], subject: Subject)
 
   case class Response(facet_counts: FacetCounts, associations: Seq[Association], objects: Seq[String], numFound: Int)
+    extends ResponseBase
 
 }

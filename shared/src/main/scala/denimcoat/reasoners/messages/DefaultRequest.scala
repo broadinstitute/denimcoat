@@ -5,10 +5,10 @@ import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
 
-case class Request(items: Seq[String], relation: Relation, timestamp: Date)
+case class DefaultRequest(items: Seq[String], relation: Relation, timestamp: Date)
 
-object Request {
-  def apply(items: Seq[String], relation: Relation): Request = Request(items, relation, new Date())
+object DefaultRequest {
+  def apply(items: Seq[String], relation: Relation): DefaultRequest = DefaultRequest(items, relation, new Date())
 }
 
 case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
@@ -31,8 +31,9 @@ object Result {
   def empty: Result = Result(None, None, None, Seq.empty, Seq.empty)
 }
 
-case class Response(`@context`: Option[URI], `@id`: Option[URI], `@type`: Option[String],
-                    schema_version: Option[String], tool_version: Option[String], datetime: Option[Date],
-                    original_question_text: Option[String], restated_question_text: Option[String],
-                    result_code: Option[String], message: Option[String], result_list: Result)
+case class DefaultResponse(`@context`: Option[URI], `@id`: Option[URI], `@type`: Option[String],
+                           schema_version: Option[String], tool_version: Option[String], datetime: Option[Date],
+                           original_question_text: Option[String], restated_question_text: Option[String],
+                           result_code: Option[String], message: Option[String], result_list: Result)
+  extends ResponseBase
 

@@ -5,16 +5,15 @@ import java.util.Date
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.ResultItemSetInfo
-import denimcoat.reasoners.messages.{Request => ReasonerRequest, Response => ReasonerResponse}
-import denimcoat.reasoners.mvp.BioThingsExplorerUtils
+import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse}
+import denimcoat.reasoners.mvp.{BioThingsExplorerUtils, MonarchInitiativeUtils}
 import denimcoat.svg.MainSvg
 import denimcoat.util.NamesAndIds
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
-import org.scalajs.dom.html.Button
-import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, KeyboardEvent, XMLHttpRequest}
-import org.scalajs.dom.{Event, MouseEvent}
+import org.scalajs.dom.Event
+import org.scalajs.dom.raw.{HTMLElement, KeyboardEvent, XMLHttpRequest}
 
 import scala.scalajs.js
 
@@ -31,9 +30,9 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ReasonerResponse]]] =
+  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, DefaultResponse]]] =
     Workflow.resultItemSetInfos.map(itemSet =>
-      (itemSet, Map.empty[String, Either[String, ReasonerResponse]])).toMap
+      (itemSet, Map.empty[String, Either[String, DefaultResponse]])).toMap
   var items: Map[Workflow.ItemSetInfo, Seq[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
@@ -43,7 +42,7 @@ object MainJS {
   }
 
   def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
-                responseEither: Either[String, ReasonerResponse]): Unit = {
+                responseEither: Either[String, DefaultResponse]): Unit = {
     val itemSetAnswers = answers(itemSet)
     answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseEither)))
     responseEither match {
@@ -76,7 +75,7 @@ object MainJS {
   }
 
   def submitReasonerRequest(reasonerId: String, resultItemSetInfo: ResultItemSetInfo, url: String,
-                            requestOpt: Option[ReasonerRequest],
+                            requestOpt: Option[DefaultRequest],
                             responseHandler: (XMLHttpRequest, String, ResultItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
@@ -109,6 +108,7 @@ object MainJS {
   def queryMonarchInitiative(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
     startItems.flatMap(NamesAndIds.parse(_).getId("hp")).foreach { startItem =>
+      val url = MonarchInitiativeUtils.phenotypeToDiseaseUrl(startItem)
       ???
 //      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
 //      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
@@ -118,7 +118,7 @@ object MainJS {
   def queryDefaultReasoner(reasonerId: String, startItems: Seq[String],
                            resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
-    val request = ReasonerRequest(startItems, resultItemSetInfo.relationToPrevious)
+    val request = DefaultRequest(startItems, resultItemSetInfo.relationToPrevious)
     submitReasonerRequest(reasonerId, resultItemSetInfo, url, Some(request), receiveResponse)
   }
 
