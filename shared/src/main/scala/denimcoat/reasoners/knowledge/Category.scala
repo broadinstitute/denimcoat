@@ -1,6 +1,6 @@
 package denimcoat.reasoners.knowledge
 
-case class Category(id: String, label: String) extends Identifiable {
+case class Category(id: String, name: String) extends Identifiable {
 
 }
 

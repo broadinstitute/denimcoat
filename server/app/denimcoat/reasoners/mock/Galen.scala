@@ -5,7 +5,8 @@ import java.util.Date
 
 import denimcoat.reasoners.Reasoner
 import denimcoat.reasoners.knowledge.{Category, Relation}
-import denimcoat.reasoners.messages.{Edge, Node, DefaultRequest, DefaultResponse, Result}
+import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse, Edge, Node, Result}
+import denimcoat.util.Entity
 
 object Galen extends Reasoner {
   override def id: String = "galen"
@@ -19,16 +20,16 @@ object Galen extends Reasoner {
 
   def restateQuestion(edge: KBEdge): String = {
     val relation = edge.relation
-    s"What has relation ${relation.label} with ${relation.inCategory.label} ${edge.start.label}?"
+    s"What has relation ${relation.name} with ${relation.inCategory.name} ${edge.start.name}?"
   }
 
   def entityToNode(entity: Entity, category: Category): Node = {
     Node(
       id = entity.id,
       `type` = category.id,
-      name = entity.label,
+      name = entity.name,
       uri = Some(new URI(s"${category.id}:${entity.id}")),
-      description = Some(s"The ${category.label} ${entity.label}."),
+      description = Some(s"The ${category.name} ${entity.name}."),
       symbol = Some(entity.id),
       node_property_list = Some(Seq.empty)
     )
@@ -46,8 +47,8 @@ object Galen extends Reasoner {
       val objectEntity = kbEdge.end
       val objectCategory = relation.outCategory
       val message =
-        s"${subjectCategory.label} ${subjectEntity.label} ${relation.label} " +
-          s"${objectCategory.label} ${objectCategory.label}"
+        s"${subjectCategory.name} ${subjectEntity.name} ${relation.name} " +
+          s"${objectCategory.name} ${objectCategory.name}"
       val diseaseNode = entityToNode(subjectEntity, subjectCategory)
       val symptomNode = entityToNode(objectEntity, objectCategory)
       val diseaseSymptomEdge = Edge(

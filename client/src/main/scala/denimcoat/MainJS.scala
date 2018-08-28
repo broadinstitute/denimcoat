@@ -8,7 +8,8 @@ import denimcoat.mvp.Workflow.ResultItemSetInfo
 import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse}
 import denimcoat.reasoners.mvp.{BioThingsExplorerUtils, MonarchInitiativeUtils}
 import denimcoat.svg.MainSvg
-import denimcoat.util.NamesAndIds
+import denimcoat.svg.mvp.ReasonerList
+import denimcoat.util.Entity
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
@@ -52,7 +53,7 @@ object MainJS {
           val result = response.result_list
           val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
           val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map { node =>
-            NamesAndIds.fromStrings(Set(node.name, node.id)).toString
+            Entity.fromStrings(Seq(node.name, node.id)).toString
           }
           nodeNames
         }
@@ -99,17 +100,21 @@ object MainJS {
 
   def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    startItems.flatMap(NamesAndIds.parse(_).getId("omim.disease")).foreach { startItem =>
+    startItems.flatMap(Entity.parse(_).getId("omim.disease")).foreach { startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
       submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
     }
   }
 
+  private def notYetImplemented(what: String): Unit = {
+    dom.window.alert("Not yet implemented: " + what)
+  }
+
   def queryMonarchInitiative(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    startItems.flatMap(NamesAndIds.parse(_).getId("hp")).foreach { startItem =>
+    startItems.flatMap(Entity.parse(_).getId("hp")).foreach { startItem =>
       val url = MonarchInitiativeUtils.phenotypeToDiseaseUrl(startItem)
-      ???
+      notYetImplemented("queryMonarchInitiative")
 //      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
 //      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
     }
@@ -138,8 +143,10 @@ object MainJS {
         resetAnswers(resultItemSetInfo)
         displayAnswers(resultItemSetInfo)
         reasonerIds.foreach { reasonerId =>
-          if (reasonerId == "biothings") {
+          if (reasonerId == ReasonerList.biothings.id) {
             queryBioThingsExplorer(reasonerId, selectedItems, resultItemSetInfo)
+          } else if(reasonerId == ReasonerList.monarch.id) {
+            queryMonarchInitiative(reasonerId, selectedItems, resultItemSetInfo)
           } else {
             queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
           }

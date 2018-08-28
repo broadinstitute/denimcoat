@@ -9,7 +9,7 @@ trait Relation extends Identifiable {
 
 object Relation {
 
-  abstract case class Reversible(id: String, label: String, inCategory: Category, outCategory: Category)
+  abstract case class Reversible(id: String, name: String, inCategory: Category, outCategory: Category)
     extends Relation {
     def reverse: Reversible
   }

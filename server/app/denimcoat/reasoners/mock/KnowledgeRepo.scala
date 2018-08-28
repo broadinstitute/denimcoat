@@ -1,7 +1,7 @@
 package denimcoat.reasoners.mock
 
-import denimcoat.reasoners.knowledge.{Category, Identifiable, Relation}
-import denimcoat.util.Index
+import denimcoat.reasoners.knowledge.{Category, Relation}
+import denimcoat.util.{Entity, Index}
 
 object KnowledgeRepo {
 
@@ -10,21 +10,20 @@ object KnowledgeRepo {
 
     def category: Category
 
-    def newEntity(id: String, label: String): Entity = {
-      val entity = Entity(id, label)
+    def newEntity(string: String): Entity = {
+      val entity = Entity.parse(string)
       entities += entity
       entity
     }
 
-    def newEntity(id: String): Entity = newEntity(id, id)
   }
 
   object Diseases extends EntitySet {
     val category: Category = Category.disease
-    val typeOneDiabetesMellitus: Entity = newEntity("typeOneDiabetesMellitus", "type 1 diabetes mellitus")
-    val typeTwoDiabetesMellitus: Entity = newEntity("typeTwoDiabetesMellitus", "type 2 diabetes mellitus")
-    val behcet: Entity = newEntity("behcetsDisease", "Behcet's disease")
-    val ms: Entity = newEntity("multipleSklerosis", "multiple sklerosis")
+    val typeOneDiabetesMellitus: Entity = newEntity("type 1 diabetes mellitus")
+    val typeTwoDiabetesMellitus: Entity = newEntity("type 2 diabetes mellitus")
+    val behcet: Entity = newEntity("Behcet's disease")
+    val ms: Entity = newEntity("multiple sklerosis")
   }
 
   object Symptoms extends EntitySet {
@@ -32,20 +31,20 @@ object KnowledgeRepo {
     val inflammation: Entity = newEntity("inflammation")
     val fever: Entity = newEntity("fever")
     val pain: Entity = newEntity("pain")
-    val oralAphthousUlcers: Entity = newEntity("ulcersAphtousOral", "ulcers aphthous oral")
+    val oralAphthousUlcers: Entity = newEntity("ulcers aphthous oral")
     val uveitis: Entity = newEntity("uveitis")
-    val genitalUlceration: Entity = newEntity("genitalUlceration", "genital ulceration")
+    val genitalUlceration: Entity = newEntity("genital ulceration")
     val hyperglycemia: Entity = newEntity("hyperglycemia")
     val polydipsia: Entity = newEntity("polydipsia")
     val polyphagia: Entity = newEntity("polyphagia")
-    val cnsLesions: Entity = newEntity("cnsLesions", "CNS lesions")
+    val cnsLesions: Entity = newEntity("CNS lesions")
   }
 
   object Variants extends EntitySet {
     val category: Category = Category.variant
-    val rs3135388T: Entity = newEntity("rs3135388T", "rs3135388(T)")
-    val rs12722489G: Entity = newEntity("rs12722489G", "rs12722489(G)")
-    val rs2104286A: Entity = newEntity("rs2104286A", "rs2104286(A)")
+    val rs3135388T: Entity = newEntity("rs3135388(T)")
+    val rs12722489G: Entity = newEntity("rs12722489(G)")
+    val rs2104286A: Entity = newEntity("rs2104286(A)")
   }
 
   val entitySets: Set[EntitySet] = Set(Diseases, Symptoms, Variants)
@@ -93,7 +92,7 @@ object KnowledgeRepo {
     graph
   }
 
-  val index: Index[Entity] = Index[Entity](Seq(_.id, _.label))
+  val index: Index[Entity] = Index[Entity](Seq(_.id, _.name))
 
   for (entity <- graph.nodes) {
     index.add(entity)

@@ -10,12 +10,12 @@ object Workflow {
     def relationToPreviousOpt: Option[Relation]
   }
 
-  case class StartItemSetInfo(id: String, label: String, category: Category) extends ItemSetInfo {
+  case class StartItemSetInfo(id: String, name: String, category: Category) extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = None
     override val relationToPreviousOpt: Option[Relation] = None
   }
 
-  case class ResultItemSetInfo(id: String, label: String, category: Category, previousItems: ItemSetInfo,
+  case class ResultItemSetInfo(id: String, name: String, category: Category, previousItems: ItemSetInfo,
                                relationToPrevious: Relation)
   extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = Some(previousItems)

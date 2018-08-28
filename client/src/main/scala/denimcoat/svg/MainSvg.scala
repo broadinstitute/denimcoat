@@ -46,7 +46,7 @@ object MainSvg {
     def create(itemSetInfo: StartItemSetInfo, svg: SVG, iRow: Int): InputRow = {
       val y = spaceLayout.yOfItemsRow(iRow)
       val label = TextFacade.create(svg, "inputRow" + iRow, spaceLayout.xItemsLabel, y)
-      label.text := itemSetInfo.label + ":"
+      label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
       val textEditBox = TextEditBox.create(svg, "textEditBow" + iRow, spaceLayout.xOfItem(0), y)
       svg.appendChild(textEditBox.element)
@@ -89,10 +89,10 @@ object MainSvg {
     def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
       val yItems = spaceLayout.yOfItemsRow(iRow)
       val label = TextFacade.create(svg, "resultRow" + iRow, spaceLayout.xItemsLabel, yItems)
-      label.text := itemSetInfo.label + ":"
+      label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
       val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
-      button.text := itemSetInfo.relationToPrevious.label
+      button.text := itemSetInfo.relationToPrevious.name
       button.x := spaceLayout.xButtons
       button.y := yItems - 25
       svg.appendChild(button.element)
@@ -102,8 +102,8 @@ object MainSvg {
   }
 
   val reasonerSelectionPanels: Seq[ReasonerSelectionPanel] =
-    ReasonerList.list.zipWithIndex.map { case (ReasonerList.Entry(id, name), iReasoner) =>
-      val panel = ReasonerSelectionPanel.create(svg, id, name, spaceLayout, iReasoner)
+    ReasonerList.list.zipWithIndex.map { case (ReasonerList.Entry(reasonerId, name), iReasoner) =>
+      val panel = ReasonerSelectionPanel.create(svg, reasonerId, name, spaceLayout, iReasoner)
       svg.appendChild(panel.element)
       panel
     }
