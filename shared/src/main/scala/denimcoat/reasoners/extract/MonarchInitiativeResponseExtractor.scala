@@ -7,6 +7,6 @@ class MonarchInitiativeResponseExtractor(override val response: MonarchInitiativ
   type Response = MonarchInitiativeUtils.Response
 
   override def targetNodeNames: Seq[String] = {
-    ???
+    response.associations.map(_.`object`).map(obj => obj.label + "; " + obj.id)
   }
 }

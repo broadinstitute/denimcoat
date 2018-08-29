@@ -5,7 +5,7 @@ import java.util.Date
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.ResultItemSetInfo
-import denimcoat.reasoners.extract.DefaultResponseExtractor
+import denimcoat.reasoners.extract.{DefaultResponseExtractor, ResponseExtractor}
 import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.mvp.{BioThingsExplorerUtils, MonarchInitiativeUtils}
 import denimcoat.svg.MainSvg
@@ -32,9 +32,9 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, DefaultResponseExtractor]]] =
+  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ResponseExtractor]]] =
     Workflow.resultItemSetInfos.map(itemSet =>
-      (itemSet, Map.empty[String, Either[String, DefaultResponseExtractor]])).toMap
+      (itemSet, Map.empty[String, Either[String, ResponseExtractor]])).toMap
   var items: Map[Workflow.ItemSetInfo, Seq[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
@@ -44,7 +44,7 @@ object MainJS {
   }
 
   def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
-                responseExtractorEither: Either[String, DefaultResponseExtractor]): Unit = {
+                responseExtractorEither: Either[String, ResponseExtractor]): Unit = {
     val itemSetAnswers = answers(itemSet)
     answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseExtractorEither)))
     responseExtractorEither match {
