@@ -26,11 +26,9 @@ object Workflow {
   val resultItemSetInfo0: ResultItemSetInfo =
     ResultItemSetInfo("symptom", "symptom", Category.symptom, startItemSetInfo, Relation.hasSymptom)
   val resultItemSetInfo1: ResultItemSetInfo =
-    ResultItemSetInfo("disease", "disease", Category.disease, resultItemSetInfo0,
-      Relation.isSymptomOf)
+    ResultItemSetInfo("disease", "disease", Category.disease, resultItemSetInfo0, Relation.isSymptomOf)
   val resultItemSetInfo2: ResultItemSetInfo =
-    ResultItemSetInfo("variant", "variant", Category.variant, resultItemSetInfo1,
-      Relation.isPromotedBy)
+    ResultItemSetInfo("gene", "gene", Category.gene, resultItemSetInfo1, Relation.hasAssociatedGene)
 
   val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2)
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
