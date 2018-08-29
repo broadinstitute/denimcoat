@@ -6,4 +6,5 @@ trait ResponseExtractor {
   type Response <: ResponseBase
 
   def response: Response
+  def targetNodeNames: Seq[String]
 }

@@ -5,7 +5,8 @@ import java.util.Date
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.ResultItemSetInfo
-import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse}
+import denimcoat.reasoners.extract.DefaultResponseExtractor
+import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.mvp.{BioThingsExplorerUtils, MonarchInitiativeUtils}
 import denimcoat.svg.MainSvg
 import denimcoat.svg.mvp.ReasonerList
@@ -31,9 +32,9 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, DefaultResponse]]] =
+  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, DefaultResponseExtractor]]] =
     Workflow.resultItemSetInfos.map(itemSet =>
-      (itemSet, Map.empty[String, Either[String, DefaultResponse]])).toMap
+      (itemSet, Map.empty[String, Either[String, DefaultResponseExtractor]])).toMap
   var items: Map[Workflow.ItemSetInfo, Seq[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
@@ -43,20 +44,13 @@ object MainJS {
   }
 
   def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
-                responseEither: Either[String, DefaultResponse]): Unit = {
+                responseExtractorEither: Either[String, DefaultResponseExtractor]): Unit = {
     val itemSetAnswers = answers(itemSet)
-    answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseEither)))
-    responseEither match {
+    answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseExtractorEither)))
+    responseExtractorEither match {
       case Left(_) => ()
-      case Right(response) =>
-        val responseTargetNodeNames = {
-          val result = response.result_list
-          val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
-          val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map { node =>
-            Entity.fromStrings(Seq(node.name, node.id)).toString
-          }
-          nodeNames
-        }
+      case Right(responseExtractor) =>
+        val responseTargetNodeNames = responseExtractor.targetNodeNames
         items += itemSet -> (items(itemSet) ++ responseTargetNodeNames).distinct
     }
   }
@@ -70,7 +64,8 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseEither = JsonIO.decodeResponse(responseJson)
-      addAnswer(resultItemSetInfo, reasonerId, responseEither)
+      val responseExtractorEither = responseEither.map(new DefaultResponseExtractor(_))
+      addAnswer(resultItemSetInfo, reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
     }
   }
