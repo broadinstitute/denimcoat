@@ -8,6 +8,7 @@ import denimcoat.mvp.Workflow.ResultItemSetInfo
 import denimcoat.reasoners.extract.{DefaultResponseExtractor, ResponseExtractor}
 import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.mvp.{BioThingsExplorerUtils, MonarchInitiativeUtils}
+import denimcoat.reasoners.plugin.{DefaultReasonerPlugin, MonarchInitiativePlugin, ReasonerPlugin}
 import denimcoat.svg.MainSvg
 import denimcoat.svg.mvp.ReasonerList
 import denimcoat.util.Entity
@@ -59,23 +60,22 @@ object MainJS {
     displayResultSet(resultItemSetInfo)
   }
 
-  def receiveResponse(request: XMLHttpRequest, reasonerId: String,
+  def receiveResponse(request: XMLHttpRequest, plugin: ReasonerPlugin,
                       resultItemSetInfo: ResultItemSetInfo): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
-      val responseEither = JsonIO.decodeResponse(responseJson)
-      val responseExtractorEither = responseEither.map(new DefaultResponseExtractor(_))
-      addAnswer(resultItemSetInfo, reasonerId, responseExtractorEither)
+      val responseExtractorEither = plugin.getExtractorFor(responseJson)
+      addAnswer(resultItemSetInfo, plugin.reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
     }
   }
 
-  def submitReasonerRequest(reasonerId: String, resultItemSetInfo: ResultItemSetInfo, url: String,
+  def submitReasonerRequest(plugin: ReasonerPlugin, resultItemSetInfo: ResultItemSetInfo, url: String,
                             requestOpt: Option[DefaultRequest],
-                            responseHandler: (XMLHttpRequest, String, ResultItemSetInfo) => Event => Unit,
+                            responseHandler: (XMLHttpRequest, ReasonerPlugin, ResultItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
-    http.onreadystatechange = responseHandler(http, reasonerId, resultItemSetInfo)
+    http.onreadystatechange = responseHandler(http, plugin, resultItemSetInfo)
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
     val protocol = if (requestOpt.isEmpty) "GET" else "POST"
@@ -97,7 +97,8 @@ object MainJS {
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
     startItems.flatMap(Entity.parse(_).getId("omim.disease")).foreach { startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
-      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
+      submitReasonerRequest(DefaultReasonerPlugin(reasonerId), resultItemSetInfo, url, None, receiveResponse,
+        useProxy = true)
     }
   }
 
@@ -110,8 +111,8 @@ object MainJS {
     startItems.flatMap(Entity.parse(_).getId("hp")).foreach { startItem =>
       val url = MonarchInitiativeUtils.phenotypeToDiseaseUrl(startItem)
       notYetImplemented("queryMonarchInitiative")
-//      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
-//      submitReasonerRequest(reasonerId, resultItemSetInfo, url, None, receiveResponse, useProxy = true)
+      submitReasonerRequest(MonarchInitiativePlugin, resultItemSetInfo, url, None, receiveResponse,
+        useProxy = true)
     }
   }
 
@@ -119,7 +120,7 @@ object MainJS {
                            resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
     val request = DefaultRequest(startItems, resultItemSetInfo.relationToPrevious)
-    submitReasonerRequest(reasonerId, resultItemSetInfo, url, Some(request), receiveResponse)
+    submitReasonerRequest(DefaultReasonerPlugin(reasonerId), resultItemSetInfo, url, Some(request), receiveResponse)
   }
 
   def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
