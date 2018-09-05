@@ -162,10 +162,6 @@ object MainJS {
     MainSvg.inputString = exampleTwoDisease
   }
 
-  def clearDisease(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = ""
-  }
-
   def handleKeypress(event: Event): Unit = {
     event match {
       case keyboardEvent: KeyboardEvent =>
@@ -192,7 +188,6 @@ object MainJS {
 
     D3.select("#diseaseExampleOneButton").on("click", setDiseaseExampleOne)
     D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
-    D3.select("#diseaseClearButton").on("click", clearDisease)
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 

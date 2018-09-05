@@ -14,11 +14,15 @@ case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.d
 
   def xOfReasonerPanel(iPanel: Int): Double = 10 + iPanel * spacing.widthReasonerPanel
 
-  val xItemsLabel = 40.0 + nReasoners * spacing.widthReasonerPanel
+  val xItemsLabel: Double = 40.0 + nReasoners * spacing.widthReasonerPanel
 
-  val xButtons = xItemsLabel - 20.0
+  val xQueryButtons: Double = xItemsLabel - 20.0
 
-  def xOfItem(iItem: Int): Double = xItemsLabel + 170.0 + 170.0 * iItem
+  val xOfExampleButton: Double = xItemsLabel + 90.0
+
+  val xOfClearButton: Double = xOfExampleButton + 30.0
+
+  def xOfItem(iItem: Int): Double = xOfClearButton + 60.0 + 170.0 * iItem
 
 }
 

@@ -31,6 +31,26 @@ object MainSvg {
 
     def items: Seq[String]
 
+    def addExample(): Unit
+
+    def clear(): Unit
+
+    val exampleClickAction: MouseEvent => Unit = (_: MouseEvent) => addExample
+
+    val clearClickAction: MouseEvent => Unit = (_: MouseEvent) => clear
+
+    val exampleButton: LabelledButton = LabelledButton.create(svg, exampleClickAction)
+    exampleButton.text := "ex"
+    exampleButton.x := spaceLayout.xOfExampleButton
+    exampleButton.y := spaceLayout.yOfItemsRow(iRow)
+    svg.appendChild(exampleButton.element)
+
+    val clearButton: LabelledButton = LabelledButton.create(svg, clearClickAction)
+    clearButton.text := "clear"
+    clearButton.x := spaceLayout.xOfClearButton
+    clearButton.y := spaceLayout.yOfItemsRow(iRow)
+    svg.appendChild(clearButton.element)
+
     def selectedItems: Seq[String]
   }
 
@@ -40,6 +60,12 @@ object MainSvg {
     override def items: Seq[String] = Seq(textEditBox.text)
 
     override def selectedItems: Seq[String] = Seq(textEditBox.text)
+
+    override def addExample(): Unit = ???
+
+    override def clear(): Unit = {
+      textEditBox.text = ""
+    }
   }
 
   object InputRow {
@@ -83,6 +109,12 @@ object MainSvg {
     }
 
     override def selectedItems: Seq[String] = itemBoxes.filter(_.selectedVar.get.get).map(_.text.get.get)
+
+    override def addExample(): Unit = ???
+
+    override def clear(): Unit = {
+      items = Seq.empty
+    }
   }
 
   object ResultRow {
@@ -93,7 +125,7 @@ object MainSvg {
       svg.appendChild(label.element)
       val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
       button.text := itemSetInfo.relationToPrevious.name
-      button.x := spaceLayout.xButtons
+      button.x := spaceLayout.xQueryButtons
       button.y := yItems - 25
       svg.appendChild(button.element)
       val items = Seq.empty[SelectableLabelBox]
