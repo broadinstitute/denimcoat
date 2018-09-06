@@ -6,7 +6,9 @@ object Workflow {
 
   trait ItemSetInfo extends Identifiable {
     def category: Category
+
     def previousItemsOpt: Option[ItemSetInfo]
+
     def relationToPreviousOpt: Option[Relation]
   }
 
@@ -17,7 +19,7 @@ object Workflow {
 
   case class ResultItemSetInfo(id: String, name: String, category: Category, previousItems: ItemSetInfo,
                                relationToPrevious: Relation)
-  extends ItemSetInfo {
+    extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = Some(previousItems)
     override val relationToPreviousOpt: Option[Relation] = Some(relationToPrevious)
   }
@@ -32,4 +34,15 @@ object Workflow {
 
   val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2)
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
+
+  val examples: Map[ItemSetInfo, Seq[String]] = Map(
+    startItemSetInfo -> Seq(
+      "type 2 diabetes mellitus; omim.disease:125853", "Behcet's disease; omim.disease:109650"
+    ),
+    resultItemSetInfo0 -> Seq("Insulin resistance; hp:0000855"),
+    resultItemSetInfo1 -> Seq(
+      "type 2 diabetes mellitus; omim.disease:125853", "Behcet's disease; omim.disease:109650"
+    ),
+    resultItemSetInfo2 -> Seq("gene:1234567")
+  )
 }

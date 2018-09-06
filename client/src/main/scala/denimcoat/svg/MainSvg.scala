@@ -10,6 +10,8 @@ import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.svg.SVG
 
+import scala.util.Random
+
 object MainSvg {
 
   val id = "mainSvg"
@@ -35,9 +37,9 @@ object MainSvg {
 
     def clear(): Unit
 
-    val exampleClickAction: MouseEvent => Unit = (_: MouseEvent) => addExample
+    val exampleClickAction: MouseEvent => Unit = (_: MouseEvent) => addExample()
 
-    val clearClickAction: MouseEvent => Unit = (_: MouseEvent) => clear
+    val clearClickAction: MouseEvent => Unit = (_: MouseEvent) => clear()
 
     val exampleButton: LabelledButton = LabelledButton.create(svg, exampleClickAction)
     exampleButton.text := "ex"
@@ -61,7 +63,11 @@ object MainSvg {
 
     override def selectedItems: Seq[String] = Seq(textEditBox.text)
 
-    override def addExample(): Unit = ???
+    override def addExample(): Unit = {
+      val examples = Workflow.examples(itemSetInfo)
+      val iRandom = Random.nextInt(examples.size)
+      textEditBox.text = examples(iRandom)
+    }
 
     override def clear(): Unit = {
       textEditBox.text = ""
@@ -110,7 +116,10 @@ object MainSvg {
 
     override def selectedItems: Seq[String] = itemBoxes.filter(_.selectedVar.get.get).map(_.text.get.get)
 
-    override def addExample(): Unit = ???
+    override def addExample(): Unit = {
+      val examples = Workflow.examples(itemSetInfo)
+      items = (items ++ examples).distinct
+    }
 
     override def clear(): Unit = {
       items = Seq.empty
