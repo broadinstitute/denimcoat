@@ -1,15 +1,15 @@
 package denimcoat.reasoners.knowledge
 
-case class Category(id: String, name: String) extends Identifiable {
+case class Category(id: String, name: String, prefix: String) extends Identifiable {
 
 }
 
 object Category {
 
-  def apply(name: String): Category = Category(name, name)
+  def apply(name: String, prefix: String): Category = Category(name, name, prefix)
 
-  val disease = Category("disease")
-  val symptom = Category("symptom")
-  val gene = Category("gene")
-  val variant = Category("variant")
+  val disease = Category("disease", "omim.disease")
+  val symptom = Category("symptom", "hp")
+  val gene = Category("gene", "ncbigene")
+  val variant = Category("variant", "rs")
 }

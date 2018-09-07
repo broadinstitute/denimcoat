@@ -22,6 +22,10 @@ import scala.scalajs.js
 
 object MainJS {
 
+  def alert(message: String): Unit = {
+    dom.window.alert(message)
+  }
+
   def printTime(selection: Selection[HTMLElement, _, _]): Unit = {
     val timeNow = new Date()
     selection.html(timeNow.toString)
@@ -65,6 +69,7 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseExtractorEither = plugin.getExtractorFor(responseJson)
+      dom.window.alert(responseExtractorEither.toString)
       addAnswer(resultItemSetInfo, plugin.reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
     }
@@ -108,11 +113,17 @@ object MainJS {
 
   def queryMonarchInitiative(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    startItems.flatMap(Entity.parse(_).getId("hp")).foreach { startItem =>
-      val url = MonarchInitiativeUtils.phenotypeToDiseaseUrl(startItem)
-      notYetImplemented("queryMonarchInitiative")
-      submitReasonerRequest(MonarchInitiativePlugin, resultItemSetInfo, url, None, receiveResponse,
-        useProxy = true)
+    val inCategory = resultItemSetInfo.previousItems.category
+    val inputIdPrefix = inCategory.prefix
+    val outCategory = resultItemSetInfo.category
+    startItems.flatMap(Entity.parse(_).getId(inputIdPrefix)).foreach { startItem =>
+      val urlEither = MonarchInitiativeUtils.constructUrl(inCategory, startItem, outCategory)
+      urlEither match {
+        case Right(url) =>
+          submitReasonerRequest(MonarchInitiativePlugin, resultItemSetInfo, url, None, receiveResponse,
+            useProxy = true)
+        case Left(message) => dom.window.alert(message)
+      }
     }
   }
 
@@ -141,7 +152,7 @@ object MainJS {
         reasonerIds.foreach { reasonerId =>
           if (reasonerId == ReasonerList.biothings.id) {
             queryBioThingsExplorer(reasonerId, selectedItems, resultItemSetInfo)
-          } else if(reasonerId == ReasonerList.monarch.id) {
+          } else if (reasonerId == ReasonerList.monarch.id) {
             queryMonarchInitiative(reasonerId, selectedItems, resultItemSetInfo)
           } else {
             queryDefaultReasoner(reasonerId, selectedItems, resultItemSetInfo)
@@ -149,17 +160,6 @@ object MainJS {
         }
       }
     }
-  }
-
-  val exampleOneDisease = "type 2 diabetes mellitus; omim.disease:125853"
-  val exampleTwoDisease = "Behcet's disease; omim.disease:109650"
-
-  def setDiseaseExampleOne(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = exampleOneDisease
-  }
-
-  def setDiseaseExampleTwo(datum: Any, index: Int, groupIndex: js.UndefOr[Int]): Unit = {
-    MainSvg.inputString = exampleTwoDisease
   }
 
   def handleKeypress(event: Event): Unit = {
@@ -185,9 +185,6 @@ object MainJS {
     js.timers.setInterval(200) {
       printTime(D3.select("#nowTime").asOf[HTMLElement])
     }
-
-    D3.select("#diseaseExampleOneButton").on("click", setDiseaseExampleOne)
-    D3.select("#diseaseExampleTwoButton").on("click", setDiseaseExampleTwo)
 
     D3.select("body").asOf[HTMLElement].node.addEventListener("keypress", handleKeypress, useCapture = false)
 
