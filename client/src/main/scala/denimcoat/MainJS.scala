@@ -22,6 +22,8 @@ import scala.scalajs.js
 
 object MainJS {
 
+  val weAreInDebugMode: Boolean = false
+
   def alert(message: String): Unit = {
     dom.window.alert(message)
   }
@@ -69,7 +71,9 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseExtractorEither = plugin.getExtractorFor(responseJson)
-      dom.window.alert(responseExtractorEither.toString)
+      if(weAreInDebugMode) {
+        dom.window.alert(responseExtractorEither.toString)
+      }
       addAnswer(resultItemSetInfo, plugin.reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
     }
