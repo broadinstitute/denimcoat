@@ -22,4 +22,13 @@ object BioThingsExplorerUtils {
     val format = "translator"
     buildUrl(inputPrefix, outputPrefix, diseaseId, format)
   }
+
+  def fixDoublePrefixedId(id: String): String = {
+    val parts = id.split(":")
+    if(parts.size > 2 && parts(0) == parts(1)) {
+      parts.drop(1).mkString(":")
+    } else {
+      id
+    }
+  }
 }
