@@ -13,7 +13,7 @@ object DefaultRequest {
 
 case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)
 
-case class Node(id: String, `type`: String, name: String, uri: Option[URI], description: Option[String],
+case class Node(id: String, `type`: String, name: Option[String], uri: Option[URI], description: Option[String],
                 symbol: Option[String], node_property_list: Option[Seq[NodeProperty]])
 
 case class EdgeProperty(`type`: String, name: String, value: Any, uri: URI)

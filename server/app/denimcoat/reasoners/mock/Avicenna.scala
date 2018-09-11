@@ -31,7 +31,7 @@ object Avicenna extends Reasoner {
         val drugNode = Node(
           id = drug.cui,
           `type` = "drug",
-          name = drug.name,
+          name = Some(drug.name),
           uri = Some(new URI(s"drug:${drug.cui}")),
           description = Some(s"The drug ${drug.name}."),
           symbol = Some(drug.name),
@@ -41,7 +41,7 @@ object Avicenna extends Reasoner {
           val targetNode = Node(
             id = target.cui,
             `type` = "target",
-            name = target.name,
+            name = Some(target.name),
             uri = Some(new URI(s"target:${target.cui}")),
             description = Some(s"The target ${target.name}."),
             symbol = Some(target.name),
@@ -61,7 +61,7 @@ object Avicenna extends Reasoner {
             Node(
               id = disease.cui,
               `type` = "disease",
-              name = disease.name,
+              name = Some(disease.name),
               uri = Some(new URI(s"disease:${disease.cui}")),
               description = Some(s"The disease ${disease.name}."),
               symbol = Some(disease.name),

@@ -31,7 +31,7 @@ object Hippocrates extends Reasoner {
       val diseaseNode = Node(
         id = disease.cui,
         `type` = "disease",
-        name = disease.name,
+        name = Some(disease.name),
         uri = Some(new URI(s"disease:${disease.cui}")),
         description = Some(s"The disease ${disease.name}."),
         symbol = Some(disease.name),
@@ -41,7 +41,7 @@ object Hippocrates extends Reasoner {
         val symptomNode = Node(
           id = symptom.cui,
           `type` = "symptom",
-          name = symptom.name,
+          name = Some(symptom.name),
           uri = Some(new URI(s"symptom:${symptom.cui}")),
           description = Some(s"The symptom ${symptom.name}."),
           symbol = Some(symptom.name),

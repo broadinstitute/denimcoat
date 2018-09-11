@@ -10,7 +10,7 @@ class DefaultResponseExtractor(override val response: DefaultResponse) extends R
     val result = response.result_list
     val targetIds = result.edge_list.to[Set].map(edge => edge.target_id)
     val nodeNames = result.node_list.filter(node => targetIds.contains(node.id)).map { node =>
-      Entity.fromStrings(Seq(node.name, node.id)).toString
+      Entity.fromStrings(node.name.toList :+  node.id).toString
     }
     nodeNames
   }

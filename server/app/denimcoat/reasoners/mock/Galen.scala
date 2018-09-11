@@ -27,7 +27,7 @@ object Galen extends Reasoner {
     Node(
       id = entity.id,
       `type` = category.id,
-      name = entity.name,
+      name = Some(entity.name),
       uri = Some(new URI(s"${category.id}:${entity.id}")),
       description = Some(s"The ${category.name} ${entity.name}."),
       symbol = Some(entity.id),

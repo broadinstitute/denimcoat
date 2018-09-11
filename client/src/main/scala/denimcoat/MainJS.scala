@@ -104,6 +104,9 @@ object MainJS {
 
   def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
+    if(weAreInDebugMode) {
+      alert("Yo!")
+    }
     startItems.flatMap(Entity.parse(_).getId("omim.disease")).foreach { startItem =>
       val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
       submitReasonerRequest(DefaultReasonerPlugin(reasonerId), resultItemSetInfo, url, None, receiveResponse,
