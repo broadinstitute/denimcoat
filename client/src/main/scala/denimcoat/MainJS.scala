@@ -22,10 +22,16 @@ import scala.scalajs.js
 
 object MainJS {
 
-  val weAreInDebugMode: Boolean = false
+  val weAreInDebugMode: Boolean = true
 
   def alert(message: String): Unit = {
     dom.window.alert(message)
+  }
+
+  def alertWhenDebugging(message: String): Unit = {
+    if(weAreInDebugMode) {
+      alert(message)
+    }
   }
 
   def printTime(selection: Selection[HTMLElement, _, _]): Unit = {
@@ -107,8 +113,11 @@ object MainJS {
     if(weAreInDebugMode) {
       alert("Yo!")
     }
-    startItems.flatMap(Entity.parse(_).getId("omim.disease")).foreach { startItem =>
-      val url = BioThingsExplorerUtils.buildUrlDiseaseToSymptoms(startItem)
+    val inIdPrefix = resultItemSetInfo.previousItems.prefix
+    val outIdPrefix = resultItemSetInfo.prefix
+    startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
+      val url = BioThingsExplorerUtils.buildUrl(inIdPrefix, outIdPrefix, startItem)
+      alertWhenDebugging(url)
       submitReasonerRequest(DefaultReasonerPlugin(reasonerId), resultItemSetInfo, url, None, receiveResponse,
         useProxy = true)
     }
