@@ -110,9 +110,6 @@ object MainJS {
 
   def queryBioThingsExplorer(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    if(weAreInDebugMode) {
-      alert("Yo!")
-    }
     val inIdPrefix = resultItemSetInfo.previousItems.prefix
     val outIdPrefix = resultItemSetInfo.prefix
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
@@ -145,6 +142,7 @@ object MainJS {
   def queryDefaultReasoner(reasonerId: String, startItems: Seq[String],
                            resultItemSetInfo: ResultItemSetInfo): Unit = {
     val url = getDefaultReasonerUrl(reasonerId)
+    alertWhenDebugging(url)
     val request = DefaultRequest(startItems, resultItemSetInfo.relationToPrevious)
     submitReasonerRequest(DefaultReasonerPlugin(reasonerId), resultItemSetInfo, url, Some(request), receiveResponse)
   }

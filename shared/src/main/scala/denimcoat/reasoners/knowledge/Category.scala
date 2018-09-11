@@ -11,5 +11,6 @@ object Category {
   val disease: Category = Category("disease")
   val phenotype: Category = Category("phenotype")
   val gene: Category = Category("gene")
+  val pathway: Category = Category("pathway")
   val variant: Category = Category("variant")
 }

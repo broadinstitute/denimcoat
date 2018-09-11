@@ -9,5 +9,6 @@ object IdPrefix {
   val hp: IdPrefix = IdPrefix("hp", Category.phenotype)
   val mondo: IdPrefix = IdPrefix("mondo", Category.disease)
   val ncbigene: IdPrefix = IdPrefix("ncbigene", Category.gene)
+  val reactomePathway: IdPrefix = IdPrefix("reactome.pathway", Category.pathway)
   val rs: IdPrefix = IdPrefix("rs", Category.variant)
 }

@@ -17,6 +17,7 @@ object MonarchInitiativeUtils {
     val coreOpt = (inIdPrefix, outIdPrefix) match {
       case (IdPrefix.omimDisease, IdPrefix.hp) => Right(s"disease/OMIM:$inputEntityId/phenotypes/")
       case (IdPrefix.hp, IdPrefix.mondo) => Right(s"phenotype/HP:$inputEntityId/diseases/")
+      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => Right(s"gene/NCBIGENE:$inputEntityId/pathways/")
       case _ =>
         Left(s"Don't know how to query Monarch Initiative to go from ${inIdPrefix.string} to ${outIdPrefix.string}.")
     }

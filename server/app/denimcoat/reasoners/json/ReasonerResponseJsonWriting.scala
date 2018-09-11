@@ -47,7 +47,7 @@ object ReasonerResponseJsonWriting {
     "source_id" -> edge.source_id,
     "target_id" -> edge.target_id,
     "is_defined_by" -> edge.is_defined_by,
-    "provided_by" -> edge.provided_by,
+//    "provided_by" -> edge.provided_by,
     "confidence" -> edge.confidence,
     "edge_property_list" -> edge.edge_property_list,
     "origin_list" -> edge.origin_list

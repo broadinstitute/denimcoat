@@ -31,8 +31,11 @@ object Workflow {
     ResultItemSetInfo("disease", "disease", IdPrefix.mondo, resultItemSetInfo0, Relation.isSymptomOf)
   val resultItemSetInfo2: ResultItemSetInfo =
     ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo1, Relation.hasAssociatedGene)
+  val resultItemSetInfo3: ResultItemSetInfo =
+    ResultItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway, resultItemSetInfo2, Relation.isPartOfPathway)
 
-  val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2)
+  val resultItemSetInfos: Seq[ResultItemSetInfo] =
+    Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3)
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
 
   val examples: Map[ItemSetInfo, Seq[String]] = Map(
@@ -43,6 +46,7 @@ object Workflow {
     resultItemSetInfo1 -> Seq(
       "type 2 diabetes mellitus; omim.disease:125853", "Behcet's disease; omim.disease:109650"
     ),
-    resultItemSetInfo2 -> Seq("gene:1234567")
+    resultItemSetInfo2 -> Seq("gene:1234567"),
+    resultItemSetInfo3 -> Seq("reactome.pathway:1234567"),
   )
 }

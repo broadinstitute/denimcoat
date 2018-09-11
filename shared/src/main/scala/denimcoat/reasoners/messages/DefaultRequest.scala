@@ -21,7 +21,7 @@ case class EdgeProperty(`type`: String, name: String, value: Any, uri: URI)
 case class Origin(id: String, `type`: String, name: String)
 
 case class Edge(`type`: String, source_id: String, target_id: String, is_defined_by: Option[String],
-                provided_by: String, confidence: Option[Float], edge_property_list: Option[Seq[EdgeProperty]],
+                confidence: Option[Float], edge_property_list: Option[Seq[EdgeProperty]],
                 origin_list: Option[Seq[Origin]])
 
 case class Result(`@id`: Option[URI], text: Option[String], confidence: Option[Float], node_list: Seq[Node],

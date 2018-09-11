@@ -41,8 +41,21 @@ object Relation {
     override def reverse: Reversible = hasAssociatedGene
   }
 
+  val isPartOfPathway: Reversible =
+    new Reversible("isPartOfPathway", "is part of pathway", Category.gene, Category.pathway) {
+      override def reverse: Reversible = includesGene
+    }
+
+  val includesGene: Reversible =
+    new Reversible("includesGene", "includes gene", Category.pathway, Category.gene) {
+      override def reverse: Reversible = isPartOfPathway
+    }
+
   val knownRelations: Set[Relation] =
-    Set[Relation](hasSymptom, isSymptomOf, isPromotedBy, promotes, hasAssociatedGene, isAssociatedWith)
+    Set[Relation](
+      hasSymptom, isSymptomOf, isPromotedBy, promotes, hasAssociatedGene, isAssociatedWith, isPartOfPathway,
+      includesGene
+    )
 
   val relationsById: Map[String, Relation] = knownRelations.map(relation => (relation.id, relation)).toMap
 
