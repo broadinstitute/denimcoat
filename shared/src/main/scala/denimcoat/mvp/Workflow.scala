@@ -1,36 +1,36 @@
 package denimcoat.mvp
 
-import denimcoat.reasoners.knowledge.{Category, Identifiable, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, Identifiable, Relation}
 
 object Workflow {
 
   trait ItemSetInfo extends Identifiable {
-    def category: Category
+    def prefix: IdPrefix
 
     def previousItemsOpt: Option[ItemSetInfo]
 
     def relationToPreviousOpt: Option[Relation]
   }
 
-  case class StartItemSetInfo(id: String, name: String, category: Category) extends ItemSetInfo {
+  case class StartItemSetInfo(id: String, name: String, prefix: IdPrefix) extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = None
     override val relationToPreviousOpt: Option[Relation] = None
   }
 
-  case class ResultItemSetInfo(id: String, name: String, category: Category, previousItems: ItemSetInfo,
+  case class ResultItemSetInfo(id: String, name: String, prefix: IdPrefix, previousItems: ItemSetInfo,
                                relationToPrevious: Relation)
     extends ItemSetInfo {
     override val previousItemsOpt: Option[ItemSetInfo] = Some(previousItems)
     override val relationToPreviousOpt: Option[Relation] = Some(relationToPrevious)
   }
 
-  val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", Category.disease)
+  val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", IdPrefix.omimDisease)
   val resultItemSetInfo0: ResultItemSetInfo =
-    ResultItemSetInfo("symptom", "symptom", Category.symptom, startItemSetInfo, Relation.hasSymptom)
+    ResultItemSetInfo("symptom", "symptom", IdPrefix.hp, startItemSetInfo, Relation.hasSymptom)
   val resultItemSetInfo1: ResultItemSetInfo =
-    ResultItemSetInfo("disease", "disease", Category.disease, resultItemSetInfo0, Relation.isSymptomOf)
+    ResultItemSetInfo("disease", "disease", IdPrefix.mondo, resultItemSetInfo0, Relation.isSymptomOf)
   val resultItemSetInfo2: ResultItemSetInfo =
-    ResultItemSetInfo("gene", "gene", Category.gene, resultItemSetInfo1, Relation.hasAssociatedGene)
+    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo1, Relation.hasAssociatedGene)
 
   val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2)
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos

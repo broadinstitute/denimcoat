@@ -27,7 +27,7 @@ object KnowledgeRepo {
   }
 
   object Symptoms extends EntitySet {
-    val category: Category = Category.symptom
+    val category: Category = Category.phenotype
     val inflammation: Entity = newEntity("inflammation")
     val fever: Entity = newEntity("fever")
     val pain: Entity = newEntity("pain")

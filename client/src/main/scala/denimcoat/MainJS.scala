@@ -120,11 +120,10 @@ object MainJS {
 
   def queryMonarchInitiative(reasonerId: String, startItems: Seq[String],
                              resultItemSetInfo: ResultItemSetInfo): Unit = {
-    val inCategory = resultItemSetInfo.previousItems.category
-    val inputIdPrefix = inCategory.prefix
-    val outCategory = resultItemSetInfo.category
-    startItems.flatMap(Entity.parse(_).getId(inputIdPrefix)).foreach { startItem =>
-      val urlEither = MonarchInitiativeUtils.constructUrl(inCategory, startItem, outCategory)
+    val inIdPrefix = resultItemSetInfo.previousItems.prefix
+    val outIdPrefix = resultItemSetInfo.prefix
+    startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
+      val urlEither = MonarchInitiativeUtils.constructUrl(inIdPrefix, startItem, outIdPrefix)
       urlEither match {
         case Right(url) =>
           submitReasonerRequest(MonarchInitiativePlugin, resultItemSetInfo, url, None, receiveResponse,
