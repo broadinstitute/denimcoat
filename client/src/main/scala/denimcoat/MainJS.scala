@@ -22,7 +22,7 @@ import scala.scalajs.js
 
 object MainJS {
 
-  val weAreInDebugMode: Boolean = true
+  val weAreInDebugMode: Boolean = false
 
   def alert(message: String): Unit = {
     dom.window.alert(message)
