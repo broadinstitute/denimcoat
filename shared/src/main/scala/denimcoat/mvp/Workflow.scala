@@ -33,9 +33,17 @@ object Workflow {
     ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo1, Relation.hasAssociatedGene)
   val resultItemSetInfo3: ResultItemSetInfo =
     ResultItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway, resultItemSetInfo2, Relation.isPartOfPathway)
+  val resultItemSetInfo4: ResultItemSetInfo =
+    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo3, Relation.includesGene)
+  val resultItemSetInfo5: ResultItemSetInfo =
+    ResultItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, resultItemSetInfo4, Relation.isSameGeneAs)
+  val resultItemSetInfo6: ResultItemSetInfo =
+    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, resultItemSetInfo5, Relation.isGeneTargetedByDrug)
 
-  val resultItemSetInfos: Seq[ResultItemSetInfo] =
-    Seq(resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3)
+  val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(
+    resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3, resultItemSetInfo4,
+    resultItemSetInfo5, resultItemSetInfo6
+  )
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
 
   val examples: Map[ItemSetInfo, Seq[String]] = Map(
@@ -58,5 +66,16 @@ object Workflow {
       "MAPK signaling pathway; reactome.pathway:KEGG-path:maphsa04010",
       "Innate Immune System; reactome.pathway:REACT:R-HSA-168249"
     ),
+    resultItemSetInfo4 -> Seq(
+      "ncbigene:338", "ncbigene:3383", "ncbigene:355", "ncbigene:1649", "ncbigene:169792", "ncbigene:23274"
+    ),
+    resultItemSetInfo5 -> Seq(
+      "hgnc.symbol:DDIT3", "hgnc.symbol:FAS", "hgnc.symbol:ICAM1", "hgnc.symbol:GLIS3", "hgnc.symbol:CLEC16A"
+    ),
+    resultItemSetInfo6 -> Seq(
+      "chembl.compound:CHEMBL2146126", "chembl.compound:CHEMBL866", "chembl.compound:CHEMBL452231",
+      "chembl.compound:CHEMBL386630", "chembl.compound:CHEMBL2108110", "chembl.compound:CHEMBL109",
+      "chembl.compound:CHEMBL905"
+    )
   )
 }

@@ -130,6 +130,7 @@ object MainJS {
     val outIdPrefix = resultItemSetInfo.prefix
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
       val urlEither = MonarchInitiativeUtils.constructUrl(inIdPrefix, startItem, outIdPrefix)
+      alertWhenDebugging(urlEither.toString)
       urlEither match {
         case Right(url) =>
           submitReasonerRequest(MonarchInitiativePlugin, resultItemSetInfo, url, None, receiveResponse,

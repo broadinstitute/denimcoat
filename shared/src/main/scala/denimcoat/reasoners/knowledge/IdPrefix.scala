@@ -11,4 +11,6 @@ object IdPrefix {
   val ncbigene: IdPrefix = IdPrefix("ncbigene", Category.gene)
   val reactomePathway: IdPrefix = IdPrefix("reactome.pathway", Category.pathway)
   val rs: IdPrefix = IdPrefix("rs", Category.variant)
+  val hgncSymbol: IdPrefix = IdPrefix("hgnc.symbol", Category.gene)
+  val chemblCompound: IdPrefix = IdPrefix("chembl.compound", Category.compound)
 }

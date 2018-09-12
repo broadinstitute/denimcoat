@@ -51,10 +51,25 @@ object Relation {
       override def reverse: Reversible = isPartOfPathway
     }
 
+  val isSameGeneAs: Reversible =
+    new Reversible("isSameGeneAs", "is same gene as", Category.gene, Category.gene) {
+      override def reverse: Reversible = this
+    }
+
+  val isGeneTargetedByDrug: Reversible =
+    new Reversible("isGeneTargetedByDrug", "is gene targeted by drug", Category.gene, Category.compound) {
+      override def reverse: Reversible = isDrugTargetingGene
+    }
+
+  val isDrugTargetingGene: Reversible =
+    new Reversible("isDrugTargetingGene", "is drug targeting gene", Category.compound, Category.gene) {
+      override def reverse: Reversible = isGeneTargetedByDrug
+    }
+
   val knownRelations: Set[Relation] =
     Set[Relation](
       hasSymptom, isSymptomOf, isPromotedBy, promotes, hasAssociatedGene, isAssociatedWith, isPartOfPathway,
-      includesGene
+      includesGene, isSameGeneAs, isGeneTargetedByDrug, isDrugTargetingGene
     )
 
   val relationsById: Map[String, Relation] = knownRelations.map(relation => (relation.id, relation)).toMap

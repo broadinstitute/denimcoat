@@ -13,4 +13,5 @@ object Category {
   val gene: Category = Category("gene")
   val pathway: Category = Category("pathway")
   val variant: Category = Category("variant")
+  val compound: Category = Category("compound")
 }
