@@ -56,7 +56,6 @@ object Galen extends Reasoner {
         source_id = diseaseNode.id,
         target_id = symptomNode.id,
         is_defined_by = Some("Some smart dude"),
-        provided_by = "Hippocrates",
         confidence = Some(1.0f),
         edge_property_list = Some(Seq.empty),
         origin_list = Some(Seq.empty)
