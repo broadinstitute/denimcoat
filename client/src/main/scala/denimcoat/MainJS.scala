@@ -78,7 +78,7 @@ object MainJS {
       val responseJson = request.responseText
       val responseExtractorEither = plugin.getExtractorFor(responseJson)
       if(weAreInDebugMode) {
-        dom.window.alert(responseExtractorEither.toString)
+        dom.window.alert(responseExtractorEither.toString + "\n" + responseJson.substring(0, 100))
       }
       addAnswer(resultItemSetInfo, plugin.reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
