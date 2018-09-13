@@ -3,6 +3,7 @@ package denimcoat.svg.mvp
 import denimcoat.gears.providers.Var
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
+import denimcoat.reasoners.plugin.{ReasonerPlugin, ReasonerPluginProvider}
 import denimcoat.svg.mvp.ReasonerSelectionPanel.SelectionBox
 import denimcoat.svg.{ElementFacade, SelectableLabelBox, SvgUtils, TextFacade}
 import org.scalajs.dom.svg.{G, SVG}
@@ -22,8 +23,14 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
   reasonerIdLabel.angle.setValue(-90.0)
   element.appendChild(reasonerIdLabel.element)
 
+  val reasonerPlugin: ReasonerPlugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
+
   val selectionBoxes: Seq[SelectionBox] = (0 until spaceLayout.nRows).filter{ iRow =>
-    Workflow.itemSetInfos(iRow).previousItemsOpt.nonEmpty
+    Workflow.itemSetInfos(iRow) match {
+      case _ : Workflow.StartItemSetInfo => false
+      case resultItemSetInfo: Workflow.ResultItemSetInfo =>
+        reasonerPlugin.mightBeAbleTo(resultItemSetInfo.previousItems.prefix, resultItemSetInfo.prefix)
+    }
   }.map { iRow =>
     val box = SelectableLabelBox.create(svg)
     box.text := TextConstants.reasonerSelectionCheckMark
