@@ -8,6 +8,16 @@ object MonarchInitiativeUtils {
   val sampleUrl: String = "https://api.monarchinitiative.org/api/bioentity/phenotype/HP:0000855/diseases/?" +
     "unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true&use_compact_associations=false"
 
+  def canDo(inIdPrefix: IdPrefix, outIdPrefix: IdPrefix): Boolean = {
+    (inIdPrefix, outIdPrefix) match {
+      case (IdPrefix.omimDisease, IdPrefix.hp) => true
+      case (IdPrefix.hp, IdPrefix.mondo) => true
+      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => true
+      case (IdPrefix.reactomePathway, IdPrefix.ncbigene) => true
+      case _ => false
+    }
+  }
+
   def constructUrl(inIdPrefix: IdPrefix, inputEntityId: String, outIdPrefix: IdPrefix):
   Either[String, String] = {
     val root = "https://api.monarchinitiative.org/api/bioentity/"

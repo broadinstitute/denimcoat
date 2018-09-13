@@ -1,21 +1,20 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.extract.ResponseExtractor
-import denimcoat.reasoners.messages.ResponseBase
+import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.messages.DefaultRequest
+import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
 
 trait ReasonerPlugin {
 
-  type Response <: ResponseBase
-  type Extractor <: ResponseExtractor
+  type ResponsePlugin <: ReasonerResponsePlugin
+
+  def responsePlugin: ResponsePlugin
 
   def reasonerId: String
 
-  def decodeResponse(responseString: String): Either[String, Response]
+  def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean
 
-  def getExtractorForBase(response: ResponseBase): Either[String,ResponseExtractor]
+  def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Either[String, String]
 
-  def getExtractorFor(response: Response): ResponseExtractor
-
-  def getExtractorFor(responseString: String): Either[String, ResponseExtractor] =
-    decodeResponse(responseString).map(getExtractorFor)
+  def createRequestOpt(startItems: Seq[String], relation: Relation): Option[DefaultRequest]
 }

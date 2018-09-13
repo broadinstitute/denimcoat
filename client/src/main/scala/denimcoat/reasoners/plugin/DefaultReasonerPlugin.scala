@@ -1,23 +1,20 @@
 package denimcoat.reasoners.plugin
+import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.messages.DefaultRequest
+import denimcoat.reasoners.plugin.response.DefaultReasonerResponsePlugin
 
-import denimcoat.JsonIO
-import denimcoat.reasoners.extract.{DefaultResponseExtractor, ResponseExtractor}
-import denimcoat.reasoners.messages.{DefaultResponse, ResponseBase}
+case class DefaultReasonerPlugin(override val reasonerId: String) extends ReasonerPlugin {
+  override type ResponsePlugin = DefaultReasonerResponsePlugin
 
-case class DefaultReasonerPlugin(reasonerId: String) extends ReasonerPlugin {
-  override type Response = DefaultResponse
-  override type Extractor = DefaultResponseExtractor
+  override def responsePlugin: ResponsePlugin = DefaultReasonerResponsePlugin(reasonerId)
 
-  override def decodeResponse(responseString: String): Either[String, DefaultResponse] =
-    JsonIO.decodeResponse(responseString)
+  val url: String = "/reasoner/" + reasonerId
 
-  override def getExtractorForBase(response: ResponseBase): Either[String, ResponseExtractor] = {
-    response match {
-      case defaultResponse: DefaultResponse => Right(getExtractorFor(defaultResponse))
-      case _ => Left(s"Expected DefaultResponse, but got ${response.getClass.getCanonicalName}.")
-    }
-  }
+  override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean = true
 
-  override def getExtractorFor(response: DefaultResponse): DefaultResponseExtractor =
-    new DefaultResponseExtractor(response)
+  override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Right[String, String] =
+    Right(url)
+
+  override def createRequestOpt(startItems: Seq[String], relation: Relation): Some[DefaultRequest] =
+    Some(DefaultRequest(startItems, relation))
 }

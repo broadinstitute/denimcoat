@@ -1,26 +1,21 @@
 package denimcoat.reasoners.plugin
-import denimcoat.JsonIO
-import denimcoat.reasoners.extract.{MonarchInitiativeResponseExtractor, ResponseExtractor}
-import denimcoat.reasoners.messages.ResponseBase
+import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
 import denimcoat.reasoners.mvp.MonarchInitiativeUtils
+import denimcoat.reasoners.plugin.response.MonarchInitiativeResponsePlugin
 import denimcoat.svg.mvp.ReasonerList
 
 object MonarchInitiativePlugin extends ReasonerPlugin {
-  override type Response = MonarchInitiativeUtils.Response
-  override type Extractor = MonarchInitiativeResponseExtractor
+  override type ResponsePlugin = MonarchInitiativeResponsePlugin.type
+
+  override def responsePlugin: ResponsePlugin = MonarchInitiativeResponsePlugin
 
   override def reasonerId: String = ReasonerList.monarch.id
 
-  override def decodeResponse(responseString: String): Either[String, MonarchInitiativeUtils.Response] =
-    JsonIO.decodeMonarchResponse(responseString)
+  override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean =
+    MonarchInitiativeUtils.canDo(inputPrefix, outputPrefix)
 
-  override def getExtractorForBase(response: ResponseBase): Either[String, ResponseExtractor] = {
-    response match {
-      case monarchResponse: Response => Right(getExtractorFor(monarchResponse))
-      case _ => Left(s"Expected Monarch Initiative response, but got ${response.getClass.getCanonicalName}.")
-    }
-  }
+  override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Either[String, String] =
+    MonarchInitiativeUtils.constructUrl(inputPrefix, inputValue, outputPrefix)
 
-  override def getExtractorFor(response: MonarchInitiativeUtils.Response): ResponseExtractor =
-    new MonarchInitiativeResponseExtractor(response)
+  override def createRequestOpt(startItems: Seq[String], relation: Relation): None.type = None
 }
