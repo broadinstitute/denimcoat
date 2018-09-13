@@ -48,8 +48,7 @@ object Workflow {
 
   val examples: Map[ItemSetInfo, Seq[String]] = Map(
     startItemSetInfo -> Seq(
-      "type 2 diabetes mellitus; omim.disease:125853", "Behcet's disease; omim.disease:109650",
-      "Gastrointestinal hemorrhage; hp:0002239"
+      "type 2 diabetes mellitus; omim.disease:125853", "Behcet's disease; omim.disease:109650"
     ),
     resultItemSetInfo0 -> Seq(
       "Insulin resistance; hp:0000855", "Type II diabetes mellitus; hp:0005978", "Meningitis; hp:0001287",
