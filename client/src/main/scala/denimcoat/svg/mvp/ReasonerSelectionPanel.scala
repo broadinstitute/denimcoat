@@ -26,7 +26,7 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
     Workflow.itemSetInfos(iRow).previousItemsOpt.nonEmpty
   }.map { iRow =>
     val box = SelectableLabelBox.create(svg)
-    box.text := "X"
+    box.text := TextConstants.reasonerSelectionCheckMark
     box.x := x
     box.y := spaceLayout.yOfButtonsRow(iRow)
     element.appendChild(box.element)
@@ -38,7 +38,7 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
     selectionBoxes.map(box => (box.itemInfo, box)).toMap
 
   def selected(itemInfo: Workflow.ItemSetInfo): Boolean =
-    checkboxesByItemInfo.get(itemInfo).map(_.selected).getOrElse(false)
+    checkboxesByItemInfo.get(itemInfo).exists(_.selected)
 }
 
 object ReasonerSelectionPanel {

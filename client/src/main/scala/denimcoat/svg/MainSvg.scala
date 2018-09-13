@@ -4,7 +4,7 @@ import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
-import denimcoat.svg.mvp.{ReasonerList, ReasonerSelectionPanel, SpaceLayout}
+import denimcoat.svg.mvp.{ReasonerList, ReasonerSelectionPanel, SpaceLayout, TextConstants}
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
@@ -42,13 +42,13 @@ object MainSvg {
     val clearClickAction: MouseEvent => Unit = (_: MouseEvent) => clear()
 
     val exampleButton: LabelledButton = LabelledButton.create(svg, exampleClickAction)
-    exampleButton.text := "ex"
+    exampleButton.text := TextConstants.exampleButton
     exampleButton.x := spaceLayout.xOfExampleButton
     exampleButton.y := spaceLayout.yOfItemsRow(iRow)
     svg.appendChild(exampleButton.element)
 
     val clearButton: LabelledButton = LabelledButton.create(svg, clearClickAction)
-    clearButton.text := "clear"
+    clearButton.text := TextConstants.clearButton
     clearButton.x := spaceLayout.xOfClearButton
     clearButton.y := spaceLayout.yOfItemsRow(iRow)
     svg.appendChild(clearButton.element)
@@ -93,7 +93,7 @@ object MainSvg {
 
     def items_=(items: Seq[String]): Unit = {
       itemBoxes.foreach(box => svg.removeChild(box.element))
-      itemBoxes = items.zipWithIndex.map { case (item, index) =>
+      itemBoxes = items.map { item  =>
         val outputBox = SelectableLabelBox.create(svg)
         outputBox.text := item
         //        outputBox.x := xOfItem(index)
