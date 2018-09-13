@@ -21,7 +21,7 @@ object KnowledgeRepo {
   object Diseases extends EntitySet {
     val category: Category = Category.disease
     val typeOneDiabetesMellitus: Entity = newEntity("type 1 diabetes mellitus")
-    val typeTwoDiabetesMellitus: Entity = newEntity("type 2 diabetes mellitus")
+    val typeTwoDiabetesMellitus: Entity = newEntity("type 2 diabetes mellitus; omim.disease:125853")
     val behcet: Entity = newEntity("Behcet's disease")
     val ms: Entity = newEntity("multiple sklerosis")
   }

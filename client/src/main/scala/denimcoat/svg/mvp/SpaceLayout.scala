@@ -20,7 +20,7 @@ case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.d
 
   val xOfExampleButton: Double = xItemsLabel + 90.0
 
-  val xOfClearButton: Double = xOfExampleButton + 30.0
+  val xOfClearButton: Double = xOfExampleButton + 40.0
 
   def xOfItem(iItem: Int): Double = xOfClearButton + 60.0 + 170.0 * iItem
 
