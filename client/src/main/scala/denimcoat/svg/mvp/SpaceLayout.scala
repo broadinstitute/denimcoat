@@ -6,23 +6,37 @@ case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.d
 
   val yFirstItemsRow: Double = 180.0
 
-  def yOfButtonsRow(iRow: Int): Double = yFirstItemsRow - 25.0 + 50.0 * iRow
+  def yOfPredicateRow(iRow: Int): Double = yFirstItemsRow - 25.0 + 75.0 * iRow
 
-  def yOfItemsRow(iRow: Int): Double = yFirstItemsRow + 50.0 * iRow
+  def yOfItemsRow(iRow: Int): Double = yFirstItemsRow + 75.0 * iRow
+
+  def yOfNavigationRow(iRow: Int): Double = yFirstItemsRow + 25.0 + 75.0 * iRow
+
+  def iOfSmallButtonGroup(buttonId: ButtonId): Int = ButtonId.Group.all.indexOf(buttonId.group)
+
+  def yOfSmallButton(iRow: Int, buttonId: ButtonId): Double = yOfItemsRow(iRow) + 25.0 * iOfSmallButtonGroup(buttonId)
+
+  val xOfFirstSmallButton: Double = 40.0 + nReasoners * spacing.widthReasonerPanel
+
+  def iOfSmallButton(buttonId: ButtonId): Int = ButtonId.allByGroup(buttonId.group).indexOf(buttonId)
+
+  def xOfSmallButton(buttonId: ButtonId): Double = xOfFirstSmallButton + 40.0*iOfSmallButton(buttonId)
 
   val yReasonerPanel: Double = 30
 
   def xOfReasonerPanel(iPanel: Int): Double = 10 + iPanel * spacing.widthReasonerPanel
 
-  val xItemsLabel: Double = 40.0 + nReasoners * spacing.widthReasonerPanel
+  val nButtonsPerRowMax: Int = ButtonId.allByGroup.values.map(_.size).max
 
-  val xQueryButtons: Double = xItemsLabel - 20.0
+  val xItemsLabel: Double = xOfFirstSmallButton + 10.0 + 40.0*nButtonsPerRowMax
 
-  val xOfExampleButton: Double = xItemsLabel + 90.0
+  val xQueryButtons: Double = xOfFirstSmallButton - 20.0
+
+  val xOfExampleButton: Double = xOfFirstSmallButton
 
   val xOfClearButton: Double = xOfExampleButton + 40.0
 
-  def xOfItem(iItem: Int): Double = xOfClearButton + 60.0 + 170.0 * iItem
+  def xOfItem(iItem: Int): Double = xItemsLabel + 100.0 + 170.0 * iItem
 
 }
 

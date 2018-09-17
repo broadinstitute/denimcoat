@@ -35,7 +35,7 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
     val box = SelectableLabelBox.create(svg)
     box.text := TextConstants.reasonerSelectionCheckMark
     box.x := x
-    box.y := spaceLayout.yOfButtonsRow(iRow)
+    box.y := spaceLayout.yOfPredicateRow(iRow)
     element.appendChild(box.element)
     val itemInfo = Workflow.itemSetInfos(iRow)
     new SelectionBox(itemInfo, box)

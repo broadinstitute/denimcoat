@@ -4,7 +4,8 @@ import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
-import denimcoat.svg.mvp.{ReasonerList, ReasonerSelectionPanel, SpaceLayout, TextConstants}
+import denimcoat.svg.mvp.{ButtonId, ReasonerList, ReasonerSelectionPanel, SpaceLayout, TextConstants}
+import denimcoat.util.SeqRotator
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
@@ -37,21 +38,25 @@ object MainSvg {
 
     def clear(): Unit
 
-    val exampleClickAction: MouseEvent => Unit = (_: MouseEvent) => addExample()
+    def rotateItems(offset: Int): Unit
 
-    val clearClickAction: MouseEvent => Unit = (_: MouseEvent) => clear()
+    val buttonClickActions: Map[ButtonId, () => Unit] = Map(
+      ButtonId.examples -> (() => addExample()),
+      ButtonId.clear -> (() => clear()),
+      ButtonId.fastBack -> (() => rotateItems(-5)),
+      ButtonId.back -> (() => rotateItems(-1)),
+      ButtonId.forward -> (() => rotateItems(1)),
+      ButtonId.fastForward -> (() => rotateItems(5))
+    )
 
-    val exampleButton: LabelledButton = LabelledButton.create(svg, exampleClickAction)
-    exampleButton.text := TextConstants.exampleButton
-    exampleButton.x := spaceLayout.xOfExampleButton
-    exampleButton.y := spaceLayout.yOfItemsRow(iRow)
-    svg.appendChild(exampleButton.element)
-
-    val clearButton: LabelledButton = LabelledButton.create(svg, clearClickAction)
-    clearButton.text := TextConstants.clearButton
-    clearButton.x := spaceLayout.xOfClearButton
-    clearButton.y := spaceLayout.yOfItemsRow(iRow)
-    svg.appendChild(clearButton.element)
+    val buttons: Map[ButtonId, LabelledButton] = buttonClickActions.map { case (buttonId, action) =>
+      val button: LabelledButton = LabelledButton.create(svg, (_ : MouseEvent) => action())
+      button.text := "[" + buttonId.label + "]"
+      button.x := spaceLayout.xOfSmallButton(buttonId)
+      button.y := spaceLayout.yOfSmallButton(iRow, buttonId)
+      svg.appendChild(button.element)
+      (buttonId, button)
+    }
 
     def selectedItems: Seq[String]
   }
@@ -72,6 +77,8 @@ object MainSvg {
     override def clear(): Unit = {
       textEditBox.text = ""
     }
+
+    override def rotateItems(offset: Int): Unit = ()
   }
 
   object InputRow {
@@ -124,6 +131,10 @@ object MainSvg {
     override def clear(): Unit = {
       items = Seq.empty
     }
+
+    override def rotateItems(offset: Int): Unit = {
+      items = SeqRotator.rotate(items, offset)
+    }
   }
 
   object ResultRow {
@@ -133,7 +144,7 @@ object MainSvg {
       label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
       val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
-      button.text := itemSetInfo.relationToPrevious.name
+      button.text := "[" + itemSetInfo.relationToPrevious.name + "]"
       button.x := spaceLayout.xQueryButtons
       button.y := yItems - 25
       svg.appendChild(button.element)
