@@ -10,6 +10,7 @@ object ReasonerList {
   val galen: Entry = Entry("galen", "Galen")
   val biothings: Entry = Entry("biothings", "BioThings")
   val monarch: Entry = Entry("monarch", "Monarch Initiative")
+  val drugChecker: Entry = Entry("drugchecker", "Drug Checker")
 
   val list: Seq[Entry] = if(includeMockReasoner) Seq(galen, biothings, monarch) else Seq(biothings, monarch)
   val ids : Seq[String] = list.map(_.id)

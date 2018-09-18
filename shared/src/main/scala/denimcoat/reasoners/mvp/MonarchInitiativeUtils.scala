@@ -1,7 +1,6 @@
 package denimcoat.reasoners.mvp
 
 import denimcoat.reasoners.knowledge.IdPrefix
-import denimcoat.reasoners.messages.ResponseBase
 
 object MonarchInitiativeUtils {
 
@@ -56,6 +55,4 @@ object MonarchInitiativeUtils {
                          publications: Option[Seq[Publication]], subject: Subject)
 
   case class Response(facet_counts: FacetCounts, associations: Seq[Association], objects: Seq[String], numFound: Int)
-    extends ResponseBase
-
 }

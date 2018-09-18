@@ -66,6 +66,11 @@ object Relation {
       override def reverse: Reversible = isGeneTargetedByDrug
     }
 
+  val isKnownDrug: Reversible =
+    new Reversible("isKnownDrug", "is known drug", Category.compound, Category.compound) {
+      override def reverse: Reversible = this
+    }
+
   val knownRelations: Set[Relation] =
     Set[Relation](
       hasSymptom, isSymptomOf, isPromotedBy, promotes, hasAssociatedGene, isAssociatedWith, isPartOfPathway,

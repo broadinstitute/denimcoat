@@ -35,5 +35,4 @@ case class DefaultResponse(`@context`: Option[URI], `@id`: Option[URI], `@type`:
                            schema_version: Option[String], tool_version: Option[String], datetime: Option[Date],
                            original_question_text: Option[String], restated_question_text: Option[String],
                            result_code: Option[String], message: Option[String], result_list: Result)
-  extends ResponseBase
 

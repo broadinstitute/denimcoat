@@ -5,7 +5,7 @@ import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
 import denimcoat.reasoners.messages.{DefaultRequest => ReasonerRequest, DefaultResponse => ReasonerResponse}
-import denimcoat.reasoners.mvp.MonarchInitiativeUtils
+import denimcoat.reasoners.mvp.{DrugCheckerUtils, MonarchInitiativeUtils}
 import io.circe.{Decoder, Encoder, Error}
 import io.circe.parser.decode
 import io.circe.generic.auto._
@@ -30,6 +30,12 @@ object JsonIO {
 
   def decodeMonarchResponse(responseString: String): Either[String, MonarchInitiativeUtils.Response] = {
     decode[MonarchInitiativeUtils.Response](responseString).left.map(errorToString)
+  }
+
+  implicit val isDrugDecoder: Decoder[Boolean] = implicitly[Decoder[String]].map(_.trim.toLowerCase == "yes")
+
+  def decodeDrugCheckerResponse(responseString: String): Either[String, DrugCheckerUtils.Response] = {
+    decode[DrugCheckerUtils.Response](responseString).left.map(errorToString)
   }
 
 }

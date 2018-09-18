@@ -18,12 +18,6 @@ object BioThingsExplorerUtils {
     UrlUtils.buildQueryUrl(baseUrl, params)
   }
 
-  def buildUrlDiseaseToSymptoms(diseaseId: String): String = {
-    val inputPrefix = IdPrefix.omimDisease
-    val outputPrefix = IdPrefix.hp
-    buildUrl(inputPrefix, outputPrefix, diseaseId)
-  }
-
   def fixDoublePrefixedId(id: String): String = {
     val parts = id.split(":")
     if(parts.size > 2 && parts(0) == parts(1)) {
