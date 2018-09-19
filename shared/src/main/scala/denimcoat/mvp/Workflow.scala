@@ -39,10 +39,12 @@ object Workflow {
     ResultItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, resultItemSetInfo4, Relation.isSameGeneAs)
   val resultItemSetInfo6: ResultItemSetInfo =
     ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, resultItemSetInfo5, Relation.isGeneTargetedByDrug)
+  val resultItemSetInfo7: ResultItemSetInfo =
+    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, resultItemSetInfo6, Relation.isKnownDrug)
 
   val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(
     resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3, resultItemSetInfo4,
-    resultItemSetInfo5, resultItemSetInfo6
+    resultItemSetInfo5, resultItemSetInfo6, resultItemSetInfo7
   )
   val itemSetInfos: Seq[ItemSetInfo] = startItemSetInfo +: resultItemSetInfos
 
@@ -75,6 +77,7 @@ object Workflow {
       "chembl.compound:CHEMBL2146126", "chembl.compound:CHEMBL866", "chembl.compound:CHEMBL452231",
       "chembl.compound:CHEMBL386630", "chembl.compound:CHEMBL2108110", "chembl.compound:CHEMBL109",
       "chembl.compound:CHEMBL905"
-    )
+    ),
+    resultItemSetInfo7 -> Seq()
   )
 }

@@ -12,7 +12,8 @@ object ReasonerList {
   val monarch: Entry = Entry("monarch", "Monarch Initiative")
   val drugChecker: Entry = Entry("drugchecker", "Drug Checker")
 
-  val list: Seq[Entry] = if(includeMockReasoner) Seq(galen, biothings, monarch) else Seq(biothings, monarch)
+  val listWithoutGalen = Seq(biothings, monarch, drugChecker)
+  val list: Seq[Entry] = if(includeMockReasoner) galen +: listWithoutGalen else listWithoutGalen
   val ids : Seq[String] = list.map(_.id)
   val id2name: Map[String, String] = list.map(entry => (entry.id, entry.name)).toMap
 
