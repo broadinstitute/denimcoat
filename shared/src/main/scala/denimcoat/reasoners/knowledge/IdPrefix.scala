@@ -1,7 +1,7 @@
 package denimcoat.reasoners.knowledge
 
 case class IdPrefix(string: String, category: Category) {
-
+  def getId(idString: String): String = string + ":" + idString
 }
 
 object IdPrefix {

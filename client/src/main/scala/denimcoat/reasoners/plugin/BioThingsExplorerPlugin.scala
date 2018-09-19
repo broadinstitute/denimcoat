@@ -12,7 +12,7 @@ object BioThingsExplorerPlugin extends ReasonerPlugin {
 
   override def reasonerId: String = ReasonerList.biothings.id
 
-  override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean = true
+  override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean = inputPrefix != outputPrefix
 
   override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Right[String, String] =
     Right(BioThingsExplorerUtils.buildUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String))
