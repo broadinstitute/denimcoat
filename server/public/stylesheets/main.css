@@ -23,3 +23,11 @@ line {
 svg {
     fill: yellow
 }
+
+svg .selected {
+    fill: red
+}
+
+svg .unselected {
+    fill: yellow
+}

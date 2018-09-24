@@ -9,7 +9,7 @@ import denimcoat.util.SeqRotator
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
-import org.scalajs.dom.svg.SVG
+import org.scalajs.dom.svg.{Circle, SVG}
 
 import scala.util.Random
 

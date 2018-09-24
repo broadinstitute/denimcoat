@@ -2,9 +2,9 @@ package denimcoat.svg
 
 import denimcoat.gears.Property
 import denimcoat.gears.providers.Var
+import denimcoat.gears.syntax.AllImplicits._
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.svg.{G, SVG}
-import denimcoat.gears.syntax.AllImplicits._
 
 class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] {
 
@@ -12,7 +12,7 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
 
   appendChild(label)
 
-  val selectedVar: Var[Boolean] = Var(false)
+  val selectedVar: Var[Boolean] = Var(true)
 
   element.onclick = (_: MouseEvent) => {
     selectedVar.modify(!_)
@@ -21,8 +21,9 @@ class SelectableLabelBox(val svg: SVG, val element: G) extends ElementFacade[G] 
   val x: Property[Double] = label.x
   val y: Property[Double] = label.y
   val text: Property[String] = label.text
+  val elementClass: Property[String] = Property(classString => element.setAttribute("class", classString))
 
-  label.style.fill := selectedVar.map(if(_) "red" else "yellow")
+  elementClass := selectedVar.map(if (_) "selected" else "unselected")
 }
 
 object SelectableLabelBox {

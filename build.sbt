@@ -11,7 +11,8 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
     "com.vmunier" %% "scalajs-scripts" % "1.1.2",
     guice,
     ws,
-    specs2 % Test
+    specs2 % Test,
+    "org.scalatest" %% "scalatest" % "3.0.5" % "test"
   )
 ).enablePlugins(PlayScala).
   dependsOn(sharedJvm)
