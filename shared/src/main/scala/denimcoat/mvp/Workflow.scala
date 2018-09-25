@@ -6,22 +6,17 @@ object Workflow {
 
   trait ItemSetInfo extends Identifiable {
     def prefix: IdPrefix
-
-    def previousItemsOpt: Option[ItemSetInfo]
-
-    def relationToPreviousOpt: Option[Relation]
   }
 
+  case class Derivation(previousSet: ItemSetInfo, relation: Relation)
+
   case class StartItemSetInfo(id: String, name: String, prefix: IdPrefix) extends ItemSetInfo {
-    override val previousItemsOpt: Option[ItemSetInfo] = None
-    override val relationToPreviousOpt: Option[Relation] = None
   }
 
   case class ResultItemSetInfo(id: String, name: String, prefix: IdPrefix, previousItems: ItemSetInfo,
                                relationToPrevious: Relation)
     extends ItemSetInfo {
-    override val previousItemsOpt: Option[ItemSetInfo] = Some(previousItems)
-    override val relationToPreviousOpt: Option[Relation] = Some(relationToPrevious)
+    val derivation: Derivation = Derivation(previousItems, relationToPrevious)
   }
 
   val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", IdPrefix.omimDisease)

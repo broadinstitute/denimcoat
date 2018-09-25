@@ -109,12 +109,12 @@ object MainJS {
 
   def query(reasonerId: String, startItems: Seq[String], resultItemSetInfo: ResultItemSetInfo): Unit = {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
-    val inIdPrefix = resultItemSetInfo.previousItems.prefix
+    val inIdPrefix = resultItemSetInfo.derivation.previousSet.prefix
     val outIdPrefix = resultItemSetInfo.prefix
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
       val urlEither = plugin.createUrl(inIdPrefix, outIdPrefix, startItem)
       alertWhenDebugging(urlEither.toString)
-      val requestOpt = plugin.createRequestOpt(startItems, resultItemSetInfo.relationToPrevious)
+      val requestOpt = plugin.createRequestOpt(startItems, resultItemSetInfo.derivation.relation)
       urlEither match {
         case Right(url) =>
           submitReasonerRequest(plugin.responsePlugin, resultItemSetInfo, url, requestOpt, receiveResponse,
@@ -128,7 +128,7 @@ object MainJS {
     MainSvg.setOutputItems(resultItemSetInfo, items(resultItemSetInfo))
 
   def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
-    val inputItemsInfo = resultItemSetInfo.previousItems
+    val inputItemsInfo = resultItemSetInfo.derivation.previousSet
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
     if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")

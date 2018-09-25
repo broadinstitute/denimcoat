@@ -144,7 +144,7 @@ object MainSvg {
       label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
       val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
-      button.text := "[" + itemSetInfo.relationToPrevious.name + "]"
+      button.text := "[" + itemSetInfo.derivation.relation.name + "]"
       button.x := spaceLayout.xQueryButtons
       button.y := yItems - 25
       svg.appendChild(button.element)

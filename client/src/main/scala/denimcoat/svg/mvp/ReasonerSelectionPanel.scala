@@ -29,7 +29,7 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
     Workflow.itemSetInfos(iRow) match {
       case _ : Workflow.StartItemSetInfo => false
       case resultItemSetInfo: Workflow.ResultItemSetInfo =>
-        reasonerPlugin.mightBeAbleTo(resultItemSetInfo.previousItems.prefix, resultItemSetInfo.prefix)
+        reasonerPlugin.mightBeAbleTo(resultItemSetInfo.derivation.previousSet.prefix, resultItemSetInfo.prefix)
     }
   }.map { iRow =>
     val box = SelectableLabelBox.create(svg)
