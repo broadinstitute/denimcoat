@@ -13,29 +13,29 @@ object Workflow {
   case class StartItemSetInfo(id: String, name: String, prefix: IdPrefix) extends ItemSetInfo {
   }
 
-  case class ResultItemSetInfo(id: String, name: String, prefix: IdPrefix, previousItems: ItemSetInfo,
-                               relationToPrevious: Relation)
+  case class ResultItemSetInfo(id: String, name: String, prefix: IdPrefix, derivation: Derivation)
     extends ItemSetInfo {
-    val derivation: Derivation = Derivation(previousItems, relationToPrevious)
   }
 
   val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", IdPrefix.omimDisease)
   val resultItemSetInfo0: ResultItemSetInfo =
-    ResultItemSetInfo("symptom", "symptom", IdPrefix.hp, startItemSetInfo, Relation.hasSymptom)
+    ResultItemSetInfo("symptom", "symptom", IdPrefix.hp, Derivation(startItemSetInfo, Relation.hasSymptom))
   val resultItemSetInfo1: ResultItemSetInfo =
-    ResultItemSetInfo("disease", "disease", IdPrefix.mondo, resultItemSetInfo0, Relation.isSymptomOf)
+    ResultItemSetInfo("disease", "disease", IdPrefix.mondo, Derivation(resultItemSetInfo0, Relation.isSymptomOf))
   val resultItemSetInfo2: ResultItemSetInfo =
-    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo1, Relation.hasAssociatedGene)
+    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo1, Relation.hasAssociatedGene))
   val resultItemSetInfo3: ResultItemSetInfo =
-    ResultItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway, resultItemSetInfo2, Relation.isPartOfPathway)
+    ResultItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway,
+      Derivation(resultItemSetInfo2, Relation.isPartOfPathway))
   val resultItemSetInfo4: ResultItemSetInfo =
-    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, resultItemSetInfo3, Relation.includesGene)
+    ResultItemSetInfo("gene", "gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo3, Relation.includesGene))
   val resultItemSetInfo5: ResultItemSetInfo =
-    ResultItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, resultItemSetInfo4, Relation.isSameGeneAs)
+    ResultItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, Derivation(resultItemSetInfo4, Relation.isSameGeneAs))
   val resultItemSetInfo6: ResultItemSetInfo =
-    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, resultItemSetInfo5, Relation.isGeneTargetedByDrug)
+    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound,
+      Derivation(resultItemSetInfo5, Relation.isGeneTargetedByDrug))
   val resultItemSetInfo7: ResultItemSetInfo =
-    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, resultItemSetInfo6, Relation.isKnownDrug)
+    ResultItemSetInfo("drug", "drug", IdPrefix.chemblCompound, Derivation(resultItemSetInfo6, Relation.isKnownDrug))
 
   val resultItemSetInfos: Seq[ResultItemSetInfo] = Seq(
     resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3, resultItemSetInfo4,
