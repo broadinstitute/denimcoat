@@ -3,13 +3,13 @@ package denimcoat.svg
 import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
-import denimcoat.mvp.Workflow.{ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
-import denimcoat.svg.mvp.{ButtonId, ReasonerList, ReasonerSelectionPanel, SpaceLayout, TextConstants}
+import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
+import denimcoat.svg.mvp.{ButtonId, ReasonerList, ReasonerSelectionPanel, SpaceLayout}
 import denimcoat.util.SeqRotator
 import denimcoat.viewmodels.KeyMapper
 import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
-import org.scalajs.dom.svg.{Circle, SVG}
+import org.scalajs.dom.svg.SVG
 
 import scala.util.Random
 
@@ -21,7 +21,8 @@ object MainSvg {
 
   val nReasoners: Int = ReasonerList.list.size
   val nRows: Int = Workflow.itemSetInfos.size
-  val spaceLayout: SpaceLayout = SpaceLayout(nReasoners, nRows)
+  val nPredicatesPerRow: Int = 2
+  val spaceLayout: SpaceLayout = SpaceLayout(nReasoners, nRows, nPredicatesPerRow)
 
   trait Row {
     def itemSetInfo: ItemSetInfo
@@ -50,7 +51,7 @@ object MainSvg {
     )
 
     val buttons: Map[ButtonId, LabelledButton] = buttonClickActions.map { case (buttonId, action) =>
-      val button: LabelledButton = LabelledButton.create(svg, (_ : MouseEvent) => action())
+      val button: LabelledButton = LabelledButton.create(svg, (_: MouseEvent) => action())
       button.text := "[" + buttonId.label + "]"
       button.x := spaceLayout.xOfSmallButton(buttonId)
       button.y := spaceLayout.yOfSmallButton(iRow, buttonId)
@@ -61,7 +62,7 @@ object MainSvg {
     def selectedItems: Seq[String]
   }
 
-  class InputRow(val itemSetInfo: StartItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
+  class InputRow(val itemSetInfo: ItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
                  val textEditBox: TextEditBox)
     extends Row {
     override def items: Seq[String] = Seq(textEditBox.text)
@@ -82,7 +83,7 @@ object MainSvg {
   }
 
   object InputRow {
-    def create(itemSetInfo: StartItemSetInfo, svg: SVG, iRow: Int): InputRow = {
+    def create(itemSetInfo: ItemSetInfo, svg: SVG, iRow: Int): InputRow = {
       val y = spaceLayout.yOfItemsRow(iRow)
       val label = TextFacade.create(svg, "inputRow" + iRow, spaceLayout.xItemsLabel, y)
       label.text := itemSetInfo.name + ":"
@@ -94,13 +95,13 @@ object MainSvg {
   }
 
   class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
-                  val button: LabelledButton, var itemBoxes: Seq[SelectableLabelBox])
+                  val queryButtons: Seq[LabelledButton], var itemBoxes: Seq[SelectableLabelBox])
     extends Row {
     def items: Seq[String] = itemBoxes.map(_.text.get.get)
 
     def items_=(items: Seq[String]): Unit = {
       itemBoxes.foreach(box => svg.removeChild(box.element))
-      itemBoxes = items.map { item  =>
+      itemBoxes = items.map { item =>
         val outputBox = SelectableLabelBox.create(svg)
         outputBox.text := item
         //        outputBox.x := xOfItem(index)
@@ -143,13 +144,16 @@ object MainSvg {
       val label = TextFacade.create(svg, "resultRow" + iRow, spaceLayout.xItemsLabel, yItems)
       label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
-      val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo))
-      button.text := "[" + itemSetInfo.derivation.relation.name + "]"
-      button.x := spaceLayout.xQueryButtons
-      button.y := yItems - 25
-      svg.appendChild(button.element)
+      val buttons = itemSetInfo.derivations.zipWithIndex.map { case (derivation, iPredicate) =>
+        val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo, derivation))
+        button.text := "[" + itemSetInfo.derivation.relation.name + "]"
+        button.x := spaceLayout.xQueryButtons
+        button.y := spaceLayout.yOfPredicateRow(iRow, iPredicate)
+        svg.appendChild(button.element)
+        button
+      }
       val items = Seq.empty[SelectableLabelBox]
-      new ResultRow(itemSetInfo, svg, iRow, label, button, items)
+      new ResultRow(itemSetInfo, svg, iRow, label, buttons, items)
     }
   }
 
@@ -163,8 +167,8 @@ object MainSvg {
   val reasonerSelectionPanelsById: Map[String, ReasonerSelectionPanel] =
     reasonerSelectionPanels.map(panel => (panel.reasonerId, panel)).toMap
 
-  def selectedReasoners(itemInfo: Workflow.ItemSetInfo): Seq[String] = {
-    reasonerSelectionPanels.filter(_.selected(itemInfo)).map(_.reasonerId)
+  def selectedReasoners(itemInfo: Workflow.ItemSetInfo, derivation: Derivation): Seq[String] = {
+    reasonerSelectionPanels.filter(_.selected(itemInfo, derivation)).map(_.reasonerId)
   }
 
   val rows: Seq[Row] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>

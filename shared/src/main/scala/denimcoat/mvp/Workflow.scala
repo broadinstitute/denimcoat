@@ -6,15 +6,29 @@ object Workflow {
 
   trait ItemSetInfo extends Identifiable {
     def prefix: IdPrefix
+    def derivations: Seq[Derivation]
+    def isStartItemSet: Boolean = derivations.isEmpty
+  }
+
+  object ItemSetInfo {
+    def apply(id: String, name: String, prefix: IdPrefix, derivations: Derivation*): ItemSetInfo = {
+      if(derivations.isEmpty) {
+        StartItemSetInfo(id, name, prefix)
+      } else {
+        ResultItemSetInfo(id, name, prefix, derivations.head)
+      }
+    }
   }
 
   case class Derivation(previousSet: ItemSetInfo, relation: Relation)
 
   case class StartItemSetInfo(id: String, name: String, prefix: IdPrefix) extends ItemSetInfo {
+    override def derivations: Seq[Derivation] = Seq.empty
   }
 
   case class ResultItemSetInfo(id: String, name: String, prefix: IdPrefix, derivation: Derivation)
     extends ItemSetInfo {
+    override def derivations: Seq[Derivation] = Seq(derivation)
   }
 
   val startItemSetInfo: StartItemSetInfo = StartItemSetInfo("disease", "disease", IdPrefix.omimDisease)

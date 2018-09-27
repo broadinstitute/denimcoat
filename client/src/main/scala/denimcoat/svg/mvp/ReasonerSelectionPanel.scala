@@ -3,6 +3,7 @@ package denimcoat.svg.mvp
 import denimcoat.gears.providers.Var
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
+import denimcoat.mvp.Workflow.Derivation
 import denimcoat.reasoners.plugin.{ReasonerPlugin, ReasonerPluginProvider}
 import denimcoat.svg.mvp.ReasonerSelectionPanel.SelectionBox
 import denimcoat.svg.{ElementFacade, SelectableLabelBox, SvgUtils, TextFacade}
@@ -25,36 +26,35 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
 
   val reasonerPlugin: ReasonerPlugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
 
-  val selectionBoxes: Seq[SelectionBox] = (0 until spaceLayout.nRows).filter{ iRow =>
-    Workflow.itemSetInfos(iRow) match {
-      case _ : Workflow.StartItemSetInfo => false
-      case resultItemSetInfo: Workflow.ResultItemSetInfo =>
-        reasonerPlugin.mightBeAbleTo(resultItemSetInfo.derivation.previousSet.prefix, resultItemSetInfo.prefix)
+  val selectionBoxes: Seq[Seq[SelectionBox]] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>
+    itemSetInfo.derivations.filter { derivation =>
+      reasonerPlugin.mightBeAbleTo(derivation.previousSet.prefix, itemSetInfo.prefix)
+    }.zipWithIndex.map { case (derivation, iPredicate) =>
+      val box = SelectableLabelBox.create(svg)
+      box.text := TextConstants.reasonerSelectionCheckMark
+      box.x := x
+      box.y := spaceLayout.yOfPredicateRow(iRow, iPredicate)
+      element.appendChild(box.element)
+      new SelectionBox(itemSetInfo, derivation, box)
     }
-  }.map { iRow =>
-    val box = SelectableLabelBox.create(svg)
-    box.text := TextConstants.reasonerSelectionCheckMark
-    box.x := x
-    box.y := spaceLayout.yOfPredicateRow(iRow)
-    element.appendChild(box.element)
-    val itemInfo = Workflow.itemSetInfos(iRow)
-    new SelectionBox(itemInfo, box)
   }
 
-  val checkboxesByItemInfo: Map[Workflow.ItemSetInfo, SelectionBox] =
-    selectionBoxes.map(box => (box.itemInfo, box)).toMap
+  val checkboxesByItemInfo: Map[(Workflow.ItemSetInfo, Workflow.Derivation), SelectionBox] =
+    selectionBoxes.flatten.map(box => ((box.itemInfo, box.derivation), box)).toMap
 
-  def selected(itemInfo: Workflow.ItemSetInfo): Boolean =
-    checkboxesByItemInfo.get(itemInfo).exists(_.selected)
+  def selected(itemInfo: Workflow.ItemSetInfo, derivation: Derivation): Boolean =
+    checkboxesByItemInfo.get((itemInfo, derivation)).exists(_.selected)
 }
 
 object ReasonerSelectionPanel {
   def create(svg: SVG, reasonerId: String, reasonerName: String,
-             spaceLayout: SpaceLayout, iPanel: Int): ReasonerSelectionPanel=
+             spaceLayout: SpaceLayout, iPanel: Int): ReasonerSelectionPanel =
     new ReasonerSelectionPanel(svg, SvgUtils.createSvgElement[G]("g"), reasonerId, reasonerName,
       spaceLayout, iPanel)
 
-  class SelectionBox(val itemInfo: Workflow.ItemSetInfo, val checkbox: SelectableLabelBox) {
+  class SelectionBox(val itemInfo: Workflow.ItemSetInfo, val derivation: Derivation,
+                     val checkbox: SelectableLabelBox) {
     def selected: Boolean = checkbox.selectedVar.valueOpt.getOrElse(false)
   }
+
 }

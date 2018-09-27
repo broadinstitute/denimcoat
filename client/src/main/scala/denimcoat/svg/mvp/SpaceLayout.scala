@@ -2,15 +2,20 @@ package denimcoat.svg.mvp
 
 import denimcoat.svg.mvp.SpaceLayout.Spacing
 
-case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.default) {
+case class SpaceLayout(nReasoners: Int, nRows: Int, nPredicatesPerRow: Int, spacing: Spacing = Spacing.default) {
 
   val yFirstItemsRow: Double = 180.0
 
-  def yOfPredicateRow(iRow: Int): Double = yFirstItemsRow - 25.0 + 75.0 * iRow
+  val yDiffPerSubRow: Double = 25.0
 
-  def yOfItemsRow(iRow: Int): Double = yFirstItemsRow + 75.0 * iRow
+  val yDiffPerRow: Double = (2 + nPredicatesPerRow) * yDiffPerSubRow
 
-  def yOfNavigationRow(iRow: Int): Double = yFirstItemsRow + 25.0 + 75.0 * iRow
+  def yOfPredicateRow(iRow: Int, iPredicate: Int): Double =
+    yOfItemsRow(iRow) - (1 + iPredicate) * yDiffPerSubRow
+
+  def yOfItemsRow(iRow: Int): Double = yFirstItemsRow + yDiffPerRow * iRow
+
+  def yOfNavigationRow(iRow: Int): Double = yOfItemsRow(iRow) + yDiffPerSubRow
 
   def iOfSmallButtonGroup(buttonId: ButtonId): Int = ButtonId.Group.all.indexOf(buttonId.group)
 
@@ -20,7 +25,7 @@ case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.d
 
   def iOfSmallButton(buttonId: ButtonId): Int = ButtonId.allByGroup(buttonId.group).indexOf(buttonId)
 
-  def xOfSmallButton(buttonId: ButtonId): Double = xOfFirstSmallButton + 40.0*iOfSmallButton(buttonId)
+  def xOfSmallButton(buttonId: ButtonId): Double = xOfFirstSmallButton + 40.0 * iOfSmallButton(buttonId)
 
   val yReasonerPanel: Double = 30
 
@@ -28,7 +33,7 @@ case class SpaceLayout(nReasoners: Int, nRows: Int, spacing: Spacing = Spacing.d
 
   val nButtonsPerRowMax: Int = ButtonId.allByGroup.values.map(_.size).max
 
-  val xItemsLabel: Double = xOfFirstSmallButton + 10.0 + 40.0*nButtonsPerRowMax
+  val xItemsLabel: Double = xOfFirstSmallButton + 10.0 + 40.0 * nButtonsPerRowMax
 
   val xQueryButtons: Double = xOfFirstSmallButton - 20.0
 

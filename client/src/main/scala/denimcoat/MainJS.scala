@@ -4,7 +4,7 @@ import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
-import denimcoat.mvp.Workflow.ResultItemSetInfo
+import denimcoat.mvp.Workflow.{Derivation, ResultItemSetInfo}
 import denimcoat.reasoners.extract.ResponseExtractor
 import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
@@ -38,8 +38,8 @@ object MainJS {
     selection.html(timeNow.toString)
   }
 
-  def getSelectedReasonerIds(itemInfo: Workflow.ItemSetInfo): Seq[String] = {
-    MainSvg.selectedReasoners(itemInfo)
+  def getSelectedReasonerIds(itemInfo: Workflow.ItemSetInfo, derivation: Derivation): Seq[String] = {
+    MainSvg.selectedReasoners(itemInfo, derivation)
   }
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
@@ -107,14 +107,15 @@ object MainJS {
     }
   }
 
-  def query(reasonerId: String, startItems: Seq[String], resultItemSetInfo: ResultItemSetInfo): Unit = {
+  def query(reasonerId: String, startItems: Seq[String], resultItemSetInfo: ResultItemSetInfo,
+            derivation: Derivation): Unit = {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
-    val inIdPrefix = resultItemSetInfo.derivation.previousSet.prefix
+    val inIdPrefix = derivation.previousSet.prefix
     val outIdPrefix = resultItemSetInfo.prefix
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
       val urlEither = plugin.createUrl(inIdPrefix, outIdPrefix, startItem)
       alertWhenDebugging(urlEither.toString)
-      val requestOpt = plugin.createRequestOpt(startItems, resultItemSetInfo.derivation.relation)
+      val requestOpt = plugin.createRequestOpt(startItems, derivation.relation)
       urlEither match {
         case Right(url) =>
           submitReasonerRequest(plugin.responsePlugin, resultItemSetInfo, url, requestOpt, receiveResponse,
@@ -127,20 +128,20 @@ object MainJS {
   def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
     MainSvg.setOutputItems(resultItemSetInfo, items(resultItemSetInfo))
 
-  def submit(resultItemSetInfo: ResultItemSetInfo): Unit = {
-    val inputItemsInfo = resultItemSetInfo.derivation.previousSet
+  def submit(resultItemSetInfo: ResultItemSetInfo, derivation: Derivation): Unit = {
+    val inputItemsInfo = derivation.previousSet
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
     if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")
     } else {
-      val reasonerIds = getSelectedReasonerIds(resultItemSetInfo)
+      val reasonerIds = getSelectedReasonerIds(resultItemSetInfo, derivation)
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
         resetAnswers(resultItemSetInfo)
         displayAnswers(resultItemSetInfo)
         reasonerIds.foreach {
-          query(_, selectedItems, resultItemSetInfo)
+          query(_, selectedItems, resultItemSetInfo, derivation)
         }
       }
     }
@@ -154,7 +155,7 @@ object MainJS {
             MainSvg.editInputString(edit)
             keyboardEvent.preventDefault()
           case KeyMapper.SpecialActions.enter =>
-            submit(Workflow.resultItemSetInfo0)
+            submit(Workflow.resultItemSetInfo0, Workflow.resultItemSetInfo0.derivation)
             keyboardEvent.preventDefault()
             keyboardEvent.stopPropagation()
           case _ => ()
