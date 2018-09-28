@@ -3,7 +3,7 @@ package denimcoat.svg
 import denimcoat.MainJS
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
-import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo, ResultItemSetInfo, StartItemSetInfo}
+import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.svg.mvp.{ButtonId, ReasonerList, ReasonerSelectionPanel, SpaceLayout}
 import denimcoat.util.SeqRotator
 import denimcoat.viewmodels.KeyMapper
@@ -94,7 +94,7 @@ object MainSvg {
     }
   }
 
-  class ResultRow(val itemSetInfo: ResultItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
+  class ResultRow(val itemSetInfo: ItemSetInfo, val svg: SVG, val iRow: Int, val label: TextFacade,
                   val queryButtons: Seq[LabelledButton], var itemBoxes: Seq[SelectableLabelBox])
     extends Row {
     def items: Seq[String] = itemBoxes.map(_.text.get.get)
@@ -139,14 +139,14 @@ object MainSvg {
   }
 
   object ResultRow {
-    def create(itemSetInfo: ResultItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
+    def create(itemSetInfo: ItemSetInfo, svg: SVG, iRow: Int): ResultRow = {
       val yItems = spaceLayout.yOfItemsRow(iRow)
       val label = TextFacade.create(svg, "resultRow" + iRow, spaceLayout.xItemsLabel, yItems)
       label.text := itemSetInfo.name + ":"
       svg.appendChild(label.element)
       val buttons = itemSetInfo.derivations.zipWithIndex.map { case (derivation, iPredicate) =>
         val button = LabelledButton.create(svg, (_: MouseEvent) => MainJS.submit(itemSetInfo, derivation))
-        button.text := "[" + itemSetInfo.derivation.relation.name + "]"
+        button.text := "[" + derivation.relation.name + "]"
         button.x := spaceLayout.xQueryButtons
         button.y := spaceLayout.yOfPredicateRow(iRow, iPredicate)
         svg.appendChild(button.element)
@@ -172,16 +172,17 @@ object MainSvg {
   }
 
   val rows: Seq[Row] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>
-    itemSetInfo match {
-      case startItemSetInfo: StartItemSetInfo => InputRow.create(startItemSetInfo, svg, iRow)
-      case resultItemSetInfo: ResultItemSetInfo => ResultRow.create(resultItemSetInfo, svg, iRow)
+    if(itemSetInfo.isStartItemSet) {
+      InputRow.create(itemSetInfo, svg, iRow)
+    } else {
+      ResultRow.create(itemSetInfo, svg, iRow)
     }
   }
 
   val rowsByInfo: Map[ItemSetInfo, Row] = rows.map(row => (row.itemSetInfo, row)).toMap
 
-  val resultRowsByInfo: Map[ResultItemSetInfo, ResultRow] = rowsByInfo.collect {
-    case (resultItemSetInfo: ResultItemSetInfo, resultRow: ResultRow) => (resultItemSetInfo, resultRow)
+  val resultRowsByInfo: Map[ItemSetInfo, ResultRow] = rowsByInfo.collect {
+    case (itemSetInfo: ItemSetInfo, resultRow: ResultRow) => (itemSetInfo, resultRow)
   }
 
   val inputRow: InputRow = rowsByInfo(Workflow.startItemSetInfo).asInstanceOf[InputRow]
@@ -194,8 +195,8 @@ object MainSvg {
 
   def editInputString(edit: KeyMapper.Edit): Unit = inputField.edit(edit)
 
-  def setOutputItems(resultItemSetInfo: ResultItemSetInfo, items: Seq[String]): Unit = {
-    resultRowsByInfo(resultItemSetInfo).items = items
+  def setOutputItems(itemSetInfo: ItemSetInfo, items: Seq[String]): Unit = {
+    resultRowsByInfo(itemSetInfo).items = items
   }
 
 }

@@ -4,7 +4,7 @@ import java.util.Date
 
 import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
-import denimcoat.mvp.Workflow.{Derivation, ResultItemSetInfo}
+import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.reasoners.extract.ResponseExtractor
 import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
@@ -44,18 +44,18 @@ object MainJS {
 
   def getDefaultReasonerUrl(reasonerId: String): String = "/reasoner/" + reasonerId
 
-  var answers: Map[Workflow.ResultItemSetInfo, Map[String, Either[String, ResponseExtractor]]] =
-    Workflow.resultItemSetInfos.map(itemSet =>
+  var answers: Map[Workflow.ItemSetInfo, Map[String, Either[String, ResponseExtractor]]] =
+    Workflow.itemSetInfos.map(itemSet =>
       (itemSet, Map.empty[String, Either[String, ResponseExtractor]])).toMap
   var items: Map[Workflow.ItemSetInfo, Seq[String]] =
     Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
 
-  def resetAnswers(resultItemSet: Workflow.ResultItemSetInfo): Unit = {
+  def resetAnswers(resultItemSet: Workflow.ItemSetInfo): Unit = {
     answers += (resultItemSet -> Map.empty)
     items += (resultItemSet -> Seq.empty)
   }
 
-  def addAnswer(itemSet: Workflow.ResultItemSetInfo, reasonerId: String,
+  def addAnswer(itemSet: Workflow.ItemSetInfo, reasonerId: String,
                 responseExtractorEither: Either[String, ResponseExtractor]): Unit = {
     val itemSetAnswers = answers(itemSet)
     answers += (itemSet -> (itemSetAnswers + (reasonerId -> responseExtractorEither)))
@@ -67,12 +67,12 @@ object MainJS {
     }
   }
 
-  def displayAnswers(resultItemSetInfo: ResultItemSetInfo): Unit = {
-    displayResultSet(resultItemSetInfo)
+  def displayAnswers(itemSetInfo: ItemSetInfo): Unit = {
+    displayResultSet(itemSetInfo)
   }
 
   def receiveResponse(request: XMLHttpRequest, plugin: ReasonerResponsePlugin,
-                      resultItemSetInfo: ResultItemSetInfo): Event => Unit = { _: Event =>
+                      resultItemSetInfo: ItemSetInfo): Event => Unit = { _: Event =>
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseExtractorEither = plugin.getExtractorFor(responseJson)
@@ -84,12 +84,12 @@ object MainJS {
     }
   }
 
-  def submitReasonerRequest(plugin: ReasonerResponsePlugin, resultItemSetInfo: ResultItemSetInfo, url: String,
+  def submitReasonerRequest(plugin: ReasonerResponsePlugin, itemSetInfo: ItemSetInfo, url: String,
                             requestOpt: Option[DefaultRequest],
-                            responseHandler: (XMLHttpRequest, ReasonerResponsePlugin, ResultItemSetInfo) => Event => Unit,
+                            responseHandler: (XMLHttpRequest, ReasonerResponsePlugin, ItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
-    http.onreadystatechange = responseHandler(http, plugin, resultItemSetInfo)
+    http.onreadystatechange = responseHandler(http, plugin, itemSetInfo)
     val proxyBaseUrl = "/proxy/"
     val urlActual = if (useProxy) proxyBaseUrl + url else url
     val protocol = if (requestOpt.isEmpty) "GET" else "POST"
@@ -107,41 +107,41 @@ object MainJS {
     }
   }
 
-  def query(reasonerId: String, startItems: Seq[String], resultItemSetInfo: ResultItemSetInfo,
+  def query(reasonerId: String, startItems: Seq[String], itemSetInfo: ItemSetInfo,
             derivation: Derivation): Unit = {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
     val inIdPrefix = derivation.previousSet.prefix
-    val outIdPrefix = resultItemSetInfo.prefix
+    val outIdPrefix = itemSetInfo.prefix
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
       val urlEither = plugin.createUrl(inIdPrefix, outIdPrefix, startItem)
       alertWhenDebugging(urlEither.toString)
       val requestOpt = plugin.createRequestOpt(startItems, derivation.relation)
       urlEither match {
         case Right(url) =>
-          submitReasonerRequest(plugin.responsePlugin, resultItemSetInfo, url, requestOpt, receiveResponse,
+          submitReasonerRequest(plugin.responsePlugin, itemSetInfo, url, requestOpt, receiveResponse,
             useProxy = true)
         case Left(message) => alert(message)
       }
     }
   }
 
-  def displayResultSet(resultItemSetInfo: ResultItemSetInfo): Unit =
-    MainSvg.setOutputItems(resultItemSetInfo, items(resultItemSetInfo))
+  def displayResultSet(itemSetInfo: ItemSetInfo): Unit =
+    MainSvg.setOutputItems(itemSetInfo, items(itemSetInfo))
 
-  def submit(resultItemSetInfo: ResultItemSetInfo, derivation: Derivation): Unit = {
+  def submit(itemSetInfo: ItemSetInfo, derivation: Derivation): Unit = {
     val inputItemsInfo = derivation.previousSet
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
     if (selectedItems.isEmpty) {
       dom.window.alert("No item(s) entered or selected.")
     } else {
-      val reasonerIds = getSelectedReasonerIds(resultItemSetInfo, derivation)
+      val reasonerIds = getSelectedReasonerIds(itemSetInfo, derivation)
       if (reasonerIds.isEmpty) {
         dom.window.alert("Please check at least one reasoner.")
       } else {
-        resetAnswers(resultItemSetInfo)
-        displayAnswers(resultItemSetInfo)
+        resetAnswers(itemSetInfo)
+        displayAnswers(itemSetInfo)
         reasonerIds.foreach {
-          query(_, selectedItems, resultItemSetInfo, derivation)
+          query(_, selectedItems, itemSetInfo, derivation)
         }
       }
     }
@@ -155,7 +155,7 @@ object MainJS {
             MainSvg.editInputString(edit)
             keyboardEvent.preventDefault()
           case KeyMapper.SpecialActions.enter =>
-            submit(Workflow.resultItemSetInfo0, Workflow.resultItemSetInfo0.derivation)
+            submit(Workflow.resultItemSetInfo0, Workflow.resultItemSetInfo0.derivations.head)
             keyboardEvent.preventDefault()
             keyboardEvent.stopPropagation()
           case _ => ()
