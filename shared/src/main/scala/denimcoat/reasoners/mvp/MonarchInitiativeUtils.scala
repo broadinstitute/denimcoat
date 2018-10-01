@@ -4,7 +4,9 @@ import denimcoat.reasoners.knowledge.IdPrefix
 
 object MonarchInitiativeUtils {
 
-  val sampleUrl: String = "https://api.monarchinitiative.org/api/bioentity/phenotype/HP:0000855/diseases/?" +
+  // https://api.monarchinitiative.org/api/bioentity/disease/DOID:9352/phenotypes?rows=100&unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true&use_compact_associations=false
+
+  val sampleUrl: String = "https://api.monarchinitiative.org/api/bioentity/phenotype/HP:0000855/diseases?" +
     "unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true&use_compact_associations=false"
 
   def canDo(inIdPrefix: IdPrefix, outIdPrefix: IdPrefix): Boolean = {
@@ -24,10 +26,10 @@ object MonarchInitiativeUtils {
       "?unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true" +
         "&use_compact_associations=false"
     val coreOpt = (inIdPrefix, outIdPrefix) match {
-      case (IdPrefix.omimDisease, IdPrefix.hp) => Right(s"disease/OMIM:$inputEntityId/phenotypes/")
-      case (IdPrefix.hp, IdPrefix.mondo) => Right(s"phenotype/HP:$inputEntityId/diseases/")
-      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => Right(s"gene/NCBIGENE:$inputEntityId/pathways/")
-      case (IdPrefix.reactomePathway, IdPrefix.ncbigene) => Right(s"pathway/NCBIGENE:$inputEntityId/genes/")
+      case (IdPrefix.omimDisease, IdPrefix.hp) => Right(s"disease/OMIM:$inputEntityId/phenotypes")
+      case (IdPrefix.hp, IdPrefix.mondo) => Right(s"phenotype/HP:$inputEntityId/diseases")
+      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => Right(s"gene/NCBIGENE:$inputEntityId/pathways")
+      case (IdPrefix.reactomePathway, IdPrefix.ncbigene) => Right(s"pathway/NCBIGENE:$inputEntityId/genes")
       case _ =>
         Left(s"Don't know how to query Monarch Initiative to go from ${inIdPrefix.string} to ${outIdPrefix.string}.")
     }
@@ -51,7 +53,7 @@ object MonarchInitiativeUtils {
   case class Subject(label: String, id: String)
 
   case class Association(`object`: MIObject, relation: Relation, provided_by: Seq[String], id: String,
-                         evidence_graph: EvidenceGraph, negated: Boolean,
+                         evidence_graph: EvidenceGraph,
                          publications: Option[Seq[Publication]], subject: Subject)
 
   case class Response(facet_counts: FacetCounts, associations: Seq[Association], objects: Seq[String], numFound: Int)
