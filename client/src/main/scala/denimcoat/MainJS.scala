@@ -10,7 +10,7 @@ import denimcoat.reasoners.messages.DefaultRequest
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
 import denimcoat.svg.MainSvg
-import denimcoat.util.Entity
+import denimcoat.util.{Entity, UrlUtils}
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
@@ -18,10 +18,14 @@ import org.scalajs.dom.Event
 import org.scalajs.dom.raw.{HTMLElement, KeyboardEvent, XMLHttpRequest}
 
 import scala.scalajs.js
+import scala.util.Try
 
 object MainJS {
 
-  val weAreInDebugMode: Boolean = false
+  val urlQuery: Map[String, String] = UrlUtils.parseQueryPart(dom.window.location.href)
+
+  val weAreInDebugMode: Boolean =
+    urlQuery.get("debug").flatMap(string => Try(string.toBoolean).toOption).getOrElse(false)
 
   def alert(message: String): Unit = {
     dom.window.alert(message)
@@ -165,6 +169,7 @@ object MainJS {
   }
 
   def main(args: Array[String]): Unit = {
+
     printTime(D3.select("#loadTime").asOf[HTMLElement])
 
     js.timers.setInterval(200) {

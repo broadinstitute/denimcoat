@@ -13,4 +13,16 @@ object UrlUtils {
     }
   }
 
+  def parseQueryPart(url: String): Map[String, String] = {
+    val queryPos = url.indexOf("?")
+    if(queryPos < 0) {
+      Map.empty
+    } else {
+      val queryString = url.split("\\?").last.split("#").head
+      queryString.split("&").map(_.split("=").toSeq).collect {
+        case Seq(key: String, value: String) => (key, value)
+      }.toMap
+    }
+  }
+
 }
