@@ -24,5 +24,5 @@ object DrugCheckerPlugin extends ReasonerPlugin {
     }
   }
 
-  override def createRequestOpt(startItems: Seq[String], relation: Relation): None.type = None
+  override def createRequestBodyOpt(startItems: Seq[String], relation: Relation): None.type = None
 }

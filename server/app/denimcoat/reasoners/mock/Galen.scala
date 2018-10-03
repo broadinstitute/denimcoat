@@ -5,7 +5,7 @@ import java.util.Date
 
 import denimcoat.reasoners.Reasoner
 import denimcoat.reasoners.knowledge.{Category, Relation}
-import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse, Edge, Node, Result}
+import denimcoat.reasoners.messages.{DefaultRequestBody, DefaultResponse, Edge, Node, Result}
 import denimcoat.util.Entity
 
 object Galen extends Reasoner {
@@ -35,7 +35,7 @@ object Galen extends Reasoner {
     )
   }
 
-  override def reason(request: DefaultRequest): DefaultResponse = {
+  override def reason(request: DefaultRequestBody): DefaultResponse = {
     val starts: Set[Entity] = request.items.toSet.flatMap(getEntity)
     val relation = request.relation
     val graphEdges = starts.flatMap(start => KnowledgeRepo.graph.edgesFrom(start, relation))

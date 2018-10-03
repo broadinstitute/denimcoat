@@ -4,7 +4,7 @@ import java.net.URI
 import java.util.Date
 
 import denimcoat.reasoners.Reasoner
-import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse, Result}
+import denimcoat.reasoners.messages.{DefaultRequestBody, DefaultResponse, Result}
 
 object MockReasoners {
 

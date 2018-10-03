@@ -17,5 +17,5 @@ object MonarchInitiativePlugin extends ReasonerPlugin {
   override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Either[String, String] =
     MonarchInitiativeUtils.constructUrl(inputPrefix, inputValue, outputPrefix)
 
-  override def createRequestOpt(startItems: Seq[String], relation: Relation): None.type = None
+  override def createRequestBodyOpt(startItems: Seq[String], relation: Relation): None.type = None
 }

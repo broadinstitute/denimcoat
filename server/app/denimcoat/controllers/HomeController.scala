@@ -3,7 +3,7 @@ package denimcoat.controllers
 import denimcoat.reasoners.ReasonerRegistry
 import denimcoat.reasoners.json.ReasonerRequestJsonReading.requestReads
 import denimcoat.reasoners.json.ReasonerResponseJsonWriting.responseWrites
-import denimcoat.reasoners.messages.{DefaultRequest => ReasonerRequest}
+import denimcoat.reasoners.messages.{DefaultRequestBody => ReasonerRequest}
 import javax.inject._
 import play.api.libs.json.{JsError, JsString, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}

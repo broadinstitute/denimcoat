@@ -1,7 +1,7 @@
 package denimcoat.reasoners.plugin
 
 import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
-import denimcoat.reasoners.messages.DefaultRequest
+import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
 
 trait ReasonerPlugin {
@@ -16,5 +16,9 @@ trait ReasonerPlugin {
 
   def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Either[String, String]
 
-  def createRequestOpt(startItems: Seq[String], relation: Relation): Option[DefaultRequest]
+  def createRequestBodyOpt(startItems: Seq[String], relation: Relation): Option[DefaultRequestBody]
+}
+
+object ReasonerPlugin {
+  case class Request(url: String, bodyOpt: Option[DefaultRequestBody])
 }

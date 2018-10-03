@@ -1,6 +1,6 @@
 package denimcoat.reasoners
 
-import denimcoat.reasoners.messages.{DefaultRequest, DefaultResponse}
+import denimcoat.reasoners.messages.{DefaultRequestBody, DefaultResponse}
 
 trait Reasoner {
 
@@ -8,7 +8,7 @@ trait Reasoner {
 
   def version: String
 
-  def reason(request: DefaultRequest): DefaultResponse
+  def reason(request: DefaultRequestBody): DefaultResponse
 
 }
 

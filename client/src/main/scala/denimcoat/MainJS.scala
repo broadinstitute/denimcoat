@@ -6,7 +6,7 @@ import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.reasoners.extract.ResponseExtractor
-import denimcoat.reasoners.messages.DefaultRequest
+import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
 import denimcoat.svg.MainSvg
@@ -89,7 +89,7 @@ object MainJS {
   }
 
   def submitReasonerRequest(plugin: ReasonerResponsePlugin, itemSetInfo: ItemSetInfo, url: String,
-                            requestOpt: Option[DefaultRequest],
+                            requestOpt: Option[DefaultRequestBody],
                             responseHandler: (XMLHttpRequest, ReasonerResponsePlugin, ItemSetInfo) => Event => Unit,
                             useProxy: Boolean = false): Unit = {
     val http = new XMLHttpRequest()
@@ -119,7 +119,7 @@ object MainJS {
     startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
       val urlEither = plugin.createUrl(inIdPrefix, outIdPrefix, startItem)
       alertWhenDebugging(urlEither.toString)
-      val requestOpt = plugin.createRequestOpt(startItems, derivation.relation)
+      val requestOpt = plugin.createRequestBodyOpt(startItems, derivation.relation)
       urlEither match {
         case Right(url) =>
           submitReasonerRequest(plugin.responsePlugin, itemSetInfo, url, requestOpt, receiveResponse,

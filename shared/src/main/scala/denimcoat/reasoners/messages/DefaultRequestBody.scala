@@ -5,10 +5,11 @@ import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
 
-case class DefaultRequest(items: Seq[String], relation: Relation, timestamp: Date)
+case class DefaultRequestBody(items: Seq[String], relation: Relation, timestamp: Date)
 
-object DefaultRequest {
-  def apply(items: Seq[String], relation: Relation): DefaultRequest = DefaultRequest(items, relation, new Date())
+object DefaultRequestBody {
+  def apply(items: Seq[String], relation: Relation): DefaultRequestBody =
+    DefaultRequestBody(items, relation, new Date())
 }
 
 case class NodeProperty(`type`: String, name: String, value: Any, uri: URI)

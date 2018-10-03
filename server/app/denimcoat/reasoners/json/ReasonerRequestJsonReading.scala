@@ -3,7 +3,7 @@ package denimcoat.reasoners.json
 import java.util.Date
 
 import denimcoat.reasoners.knowledge.Relation
-import denimcoat.reasoners.messages.DefaultRequest
+import denimcoat.reasoners.messages.DefaultRequestBody
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsValue, Reads}
 
@@ -19,10 +19,10 @@ object ReasonerRequestJsonReading {
     case json => JsError(s"Expected relation id as JSON string, but found '$json'")
   }
 
-  implicit val requestReads: Reads[DefaultRequest] = (
+  implicit val requestReads: Reads[DefaultRequestBody] = (
     (JsPath \ "items").read[Seq[String]] and
       (JsPath \ "relation").read[Relation] and
       (JsPath \ "timestamp").read[Long].map(new Date(_))
-    ) (DefaultRequest(_, _, _))
+    ) (DefaultRequestBody(_, _, _))
 
 }
