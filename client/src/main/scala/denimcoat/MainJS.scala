@@ -31,7 +31,7 @@ object MainJS {
     dom.window.alert(message)
   }
 
-  def alertWhenDebugging(message: String): Unit = {
+  def alertWhenDebugging(message: => String): Unit = {
     if (weAreInDebugMode) {
       alert(message)
     }
@@ -116,16 +116,16 @@ object MainJS {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
     val inIdPrefix = derivation.previousSet.prefix
     val outIdPrefix = itemSetInfo.prefix
-    startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string)).foreach { startItem =>
-      val urlEither = plugin.createUrl(inIdPrefix, outIdPrefix, startItem)
-      alertWhenDebugging(urlEither.toString)
-      val requestOpt = plugin.createRequestBodyOpt(startItems, derivation.relation)
-      urlEither match {
-        case Right(url) =>
-          submitReasonerRequest(plugin.responsePlugin, itemSetInfo, url, requestOpt, receiveResponse,
+    val inputItems = startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string))
+    val requestsEither = plugin.createRequests(derivation.relation, inIdPrefix, outIdPrefix, inputItems)
+    requestsEither match {
+      case Left(message) => alert(message)
+      case Right(requests) =>
+        alertWhenDebugging(requests.map(_.url).mkString("\n"))
+        requests.foreach { request =>
+          submitReasonerRequest(plugin.responsePlugin, itemSetInfo, request.url, request.bodyOpt, receiveResponse,
             useProxy = true)
-        case Left(message) => alert(message)
-      }
+        }
     }
   }
 

@@ -17,10 +17,6 @@ trait ReasonerPlugin {
 
   def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
                      inputItems: Seq[String]): Either[String, Seq[Request]]
-
-  def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Either[String, String]
-
-  def createRequestBodyOpt(startItems: Seq[String], relation: Relation): Option[DefaultRequestBody]
 }
 
 object ReasonerPlugin {

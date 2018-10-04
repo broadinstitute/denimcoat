@@ -25,4 +25,6 @@ object UrlUtils {
     }
   }
 
+  def blub: String = "yo!"
+
 }

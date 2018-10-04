@@ -23,10 +23,4 @@ object BioThingsExplorerPlugin extends ReasonerPlugin {
     }
     Right(requests)
   }
-
-  override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Right[String, String] =
-    Right(BioThingsExplorerUtils.buildUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String))
-
-  override def createRequestBodyOpt(startItems: Seq[String], relation: Relation): None.type = None
-
 }

@@ -25,16 +25,4 @@ object DrugCheckerPlugin extends ReasonerPlugin {
       Left(s"Don't know how to go from $inputPrefix to $outputPrefix")
     }
   }
-
-
-  override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String):
-  Either[String, String] = {
-    if (mightBeAbleTo(inputPrefix, outputPrefix)) {
-      Right(DrugCheckerUtils.buildUrl(Seq(inputValue)))
-    } else {
-      Left(s"Don't know how to go from $inputPrefix to $outputPrefix")
-    }
-  }
-
-  override def createRequestBodyOpt(startItems: Seq[String], relation: Relation): None.type = None
 }

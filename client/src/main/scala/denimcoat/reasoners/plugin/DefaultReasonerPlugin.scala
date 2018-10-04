@@ -18,11 +18,4 @@ case class DefaultReasonerPlugin(override val reasonerId: String) extends Reason
     val request = Request(url, Some(DefaultRequestBody(inputItems, relation)))
     Right(Seq(request))
   }
-
-  override def createUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String): Right[String, String] =
-    Right(url)
-
-  override def createRequestBodyOpt(startItems: Seq[String], relation: Relation): Some[DefaultRequestBody] =
-    Some(DefaultRequestBody(startItems, relation))
-
 }
