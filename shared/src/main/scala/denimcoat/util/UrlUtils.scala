@@ -24,7 +24,4 @@ object UrlUtils {
       }.toMap
     }
   }
-
-  def blub: String = "yo!"
-
 }

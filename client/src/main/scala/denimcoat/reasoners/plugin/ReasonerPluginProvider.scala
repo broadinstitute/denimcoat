@@ -9,6 +9,7 @@ object ReasonerPluginProvider {
       case ReasonerList.biothings.id => BioThingsExplorerPlugin
       case ReasonerList.monarch.id => MonarchInitiativePlugin
       case ReasonerList.drugChecker.id => DrugCheckerPlugin
+      case ReasonerList.pathwayEnrichment.id => PathwayEnrichmentPlugin
       case _ => DefaultReasonerPlugin(reasonerId)
     }
   }
