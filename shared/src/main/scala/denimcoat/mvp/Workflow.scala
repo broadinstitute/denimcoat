@@ -1,6 +1,7 @@
 package denimcoat.mvp
 
 import denimcoat.reasoners.knowledge.{IdPrefix, Identifiable, Relation}
+import denimcoat.reasoners.mvp.MonarchInitiativeUtils
 
 object Workflow {
 
@@ -35,7 +36,9 @@ object Workflow {
     ItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway,
       Derivation(resultItemSetInfo2, Relation.isPartOfPathway))
   val resultItemSetInfo4: ItemSetInfo =
-    ItemSetInfo("gene", "gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo3, Relation.includesGene))
+    ItemSetInfo("gene", "gene", IdPrefix.ncbigene,
+      Derivation(resultItemSetInfo2, Relation.isEnrichedGeneWith),
+      Derivation(resultItemSetInfo3, Relation.includesGene))
   val resultItemSetInfo5: ItemSetInfo =
     ItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, Derivation(resultItemSetInfo4, Relation.isSameGeneAs))
   val resultItemSetInfo6: ItemSetInfo =

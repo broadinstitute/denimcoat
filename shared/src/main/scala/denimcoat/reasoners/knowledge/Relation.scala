@@ -9,10 +9,15 @@ trait Relation extends Identifiable {
 
 object Relation {
 
+  def apply(id: String, name: String, inCategory: Category, outCategory: Category): RelationImpl =
+    RelationImpl(id: String, name: String, inCategory: Category, outCategory: Category)
+
   abstract case class Reversible(id: String, name: String, inCategory: Category, outCategory: Category)
     extends Relation {
     def reverse: Reversible
   }
+
+  case class RelationImpl(id: String, name: String, inCategory: Category, outCategory: Category) extends Relation
 
   val hasSymptom: Reversible = new Reversible("hasSymptom", "has symptom", Category.disease, Category.phenotype) {
     override def reverse: Reversible = isSymptomOf
@@ -71,10 +76,13 @@ object Relation {
       override def reverse: Reversible = this
     }
 
+  val isEnrichedGeneWith: Relation =
+    Relation("isEnrichedGeneWith", "is enriched gene with", Category.gene, Category.gene)
+
   val knownRelations: Set[Relation] =
     Set[Relation](
       hasSymptom, isSymptomOf, isPromotedBy, promotes, hasAssociatedGene, isAssociatedWith, isPartOfPathway,
-      includesGene, isSameGeneAs, isGeneTargetedByDrug, isDrugTargetingGene
+      includesGene, isSameGeneAs, isGeneTargetedByDrug, isDrugTargetingGene, isKnownDrug, isEnrichedGeneWith
     )
 
   val relationsById: Map[String, Relation] = knownRelations.map(relation => (relation.id, relation)).toMap

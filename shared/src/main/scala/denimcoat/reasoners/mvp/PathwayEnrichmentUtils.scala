@@ -38,7 +38,7 @@ object PathwayEnrichmentUtils {
 
   val baseUrl: String = "http://ec2-34-227-29-65.compute-1.amazonaws.com/perl/pathDIP.cgi?genes="
 
-  def buildUrl(geneIds: Seq[String]): String = baseUrl + geneIds.mkString(",")
+  def buildUrl(geneIds: Seq[String]): String = baseUrl + geneIds.map("ncbigene:" + _).mkString(",")
 
   case class ResponsePerPathway(genes: Seq[String], name: String)
 
