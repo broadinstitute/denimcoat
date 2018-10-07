@@ -3,7 +3,7 @@ package denimcoat.svg.mvp
 import denimcoat.gears.providers.Var
 import denimcoat.gears.syntax.AllImplicits._
 import denimcoat.mvp.Workflow
-import denimcoat.mvp.Workflow.Derivation
+import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.reasoners.plugin.{ReasonerPlugin, ReasonerPluginProvider}
 import denimcoat.svg.mvp.ReasonerSelectionPanel.SelectionBox
 import denimcoat.svg.{ElementFacade, SelectableLabelBox, SvgUtils, TextFacade}
@@ -27,13 +27,16 @@ class ReasonerSelectionPanel(val svg: SVG, val element: G,
   val reasonerPlugin: ReasonerPlugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
 
   val selectionBoxes: Seq[Seq[SelectionBox]] = Workflow.itemSetInfos.zipWithIndex.map { case (itemSetInfo, iRow) =>
-    itemSetInfo.derivations.filter { derivation =>
+    itemSetInfo.derivations.zipWithIndex.map { case (derivation, iPredicate) =>
+      val y = spaceLayout.yOfPredicateRow(iRow, iPredicate)
+      (y, derivation)
+    }.filter { case (_: Double, derivation: Derivation) =>
       reasonerPlugin.mightBeAbleTo(derivation.previousSet.prefix, itemSetInfo.prefix)
-    }.zipWithIndex.map { case (derivation, iPredicate) =>
+    }.map { case (y: Double, derivation: Derivation) =>
       val box = SelectableLabelBox.create(svg)
       box.text := TextConstants.reasonerSelectionCheckMark
       box.x := x
-      box.y := spaceLayout.yOfPredicateRow(iRow, iPredicate)
+      box.y := y
       element.appendChild(box.element)
       new SelectionBox(itemSetInfo, derivation, box)
     }
