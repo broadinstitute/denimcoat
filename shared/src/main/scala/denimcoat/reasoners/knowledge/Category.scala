@@ -1,13 +1,14 @@
 package denimcoat.reasoners.knowledge
 
-case class Category(id: String, name: String) extends Identifiable {
+case class Category(name: String) extends Identifiable {
+
+  override def id: PrefixedId = IdPrefix.name(name)
 
 }
 
 object Category {
 
-  def apply(name: String): Category = Category(name, name)
-
+  val thing: Category = Category("thing")
   val disease: Category = Category("disease")
   val phenotype: Category = Category("phenotype")
   val gene: Category = Category("gene")

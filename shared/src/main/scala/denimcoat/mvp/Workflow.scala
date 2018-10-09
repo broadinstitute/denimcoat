@@ -5,47 +5,44 @@ import denimcoat.reasoners.mvp.MonarchInitiativeUtils
 
 object Workflow {
 
-  case class ItemSetInfo(id: String, name: String, prefix: IdPrefix, derivations: Seq[Derivation])
+  case class ItemSetInfo(name: String, prefix: IdPrefix, derivations: Seq[Derivation])
     extends Identifiable {
     def isStartItemSet: Boolean = derivations.isEmpty
   }
 
   object ItemSetInfo {
-    def apply(id: String, name: String, prefix: IdPrefix): ItemSetInfo = {
-      ItemSetInfo(id, name, prefix, Seq.empty)
+    def apply(name: String, prefix: IdPrefix): ItemSetInfo = {
+      ItemSetInfo(name, prefix, Seq.empty)
     }
-    def apply(id: String, name: String, prefix: IdPrefix, derivation: Derivation): ItemSetInfo = {
-      ItemSetInfo(id, name, prefix, Seq(derivation))
+    def apply(name: String, prefix: IdPrefix, derivation: Derivation): ItemSetInfo = {
+      ItemSetInfo(name, prefix, Seq(derivation))
     }
-    def apply(id: String, name: String, prefix: IdPrefix, derivation: Derivation,
-              derivations: Derivation*): ItemSetInfo = {
-      ItemSetInfo(id, name, prefix, derivation +: derivations)
+    def apply(name: String, prefix: IdPrefix, derivation: Derivation, derivations: Derivation*): ItemSetInfo = {
+      ItemSetInfo(name, prefix, derivation +: derivations)
     }
   }
 
   case class Derivation(previousSet: ItemSetInfo, relation: Relation)
 
-  val startItemSetInfo: ItemSetInfo = ItemSetInfo("disease", "disease", IdPrefix.omimDisease)
+  val startItemSetInfo: ItemSetInfo = ItemSetInfo("disease", IdPrefix.omimDisease)
   val resultItemSetInfo0: ItemSetInfo =
-    ItemSetInfo("symptom", "symptom", IdPrefix.hp, Derivation(startItemSetInfo, Relation.hasSymptom))
+    ItemSetInfo("symptom", IdPrefix.hp, Derivation(startItemSetInfo, Relation.hasSymptom))
   val resultItemSetInfo1: ItemSetInfo =
-    ItemSetInfo("disease", "disease", IdPrefix.mondo, Derivation(resultItemSetInfo0, Relation.isSymptomOf))
+    ItemSetInfo("disease", IdPrefix.mondo, Derivation(resultItemSetInfo0, Relation.isSymptomOf))
   val resultItemSetInfo2: ItemSetInfo =
-    ItemSetInfo("gene", "gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo1, Relation.hasAssociatedGene))
+    ItemSetInfo("gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo1, Relation.hasAssociatedGene))
   val resultItemSetInfo3: ItemSetInfo =
-    ItemSetInfo("pathway", "pathway", IdPrefix.reactomePathway,
+    ItemSetInfo("pathway", IdPrefix.reactomePathway,
       Derivation(resultItemSetInfo2, Relation.isPartOfPathway))
   val resultItemSetInfo4: ItemSetInfo =
-    ItemSetInfo("gene", "gene", IdPrefix.ncbigene,
-      Derivation(resultItemSetInfo2, Relation.isEnrichedGeneWith),
+    ItemSetInfo("gene", IdPrefix.ncbigene, Derivation(resultItemSetInfo2, Relation.isEnrichedGeneWith),
       Derivation(resultItemSetInfo3, Relation.includesGene))
   val resultItemSetInfo5: ItemSetInfo =
-    ItemSetInfo("gene", "gene", IdPrefix.hgncSymbol, Derivation(resultItemSetInfo4, Relation.isSameGeneAs))
+    ItemSetInfo("gene", IdPrefix.hgncSymbol, Derivation(resultItemSetInfo4, Relation.isSameGeneAs))
   val resultItemSetInfo6: ItemSetInfo =
-    ItemSetInfo("drug", "drug", IdPrefix.chemblCompound,
-      Derivation(resultItemSetInfo5, Relation.isGeneTargetedByDrug))
+    ItemSetInfo("drug", IdPrefix.chemblCompound, Derivation(resultItemSetInfo5, Relation.isGeneTargetedByDrug))
   val resultItemSetInfo7: ItemSetInfo =
-    ItemSetInfo("drug", "drug", IdPrefix.chemblCompound, Derivation(resultItemSetInfo6, Relation.isKnownDrug))
+    ItemSetInfo("drug", IdPrefix.chemblCompound, Derivation(resultItemSetInfo6, Relation.isKnownDrug))
 
   val itemSetInfos: Seq[ItemSetInfo] = Seq(
     startItemSetInfo, resultItemSetInfo0, resultItemSetInfo1, resultItemSetInfo2, resultItemSetInfo3,

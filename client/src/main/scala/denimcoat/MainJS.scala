@@ -111,12 +111,12 @@ object MainJS {
     }
   }
 
-  def query(reasonerId: String, startItems: Seq[String], itemSetInfo: ItemSetInfo,
+  def query(reasonerId: String, startItems: Seq[Entity], itemSetInfo: ItemSetInfo,
             derivation: Derivation): Unit = {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
     val inIdPrefix = derivation.previousSet.prefix
     val outIdPrefix = itemSetInfo.prefix
-    val inputItems = startItems.flatMap(Entity.parse(_).getId(inIdPrefix.string))
+    val inputItems = startItems.flatMap(_.getId(inIdPrefix.string))
     val requestsEither = plugin.createRequests(derivation.relation, inIdPrefix, outIdPrefix, inputItems)
     requestsEither match {
       case Left(message) => alert(message)
@@ -145,7 +145,7 @@ object MainJS {
         resetAnswers(itemSetInfo)
         displayAnswers(itemSetInfo)
         reasonerIds.foreach {
-          query(_, selectedItems, itemSetInfo, derivation)
+          query(_, selectedItems.map(Entity.parse), itemSetInfo, derivation)
         }
       }
     }
