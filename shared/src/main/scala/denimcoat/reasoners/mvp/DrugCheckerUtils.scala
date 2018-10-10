@@ -1,5 +1,7 @@
 package denimcoat.reasoners.mvp
 
+import denimcoat.reasoners.knowledge.PrefixedId
+
 object DrugCheckerUtils {
 
   val sampleUrl: String =
@@ -8,7 +10,7 @@ object DrugCheckerUtils {
 
   val baseUrl: String = "http://ec2-34-227-29-65.compute-1.amazonaws.com/perl/isDrug.cgi?compounds="
 
-  def buildUrl(compounds: Iterable[String]): String = baseUrl + compounds.mkString(",")
+  def buildUrl(compounds: Iterable[PrefixedId]): String = baseUrl + compounds.mkString(",")
 
   case class ResponseElement(molecule: String, isDrug: Boolean)
 

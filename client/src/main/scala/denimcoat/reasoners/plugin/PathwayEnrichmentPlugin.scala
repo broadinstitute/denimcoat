@@ -1,6 +1,6 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.mvp.PathwayEnrichmentUtils
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.PathwayEnrichmentResponsePlugin
@@ -18,7 +18,7 @@ object PathwayEnrichmentPlugin extends ReasonerPlugin {
   }
 
   override def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                              inputItems: Seq[String]): Either[String, Seq[ReasonerPlugin.Request]] = {
+                              inputItems: Seq[PrefixedId]): Either[String, Seq[ReasonerPlugin.Request]] = {
     if (mightBeAbleTo(inputPrefix, outputPrefix)) {
       val request = Request(PathwayEnrichmentUtils.buildUrl(inputItems), None)
       Right(Seq(request))

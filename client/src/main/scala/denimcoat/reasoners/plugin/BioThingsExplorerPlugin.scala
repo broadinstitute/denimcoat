@@ -1,6 +1,6 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.mvp.BioThingsExplorerUtils
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.DefaultReasonerResponsePlugin
@@ -16,9 +16,9 @@ object BioThingsExplorerPlugin extends ReasonerPlugin {
   override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean = inputPrefix != outputPrefix
 
   override def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                              inputItems: Seq[String]): Either[String, Seq[ReasonerPlugin.Request]] = {
+                              inputItems: Seq[PrefixedId]): Either[String, Seq[ReasonerPlugin.Request]] = {
     val requests = inputItems.map { inputItem =>
-      val url = BioThingsExplorerUtils.buildUrl(inputPrefix, outputPrefix, inputItem)
+      val url = BioThingsExplorerUtils.buildUrl(inputItem, outputPrefix)
       Request(url, None)
     }
     Right(requests)

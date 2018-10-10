@@ -2,16 +2,16 @@ package denimcoat.reasoners.json
 
 import java.util.Date
 
-import denimcoat.reasoners.knowledge.Relation
+import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
 import denimcoat.reasoners.messages.DefaultRequestBody
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsValue, Reads}
+import play.api.libs.json._
 
 
 object ReasonerRequestJsonReading {
 
   implicit val relationReads: Reads[Relation] = {
-    case JsString(string) => Relation.fromId(string) match {
+    case JsString(string) => Relation.fromId(IdPrefix.name(string)) match {
       case Some(relation) => JsSuccess(relation)
       case None => JsError(s"No relation with id '$string' found.")
 

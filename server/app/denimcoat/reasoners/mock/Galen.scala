@@ -25,12 +25,12 @@ object Galen extends Reasoner {
 
   def entityToNode(entity: Entity, category: Category): Node = {
     Node(
-      id = entity.id,
-      `type` = category.id,
+      id = entity.id.toString,
+      `type` = category.id.value,
       name = Some(entity.name),
       uri = Some(new URI(s"${category.id}:${entity.id}")),
       description = Some(s"The ${category.name} ${entity.name}."),
-      symbol = Some(entity.id),
+      symbol = Some(entity.id.toString),
       node_property_list = Some(Seq.empty)
     )
   }
@@ -52,7 +52,7 @@ object Galen extends Reasoner {
       val diseaseNode = entityToNode(subjectEntity, subjectCategory)
       val symptomNode = entityToNode(objectEntity, objectCategory)
       val diseaseSymptomEdge = Edge(
-        `type` = relation.id,
+        `type` = relation.id.value,
         source_id = diseaseNode.id,
         target_id = symptomNode.id,
         is_defined_by = Some("Some smart dude"),

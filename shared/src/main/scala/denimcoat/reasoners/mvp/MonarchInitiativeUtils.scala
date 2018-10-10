@@ -1,6 +1,6 @@
 package denimcoat.reasoners.mvp
 
-import denimcoat.reasoners.knowledge.IdPrefix
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId}
 
 object MonarchInitiativeUtils {
 
@@ -19,17 +19,18 @@ object MonarchInitiativeUtils {
     }
   }
 
-  def constructUrl(inIdPrefix: IdPrefix, inputEntityId: String, outIdPrefix: IdPrefix):
+  def constructUrl(inIdPrefix: IdPrefix, inputId: PrefixedId, outIdPrefix: IdPrefix):
   Either[String, String] = {
     val root = "https://api.monarchinitiative.org/api/bioentity/"
     val postfix =
       "?unselect_evidence=false&exclude_automatic_assertions=false&fetch_objects=true" +
         "&use_compact_associations=false"
+    val inputValue = inputId.value
     val coreOpt = (inIdPrefix, outIdPrefix) match {
-      case (IdPrefix.omimDisease, IdPrefix.hp) => Right(s"disease/OMIM:$inputEntityId/phenotypes")
-      case (IdPrefix.hp, IdPrefix.mondo) => Right(s"phenotype/HP:$inputEntityId/diseases")
-      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => Right(s"gene/NCBIGENE:$inputEntityId/pathways")
-      case (IdPrefix.reactomePathway, IdPrefix.ncbigene) => Right(s"pathway/NCBIGENE:$inputEntityId/genes")
+      case (IdPrefix.omimDisease, IdPrefix.hp) => Right(s"disease/OMIM:$inputValue/phenotypes")
+      case (IdPrefix.hp, IdPrefix.mondo) => Right(s"phenotype/HP:$inputValue/diseases")
+      case (IdPrefix.ncbigene, IdPrefix.reactomePathway) => Right(s"gene/NCBIGENE:$inputValue/pathways")
+      case (IdPrefix.reactomePathway, IdPrefix.ncbigene) => Right(s"pathway/NCBIGENE:$inputValue/genes")
       case _ =>
         Left(s"Don't know how to query Monarch Initiative to go from ${inIdPrefix.string} to ${outIdPrefix.string}.")
     }

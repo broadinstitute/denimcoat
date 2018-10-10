@@ -1,5 +1,5 @@
 package denimcoat.reasoners.plugin
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.DefaultReasonerResponsePlugin
@@ -14,8 +14,8 @@ case class DefaultReasonerPlugin(override val reasonerId: String) extends Reason
   override def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean = true
 
   override def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                              inputItems: Seq[String]): Either[String, Seq[ReasonerPlugin.Request]] = {
-    val request = Request(url, Some(DefaultRequestBody(inputItems, relation)))
+                              inputItems: Seq[PrefixedId]): Either[String, Seq[ReasonerPlugin.Request]] = {
+    val request = Request(url, Some(DefaultRequestBody(inputItems.map(_.toString), relation)))
     Right(Seq(request))
   }
 }

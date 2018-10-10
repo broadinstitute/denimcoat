@@ -1,6 +1,6 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.mvp.DrugCheckerUtils
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.DrugCheckerResponsePlugin
@@ -17,7 +17,7 @@ object DrugCheckerPlugin extends ReasonerPlugin {
     inputPrefix == IdPrefix.chemblCompound && outputPrefix == IdPrefix.chemblCompound
 
   override def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                              inputItems: Seq[String]): Either[String, Seq[ReasonerPlugin.Request]] = {
+                              inputItems: Seq[PrefixedId]): Either[String, Seq[ReasonerPlugin.Request]] = {
     if (mightBeAbleTo(inputPrefix, outputPrefix)) {
       val request = Request(DrugCheckerUtils.buildUrl(inputItems), None)
       Right(Seq(request))

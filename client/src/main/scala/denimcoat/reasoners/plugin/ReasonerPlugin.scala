@@ -1,6 +1,6 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
@@ -16,7 +16,7 @@ trait ReasonerPlugin {
   def mightBeAbleTo(inputPrefix: IdPrefix, outputPrefix: IdPrefix): Boolean
 
   def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                     inputItems: Seq[String]): Either[String, Seq[Request]]
+                     inputItems: Seq[PrefixedId]): Either[String, Seq[Request]]
 }
 
 object ReasonerPlugin {

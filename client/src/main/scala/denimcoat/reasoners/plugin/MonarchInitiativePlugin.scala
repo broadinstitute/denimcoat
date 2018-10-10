@@ -1,6 +1,6 @@
 package denimcoat.reasoners.plugin
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Relation}
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId, Relation}
 import denimcoat.reasoners.mvp.MonarchInitiativeUtils
 import denimcoat.reasoners.plugin.ReasonerPlugin.Request
 import denimcoat.reasoners.plugin.response.MonarchInitiativeResponsePlugin
@@ -17,7 +17,7 @@ object MonarchInitiativePlugin extends ReasonerPlugin {
     MonarchInitiativeUtils.canDo(inputPrefix, outputPrefix)
 
   override def createRequests(relation: Relation, inputPrefix: IdPrefix, outputPrefix: IdPrefix,
-                              inputItems: Seq[String]): Either[String, Seq[ReasonerPlugin.Request]] = {
+                              inputItems: Seq[PrefixedId]): Either[String, Seq[ReasonerPlugin.Request]] = {
     if (inputItems.isEmpty) {
       Right(Seq.empty)
     } else {

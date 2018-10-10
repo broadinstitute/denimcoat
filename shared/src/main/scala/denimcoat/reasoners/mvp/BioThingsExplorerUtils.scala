@@ -1,6 +1,6 @@
 package denimcoat.reasoners.mvp
 
-import denimcoat.reasoners.knowledge.IdPrefix
+import denimcoat.reasoners.knowledge.{IdPrefix, PrefixedId}
 import denimcoat.util.UrlUtils
 
 object BioThingsExplorerUtils {
@@ -10,11 +10,10 @@ object BioThingsExplorerUtils {
     "input_prefix=omim.disease&output_prefix=hp&input_value=125853&format=translator"
   val baseUrl: String = "http://biothings.io/explorer/api/v2/directinput2output"
 
-  def buildUrl(inputPrefix: IdPrefix, outputPrefix: IdPrefix, inputValue: String,
-               format: String = "translator"): String = {
+  def buildUrl(inputId: PrefixedId, outputPrefix: IdPrefix, format: String = "translator"): String = {
     val params =
-      Map("input_prefix" -> inputPrefix.string, "output_prefix" -> outputPrefix.string, "input_value" -> inputValue,
-        "format" -> format)
+      Map("input_prefix" -> inputId.prefix.string, "output_prefix" -> outputPrefix.string,
+        "input_value" -> inputId.value, "format" -> format)
     UrlUtils.buildQueryUrl(baseUrl, params)
   }
 
