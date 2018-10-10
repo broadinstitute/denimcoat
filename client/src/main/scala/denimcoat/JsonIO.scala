@@ -3,7 +3,7 @@ package denimcoat
 import java.net.URI
 import java.util.Date
 
-import denimcoat.reasoners.knowledge.Relation
+import denimcoat.reasoners.knowledge.{PrefixedId, Relation}
 import denimcoat.reasoners.messages.{DefaultRequestBody => ReasonerRequest, DefaultResponse => ReasonerResponse}
 import denimcoat.reasoners.mvp.{DrugCheckerUtils, MonarchInitiativeUtils, PathwayEnrichmentUtils}
 import io.circe.{Decoder, Encoder, Error}
@@ -18,7 +18,8 @@ object JsonIO {
   implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
   implicit val anyDecoder: Decoder[Any] = implicitly[Decoder[Any]]
   implicit val relationEncoder: Encoder[Relation] = (relation: Relation) => relation.id.asJson
-  implicit val relationDecoder: Decoder[Relation] = implicitly[Decoder[String]].map(Relation.fromId).map(_.get)
+  implicit val relationDecoder: Decoder[Relation] =
+    implicitly[Decoder[String]].map(PrefixedId.parse).map(Relation.fromId).map(_.get)
 
   def errorToString(error: Error): String = error.getClass.getSimpleName + ": " + error.getMessage
 

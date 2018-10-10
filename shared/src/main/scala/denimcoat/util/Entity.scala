@@ -41,12 +41,7 @@ object Entity {
 
   def fromStrings(strings: Seq[String]): Entity = {
     val (idStrings, namesSeq) = strings.partition(_.contains(":"))
-    val idsSeq = idStrings.map { idString =>
-      val colonPos = idString.indexOf(':')
-      val key = idString.substring(0, colonPos).trim.toLowerCase()
-      val value = idString.substring(colonPos + 1).trim
-      IdPrefix(key).apply(value)
-    }
+    val idsSeq = idStrings.map(PrefixedId.parse)
     Entity(namesSeq, idsSeq)
   }
 

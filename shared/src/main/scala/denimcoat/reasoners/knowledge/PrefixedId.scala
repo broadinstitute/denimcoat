@@ -7,8 +7,14 @@ case class PrefixedId(prefix: IdPrefix, value: String) {
 }
 
 object PrefixedId {
-  def parse(string: String): Either[String, PrefixedId] = {
-    val colonPos = string.indexOf(":")
-    ??? // TODO
+  def parse(string: String): PrefixedId = {
+    val colonPos = string.indexOf(':')
+    if(colonPos < 0) {
+      IdPrefix.name(string)
+    } else {
+      val key = string.substring(0, colonPos).trim.toLowerCase()
+      val value = string.substring(colonPos + 1).trim
+      IdPrefix(key).apply(value)
+    }
   }
 }
