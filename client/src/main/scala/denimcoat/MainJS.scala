@@ -116,7 +116,7 @@ object MainJS {
     val plugin = ReasonerPluginProvider.getReasonerPlugin(reasonerId)
     val inIdPrefix = derivation.previousSet.prefix
     val outIdPrefix = itemSetInfo.prefix
-    val inputItems = startItems.flatMap(_.getId(inIdPrefix.string))
+    val inputItems = startItems.flatMap(_.getId(inIdPrefix))
     val requestsEither = plugin.createRequests(derivation.relation, inIdPrefix, outIdPrefix, inputItems)
     requestsEither match {
       case Left(message) => alert(message)

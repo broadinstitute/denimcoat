@@ -26,7 +26,7 @@ object Galen extends Reasoner {
   def entityToNode(entity: Entity, category: Category): Node = {
     Node(
       id = entity.id.toString,
-      `type` = category.id.value,
+      `type` = category.ids.head.value,
       name = Some(entity.name),
       uri = Some(new URI(s"${category.id}:${entity.id}")),
       description = Some(s"The ${category.name} ${entity.name}."),
@@ -62,7 +62,8 @@ object Galen extends Reasoner {
       )
       val result = Result(
         `@id` =
-          Some(new URI(Seq(subjectCategory, objectCategory, subjectEntity, objectEntity).map(_.id).mkString(":"))),
+          Some(new URI(Seq(subjectCategory, objectCategory, subjectEntity, objectEntity)
+            .map(_.ids.head).mkString(":"))),
         text = Some(message),
         confidence = Some(1.0f),
         node_list = Seq(diseaseNode, symptomNode),

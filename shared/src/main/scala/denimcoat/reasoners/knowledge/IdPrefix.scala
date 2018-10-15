@@ -8,7 +8,7 @@ case class IdPrefix(string: String, category: Category) {
 object IdPrefix {
   def apply(string: String): IdPrefix = new IdPrefix(string.toLowerCase, Category.thing)
 
-  val name: IdPrefix = IdPrefix("name", Category.thing)
+  val none: IdPrefix = IdPrefix("", Category.thing)
   val omimDisease: IdPrefix = IdPrefix("omim.disease", Category.disease)
   val hp: IdPrefix = IdPrefix("hp", Category.phenotype)
   val mondo: IdPrefix = IdPrefix("mondo", Category.disease)

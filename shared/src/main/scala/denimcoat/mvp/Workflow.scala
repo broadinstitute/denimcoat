@@ -1,13 +1,14 @@
 package denimcoat.mvp
 
-import denimcoat.reasoners.knowledge.{IdPrefix, Identifiable, Relation}
-import denimcoat.reasoners.mvp.MonarchInitiativeUtils
+import denimcoat.reasoners.knowledge.{IdPrefix, Identifiable, PrefixedId, Relation}
 
 object Workflow {
 
-  case class ItemSetInfo(name: String, prefix: IdPrefix, derivations: Seq[Derivation])
+  case class ItemSetInfo(override val name: String, prefix: IdPrefix, derivations: Seq[Derivation])
     extends Identifiable {
     def isStartItemSet: Boolean = derivations.isEmpty
+
+    override def ids: Seq[PrefixedId] = Seq(IdPrefix.none(name))
   }
 
   object ItemSetInfo {

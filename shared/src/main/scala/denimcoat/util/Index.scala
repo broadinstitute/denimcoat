@@ -1,13 +1,13 @@
 package denimcoat.util
 
-class Index[V](var extracters: Seq[V => String],
+class Index[V](var extracter: V => Seq[String],
                var normalizers: Seq[String => String] = Seq(_.trim, _.trim.toLowerCase)) {
 
   var entries: Map[String, V] = Map.empty
 
   def add(item: V): Unit = {
-    for (extracter <- extracters) {
-      val string = extracter(item)
+    val strings = extracter(item)
+    for (string <- strings) {
       for (normalizer <- normalizers) {
         val key = normalizer(string)
         if (!entries.contains(key)) {
@@ -30,7 +30,7 @@ class Index[V](var extracters: Seq[V => String],
 }
 
 object Index {
-  def apply[V](extracters: Seq[V => String],
+  def apply[V](extracters: V => Seq[String],
                normalizers: Seq[String => String] = Seq(_.trim, _.trim.toLowerCase)): Index[V] =
     new Index(extracters, normalizers)
 }

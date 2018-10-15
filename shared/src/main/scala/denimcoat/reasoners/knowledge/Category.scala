@@ -1,9 +1,9 @@
 package denimcoat.reasoners.knowledge
 
-case class Category(name: String) extends Identifiable {
+case class Category(override val name: String) extends Identifiable {
+  override def id: PrefixedId = IdPrefix.none(name)
 
-  override def id: PrefixedId = IdPrefix.name(name)
-
+  override def ids: Seq[PrefixedId] = Seq(IdPrefix.none(name))
 }
 
 object Category {

@@ -1,6 +1,7 @@
 package denimcoat.reasoners.knowledge
 
 trait Relation extends Identifiable {
+  override def ids: Seq[PrefixedId] = Seq(IdPrefix.none(name))
 
   def inCategory: Category
 
@@ -12,11 +13,12 @@ object Relation {
   def apply(name: String, inCategory: Category, outCategory: Category): RelationImpl =
     RelationImpl(name, inCategory, outCategory)
 
-  abstract case class Reversible(name: String, inCategory: Category, outCategory: Category) extends Relation {
+  abstract case class Reversible(override val name: String, inCategory: Category,
+                                 outCategory: Category) extends Relation {
     def reverse: Reversible
   }
 
-  case class RelationImpl(name: String, inCategory: Category, outCategory: Category) extends Relation
+  case class RelationImpl(override val name: String, inCategory: Category, outCategory: Category) extends Relation
 
   val hasSymptom: Reversible = new Reversible("has symptom", Category.disease, Category.phenotype) {
     override def reverse: Reversible = isSymptomOf
@@ -36,13 +38,13 @@ object Relation {
 
   val hasAssociatedGene: Reversible =
     new Reversible("has associated gene", Category.disease, Category.gene) {
-    override def reverse: Reversible = isAssociatedWith
-  }
+      override def reverse: Reversible = isAssociatedWith
+    }
 
   val isAssociatedWith: Reversible =
     new Reversible("is associated with", Category.gene, Category.disease) {
-    override def reverse: Reversible = hasAssociatedGene
-  }
+      override def reverse: Reversible = hasAssociatedGene
+    }
 
   val isPartOfPathway: Reversible =
     new Reversible("is part of pathway", Category.gene, Category.pathway) {
@@ -83,7 +85,8 @@ object Relation {
       includesGene, isSameGeneAs, isGeneTargetedByDrug, isDrugTargetingGene, isKnownDrug, isEnrichedGeneWith
     )
 
-  val relationsById: Map[PrefixedId, Relation] = knownRelations.map(relation => (relation.id, relation)).toMap
+  val relationsById: Map[PrefixedId, Relation] =
+    knownRelations.flatMap(relation => relation.ids.map(id => (id, relation))).toMap
 
   def fromId(id: PrefixedId): Option[Relation] = relationsById.get(id)
 }

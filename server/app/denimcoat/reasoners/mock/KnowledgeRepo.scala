@@ -92,7 +92,7 @@ object KnowledgeRepo {
     graph
   }
 
-  val index: Index[Entity] = Index[Entity](Seq(_.id.toString, _.name))
+  val index: Index[Entity] = Index[Entity](entity => entity.ids.map(_.toString))
 
   for (entity <- graph.nodes) {
     index.add(entity)

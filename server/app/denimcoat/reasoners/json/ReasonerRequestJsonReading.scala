@@ -11,7 +11,7 @@ import play.api.libs.json._
 object ReasonerRequestJsonReading {
 
   implicit val relationReads: Reads[Relation] = {
-    case JsString(string) => Relation.fromId(IdPrefix.name(string)) match {
+    case JsString(string) => Relation.fromId(IdPrefix.none(string)) match {
       case Some(relation) => JsSuccess(relation)
       case None => JsError(s"No relation with id '$string' found.")
 

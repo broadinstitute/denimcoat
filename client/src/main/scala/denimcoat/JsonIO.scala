@@ -17,7 +17,7 @@ object JsonIO {
   implicit val dateDecoder: Decoder[Date] = implicitly[Decoder[Long]].map(new Date(_))
   implicit val uriDecoder: Decoder[URI] = implicitly[Decoder[String]].map(new URI(_))
   implicit val anyDecoder: Decoder[Any] = implicitly[Decoder[Any]]
-  implicit val relationEncoder: Encoder[Relation] = (relation: Relation) => relation.id.asJson
+  implicit val relationEncoder: Encoder[Relation] = (relation: Relation) => relation.ids.head.asJson
   implicit val relationDecoder: Decoder[Relation] =
     implicitly[Decoder[String]].map(PrefixedId.parse).map(Relation.fromId).map(_.get)
 
