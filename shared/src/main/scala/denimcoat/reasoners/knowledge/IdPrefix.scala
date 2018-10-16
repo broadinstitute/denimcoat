@@ -1,20 +1,34 @@
 package denimcoat.reasoners.knowledge
 
-case class IdPrefix(string: String, category: Category) {
+case class IdPrefix(string: String) {
   def getId(idString: String): String = string + ":" + idString
+
   def apply(value: String): PrefixedId = PrefixedId(this, value)
 }
 
 object IdPrefix {
-  def apply(string: String): IdPrefix = new IdPrefix(string.toLowerCase, Category.thing)
+  val none: IdPrefix = IdPrefix("")
+  val omimDisease: IdPrefix = IdPrefix("omim.disease")
+  val hp: IdPrefix = IdPrefix("hp")
+  val mondo: IdPrefix = IdPrefix("mondo")
+  val ncbigene: IdPrefix = IdPrefix("ncbigene")
+  val reactomePathway: IdPrefix = IdPrefix("reactome.pathway")
+  val rs: IdPrefix = IdPrefix("rs")
+  val hgncSymbol: IdPrefix = IdPrefix("hgnc.symbol")
+  val chemblCompound: IdPrefix = IdPrefix("chembl.compound")
 
-  val none: IdPrefix = IdPrefix("", Category.thing)
-  val omimDisease: IdPrefix = IdPrefix("omim.disease", Category.disease)
-  val hp: IdPrefix = IdPrefix("hp", Category.phenotype)
-  val mondo: IdPrefix = IdPrefix("mondo", Category.disease)
-  val ncbigene: IdPrefix = IdPrefix("ncbigene", Category.gene)
-  val reactomePathway: IdPrefix = IdPrefix("reactome.pathway", Category.pathway)
-  val rs: IdPrefix = IdPrefix("rs", Category.variant)
-  val hgncSymbol: IdPrefix = IdPrefix("hgnc.symbol", Category.gene)
-  val chemblCompound: IdPrefix = IdPrefix("chembl.compound", Category.compound)
+  def getCategory(prefix: IdPrefix): Category = {
+    prefix match {
+      case IdPrefix.none => Category.thing
+      case IdPrefix.omimDisease => Category.disease
+      case IdPrefix.hp => Category.phenotype
+      case IdPrefix.mondo => Category.disease
+      case IdPrefix.ncbigene => Category.gene
+      case IdPrefix.reactomePathway => Category.pathway
+      case IdPrefix.rs => Category.variant
+      case IdPrefix.hgncSymbol => Category.gene
+      case IdPrefix.chemblCompound => Category.compound
+      case _ => Category.thing
+    }
+  }
 }

@@ -6,6 +6,7 @@ import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.reasoners.extract.ResponseExtractor
+import denimcoat.reasoners.knowledge.IdPrefix
 import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
