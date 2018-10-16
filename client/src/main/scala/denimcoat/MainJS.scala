@@ -6,12 +6,11 @@ import denimcoat.d3.{D3, Selection}
 import denimcoat.mvp.Workflow
 import denimcoat.mvp.Workflow.{Derivation, ItemSetInfo}
 import denimcoat.reasoners.extract.ResponseExtractor
-import denimcoat.reasoners.knowledge.IdPrefix
 import denimcoat.reasoners.messages.DefaultRequestBody
 import denimcoat.reasoners.plugin.ReasonerPluginProvider
 import denimcoat.reasoners.plugin.response.ReasonerResponsePlugin
 import denimcoat.svg.MainSvg
-import denimcoat.util.{Entity, UrlUtils}
+import denimcoat.util.{Entity, FloodThrottler, UrlUtils}
 import denimcoat.viewmodels.KeyMapper
 import denimcoat.viewmodels.KeyMapper.EditAction
 import org.scalajs.dom
@@ -28,8 +27,10 @@ object MainJS {
   val weAreInDebugMode: Boolean =
     urlQuery.get("debug").flatMap(string => Try(string.toBoolean).toOption).getOrElse(false)
 
+  val alertThrottler: FloodThrottler = FloodThrottler()
+
   def alert(message: String): Unit = {
-    dom.window.alert(message)
+    alertThrottler(dom.window.alert(message))
   }
 
   def alertWhenDebugging(message: => String): Unit = {
@@ -52,13 +53,15 @@ object MainJS {
   var answers: Map[Workflow.ItemSetInfo, Map[String, Either[String, ResponseExtractor]]] =
     Workflow.itemSetInfos.map(itemSet =>
       (itemSet, Map.empty[String, Either[String, ResponseExtractor]])).toMap
-  var items: Map[Workflow.ItemSetInfo, Seq[String]] =
-    Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[String])).toMap
+  var items: Map[Workflow.ItemSetInfo, Seq[Entity]] =
+    Workflow.itemSetInfos.map(itemSet => (itemSet, Seq.empty[Entity])).toMap
 
   def resetAnswers(resultItemSet: Workflow.ItemSetInfo): Unit = {
     answers += (resultItemSet -> Map.empty)
     items += (resultItemSet -> Seq.empty)
   }
+
+  val reducer: Entity.Reducer = Entity.Reducer.byAnyId
 
   def addAnswer(itemSet: Workflow.ItemSetInfo, reasonerId: String,
                 responseExtractorEither: Either[String, ResponseExtractor]): Unit = {
@@ -67,8 +70,7 @@ object MainJS {
     responseExtractorEither match {
       case Left(_) => ()
       case Right(responseExtractor) =>
-        val responseTargetNodeNames = responseExtractor.targetNodeNames
-        items += itemSet -> (items(itemSet) ++ responseTargetNodeNames).distinct
+        items += itemSet -> reducer.reduce(items(itemSet) ++ responseExtractor.entities)
     }
   }
 
@@ -81,9 +83,7 @@ object MainJS {
     if (request.readyState == 4) {
       val responseJson = request.responseText
       val responseExtractorEither = plugin.getExtractorFor(responseJson)
-      if (weAreInDebugMode) {
-        dom.window.alert(responseExtractorEither.toString + "\n" + responseJson.substring(0, 100))
-      }
+        alertWhenDebugging(responseExtractorEither.toString + "\n" + responseJson.substring(0, 100))
       addAnswer(resultItemSetInfo, plugin.reasonerId, responseExtractorEither)
       displayAnswers(resultItemSetInfo)
     }
@@ -131,17 +131,17 @@ object MainJS {
   }
 
   def displayResultSet(itemSetInfo: ItemSetInfo): Unit =
-    MainSvg.setOutputItems(itemSetInfo, items(itemSetInfo))
+    MainSvg.setOutputItems(itemSetInfo, items(itemSetInfo).map(_.toString))
 
   def submit(itemSetInfo: ItemSetInfo, derivation: Derivation): Unit = {
     val inputItemsInfo = derivation.previousSet
     val selectedItems = MainSvg.rowsByInfo(inputItemsInfo).selectedItems.filter(_.trim.nonEmpty)
     if (selectedItems.isEmpty) {
-      dom.window.alert("No item(s) entered or selected.")
+      alert("No item(s) entered or selected.")
     } else {
       val reasonerIds = getSelectedReasonerIds(itemSetInfo, derivation)
       if (reasonerIds.isEmpty) {
-        dom.window.alert("Please check at least one reasoner.")
+        alert("Please check at least one reasoner.")
       } else {
         resetAnswers(itemSetInfo)
         displayAnswers(itemSetInfo)
