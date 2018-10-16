@@ -53,7 +53,7 @@ object MonarchInitiativeUtils {
 
   case class Subject(label: String, id: String)
 
-  case class Association(`object`: MIObject, relation: Relation, provided_by: Seq[String], id: String,
+  case class Association(`object`: MIObject, relation: Relation, provided_by: Option[Seq[String]], id: String,
                          evidence_graph: EvidenceGraph,
                          publications: Option[Seq[Publication]], subject: Subject)
 
